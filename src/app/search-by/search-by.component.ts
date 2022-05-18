@@ -5,12 +5,11 @@ import { ApiCallerService } from '../api-caller.service';
 Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, ChartDataLabels);
 
 @Component({
-  selector: 'app-schedule',
-  templateUrl: './schedule.component.html',
-  styleUrls: ['./schedule.component.scss']
+  selector: 'app-search-by',
+  templateUrl: './search-by.component.html',
+  styleUrls: ['./search-by.component.scss']
 })
-
-export class ScheduleComponent implements OnInit {  
+export class SearchByComponent implements OnInit {
 
   allTimeTables: any
   timeArray = [8,9,10,11,12,13,14,15,16,17,18]
@@ -18,8 +17,8 @@ export class ScheduleComponent implements OnInit {
   d2: any
   d3: any
   d4: any
-  d5: any
-
+  d5: any  
+  
   constructor(private api: ApiCallerService, public renderer: Renderer2) {
     var response = this.api.sendGetRequest("/getTimetable/1")
     response.subscribe(data => {

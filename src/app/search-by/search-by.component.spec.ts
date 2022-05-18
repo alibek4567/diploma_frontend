@@ -1,20 +1,20 @@
 import { ComponentFixture, TestBed } from '@angular/core/testing';
 
-import { ScheduleComponent } from './schedule.component';
+import { SearchByComponent } from './search-by.component';
 
-describe('FirstComponent', () => {
-  let component: ScheduleComponent;
-  let fixture: ComponentFixture<ScheduleComponent>;
+describe('SearchByComponent', () => {
+  let component: SearchByComponent;
+  let fixture: ComponentFixture<SearchByComponent>;
 
   beforeEach(async () => {
     await TestBed.configureTestingModule({
-      declarations: [ ScheduleComponent ]
+      declarations: [ SearchByComponent ]
     })
     .compileComponents();
   });
 
   beforeEach(() => {
-    fixture = TestBed.createComponent(ScheduleComponent);
+    fixture = TestBed.createComponent(SearchByComponent);
     component = fixture.componentInstance;
     fixture.detectChanges();
   });

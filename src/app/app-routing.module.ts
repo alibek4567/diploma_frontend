@@ -1,11 +1,11 @@
 import { NgModule } from '@angular/core';
 import { RouterModule, Routes } from '@angular/router';
-import { ScheduleComponent } from './schedule/schedule.component';
+import { SearchByComponent } from './search-by/search-by.component';
 
 const routes: Routes = [
   {
     path: '',
-    component: ScheduleComponent
+    component: SearchByComponent
   },
 ];
 
