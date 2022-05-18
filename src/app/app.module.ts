@@ -10,19 +10,14 @@ import {FormsModule, ReactiveFormsModule} from '@angular/forms';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import {MatFormFieldModule} from '@angular/material/form-field';
-import { FirstComponent } from './first/first.component';
-import { SecondComponent } from './second/second.component';
+import { ScheduleComponent } from './schedule/schedule.component';
 import { SwiperModule } from 'swiper/angular';
-import { ThirdComponent } from './third/third.component';
 import { HttpClientModule } from '@angular/common/http';
-
 
 @NgModule({
   declarations: [
     AppComponent,
-    FirstComponent,
-    SecondComponent,
-    ThirdComponent,
+    ScheduleComponent,
   ],
   imports: [
     BrowserModule,

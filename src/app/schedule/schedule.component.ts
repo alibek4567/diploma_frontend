@@ -5,12 +5,12 @@ import { ApiCallerService } from '../api-caller.service';
 Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, ChartDataLabels);
 
 @Component({
-  selector: 'app-first',
-  templateUrl: './first.component.html',
-  styleUrls: ['./first.component.scss']
+  selector: 'app-schedule',
+  templateUrl: './schedule.component.html',
+  styleUrls: ['./schedule.component.scss']
 })
 
-export class FirstComponent implements OnInit {  
+export class ScheduleComponent implements OnInit {  
 
   allTimeTables: any
   timeArray = [8,9,10,11,12,13,14,15,16,17,18]

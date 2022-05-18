@@ -35,8 +35,9 @@
           <select>
             <option>Find by group</option>
             <option>Find by teacher</option>
+            <option>Find by cabinet</option>
           </select>
-          <input type="text" placeholder="Input name...">
+          <input type="text" placeholder="Посик...">
           <button mat-icon-button type="submit">
             <mat-icon>search</mat-icon>
           </button>
@@ -55,7 +56,7 @@
         </div>
           <div class="grid-item">
             <div class="day">
-              <p>Monday</p>
+              <p></p>
             </div>
             <div class="column">
               <div id="d1_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
@@ -63,14 +64,14 @@
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p>Monday</p></div>
+            <div class="day"><p></p></div>
             <div class="column">
               <div id="d2_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p>Monday</p></div>
+            <div class="day"><p></p></div>
             <div class="column">
               <div id="d3_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
