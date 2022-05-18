@@ -1,0 +1,103 @@
+<mat-toolbar>
+    <button class="menu" mat-icon-button (click)="sidenav.toggle()">
+        <mat-icon *ngIf="!sidenav.opened">
+          menu
+        </mat-icon>
+        <mat-icon *ngIf="sidenav.opened">
+          close
+        </mat-icon>
+      </button>
+      <p id="logo">Astana IT University</p>
+</mat-toolbar>
+
+<mat-sidenav-container>
+    <mat-sidenav #sidenav mode="over">
+      <div class="vertical">
+          <div class="item" routerLink="home" routerDirection="root">
+            <mat-icon>home</mat-icon>
+            <p>Главная</p>
+          </div>
+
+          <div class="item" routerLink="settings" routerDirection="root">
+            <mat-icon>settings</mat-icon>
+            <p>Настройки</p>
+          </div>
+
+          <div class="item">
+            <mat-icon>exit_to_app</mat-icon>
+            <p>Выйти из аккаунта</p>
+          </div>          
+      </div>
+    </mat-sidenav>
+    <mat-sidenav-content>
+      <div class="content">
+        <div class="searchBar">
+          <select>
+            <option>Find by group</option>
+            <option>Find by teacher</option>
+          </select>
+          <input type="text" placeholder="Input name...">
+          <button mat-icon-button type="submit">
+            <mat-icon>search</mat-icon>
+          </button>
+        </div>
+
+        <h2>SE-1902</h2>
+
+       <div class="grid-container">
+        <div class="grid-item">
+          <div class="day"></div>
+          <div class="column">
+            <div class="time" *ngFor="let item of timeArray; let i = index">
+                <p>{{i+8}}</p>
+            </div>
+          </div>
+        </div>
+          <div class="grid-item">
+            <div class="day">
+              <p>Monday</p>
+            </div>
+            <div class="column">
+              <div id="d1_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+            </div>
+          </div>
+          <div class="grid-item">
+            <div class="day"><p>Monday</p></div>
+            <div class="column">
+              <div id="d2_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+            </div>
+          </div>
+          <div class="grid-item">
+            <div class="day"><p>Monday</p></div>
+            <div class="column">
+              <div id="d3_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+            </div>
+          </div>
+          <div class="grid-item">
+            <div class="day"><p>Monday</p></div>
+            <div class="column">
+              <div id="d4_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+            </div>
+          </div>
+          <div class="grid-item">
+            <div class="day"><p>Monday</p></div>
+            <div class="column">
+              <div id="d5_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+              <!-- <div class="block" *ngFor="let item of d5">
+                <p class="subject">{{item.subject}}</p>
+                <p class="teacher">{{item.tutor}}</p>
+                <p>{{item.classtime_time}}</p>
+              </div> -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </mat-sidenav-content>
+</mat-sidenav-container>
+
+

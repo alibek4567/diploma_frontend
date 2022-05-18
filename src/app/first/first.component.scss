@@ -1,0 +1,237 @@
+mat-toolbar {
+  display: flex;
+  background-color: white;
+  padding: 1rem 1.5rem;
+}
+
+mat-sidenav {
+  width: 20rem;
+  border-radius: 0 1rem 1rem 0;
+  padding: 1rem 1rem 4rem 1rem;
+
+  .vertical{
+    width: 100%;
+    height: 100%;
+    background: white;
+    display: flex;
+    flex-direction: column;
+
+    .item{
+        min-width: 100%;
+        display: flex;
+        align-items: center;
+        justify-content: start;
+        background-color: #457CCE;
+        border-radius: 10px;
+        margin-bottom: 0.5rem; 
+
+        p{
+            font-size: 14px;
+            color: white;
+        }
+    }
+
+    .item:last-child{
+        margin-top: auto;
+
+        p{
+            color: #9F4242;
+        }
+    }
+}
+}
+
+mat-sidenav-container {
+  height: calc(100vh - 65px);
+}
+
+#logo {
+  padding-left: 1.5rem;
+  margin: 0;
+}
+
+.menu{
+  background-color: #E5E5E5;
+  padding: 0.5rem;
+  border: none;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.content {
+  min-height: 100%;
+  width: 100%;
+  display: flex;
+  align-items: center;
+  flex-direction: column;
+  font-size: 1rem;
+  background-color: #E5E5E5;
+}
+
+.searchBar{
+  padding: 0.3rem;
+  border-radius: 10px;
+  margin: 3rem 0;
+  width: 40%;
+  display: flex;
+  align-items: center;
+  background-color: white;
+
+  select{
+    margin-left: 1rem;
+    border: none;
+    font-size: 0.9rem;
+    background-color: white;
+  }
+
+  input{
+    width: 70%;
+    margin-left: 1rem;
+    padding: 0.5rem 0.5rem 0.5rem 1rem;
+    background-color: white;
+    font-size: 0.9srem;
+    border: none;
+    border-left: 2px solid black;
+  }
+
+  input:focus, select:focus{
+    outline: none;
+  }
+
+  button{
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    border: none;
+    padding: 0.5rem;
+    background-color: #457CCE;
+    border-radius: 10px;
+    color: white;
+    margin-left: auto;
+  }
+}
+
+h2{
+  margin: 0;
+  padding: 0;
+}
+
+.grid-container{
+  width: 80%;
+  margin: 2rem 0;
+  display: grid;
+  gap: 0;
+
+  grid-template-columns: 0.1fr repeat(5, 1fr);
+}
+
+.grid-item{
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+}
+
+.day{
+  height: 1rem;
+  width: 100%;
+  background-color: white;
+  border: 1px solid #eeeeee;
+  padding: 0.5rem 0;
+  font-size: 1rem;
+  text-align: center;
+
+  p{
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.column{
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+}
+
+.time{
+  height: 5rem;
+  background-color: white;
+  color: black;
+  display: flex;
+  flex-direction: column;
+  justify-content: space-evenly;
+  text-align: center;
+  border: 1px solid #eeeeee;
+  padding: 0.5rem;
+
+  p{
+    padding: 0;
+    margin: 0;
+  }
+}
+
+.empty{
+  height: 5rem;
+  max-width: 100%;
+  background-color: white;
+  border: 1px solid #eeeeee;
+  padding: 0.5rem;
+}
+
+.lesson{
+  background-color: black;
+  grid-column: 5 / 6;
+}
+
+.block{
+  height: 5rem;
+  max-width: 100%;
+  background-color: #457CCE;
+  color: white;
+  display: flex;
+  flex-direction: column;
+  border: 1px solid #eeeeee;
+  padding: 0.5rem;
+
+  .subject{
+    font-weight: 700;
+  }
+
+  .teacher{
+    font-weight: 500;
+  }
+
+  p{
+    width: 100%;
+    margin: 0 0 0.5rem 0;
+    padding: 0;
+    font-size: 0.9rem;
+    font-weight: 200;
+    padding-left: 0.1rem;
+    color: white;
+  }
+}
+
+.chartContainer{
+  margin: 2rem 0;
+  width: 80%;
+  height: fit-content;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: lightgray;
+  border-radius: 10px;
+  border: 1px solid black;
+  padding: 2rem;
+}
+
+.chartHolder{
+  width: 100%;
+  height: 100%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 10px;
+}
+
+
