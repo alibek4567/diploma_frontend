@@ -47,7 +47,6 @@
 
        <div class="grid-container">
         <div class="grid-item">
-          <div class="day"></div>
           <div class="column">
             <div class="time" *ngFor="let item of timeArray; let i = index">
                 <p>{{i+8}}</p>
@@ -56,7 +55,7 @@
         </div>
           <div class="grid-item">
             <div class="day">
-              <p></p>
+              <p>Monday</p>
             </div>
             <div class="column">
               <div id="d1_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
@@ -64,28 +63,40 @@
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p></p></div>
+            <div class="day"><p>Tuesday</p></div>
             <div class="column">
               <div id="d2_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p></p></div>
+            <div class="day"><p>Wednesday</p></div>
             <div class="column">
               <div id="d3_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p>Monday</p></div>
+            <div class="day"><p>Thursday</p></div>
             <div class="column">
               <div id="d4_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
-            <div class="day"><p>Monday</p></div>
+            <div class="day"><p>Friday</p></div>
+            <div class="column">
+              <div id="d5_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              </div>
+              <!-- <div class="block" *ngFor="let item of d5">
+                <p class="subject">{{item.subject}}</p>
+                <p class="teacher">{{item.tutor}}</p>
+                <p>{{item.classtime_time}}</p>
+              </div> -->
+            </div>
+          </div>
+          <div class="grid-item">
+            <div class="day"><p>Saturday</p></div>
             <div class="column">
               <div id="d5_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
