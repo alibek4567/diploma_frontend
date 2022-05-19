@@ -1,8 +1,38 @@
 mat-toolbar {
     display: flex;
-    background-color: white;
+    background: transparent;
     padding: 1rem 1.5rem;
   }
+
+  mat-select{
+    font-size: 1.1rem;
+  }
+
+  .right{
+    margin-left: auto;
+    display: flex;
+    align-items: center;
+    justify-content: space-evenly;
+
+    p{
+      font-size: 1.1rem;
+      margin-right: 1rem;
+    }
+
+    #login{
+        padding: 0.5rem 1rem;
+        border-radius: 10px;
+        font-size: 1.1rem;
+        border: none;
+        background-color: transparent;
+        color: black;
+      }
+
+    #login:hover{
+      color: white;
+      background-color: #457CCE;
+    }
+    }
   
   mat-sidenav {
     width: 20rem;
@@ -30,7 +60,7 @@ mat-toolbar {
           }
   
           p{          
-              font-size: 14px;
+              font-size: 1.1rem;
               color: black;
           }
       }
@@ -55,13 +85,15 @@ mat-toolbar {
   
   #logo {
     padding-left: 1.5rem;
-    margin: 0;
+    margin: 0 2rem 0 0;
   }
   
   .menu{
-    background-color: #E5E5E5;
+    background-color:#457CCE;
+    color: white;
     padding: 0.5rem;
     border: none;
+    border-radius: 5px;
     display: flex;
     align-items: center;
     justify-content: center;
@@ -74,11 +106,17 @@ mat-toolbar {
     align-items: center;
     flex-direction: column;
     font-size: 1rem;
-    background-color: #E5E5E5;
+    background-image: linear-gradient(315deg, #ffffff 0%, #5899e2 74%);
+  }
+
+  .headText{
+    margin-top: 7rem;
+    color: white;
+    font-size: 4rem;
   }
   
   .searchBar{
-    padding: 0.3rem;
+    padding: 1rem;
     border-radius: 10px;
     margin: 3rem 0;
     width: 40%;
@@ -89,7 +127,7 @@ mat-toolbar {
     select{
       margin-left: 1rem;
       border: none;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       background-color: white;
     }
   
@@ -98,7 +136,7 @@ mat-toolbar {
       margin-left: 1rem;
       padding: 0.5rem 0.5rem 0.5rem 1rem;
       background-color: white;
-      font-size: 0.9rem;
+      font-size: 1.1rem;
       border: none;
       border-left: 2px solid black;
     }

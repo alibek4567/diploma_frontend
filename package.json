@@ -20,6 +20,8 @@
     "@angular/platform-browser": "~13.1.0",
     "@angular/platform-browser-dynamic": "~13.1.0",
     "@angular/router": "~13.1.0",
+    "@azure/msal-angular": "^2.3.0",
+    "@azure/msal-browser": "^2.24.0",
     "chart.js": "^3.7.1",
     "chartjs-adapter-luxon": "^1.1.0",
     "chartjs-plugin-datalabels": "^2.0.0",

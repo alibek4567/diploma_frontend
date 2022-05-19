@@ -52,5 +52,25 @@ body { margin: 0; }
   overflow: hidden !important;
 }
 
+.mat-select {
+  margin: 0 0.5rem;
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+.mat-select-value {
+  max-width: 100% !important;
+  width: auto !important;
+}
+
+.mat-option{
+  background-color: #457CCE !important;
+  color: white !important;
+}
+
+.mat-option:hover{
+  opacity: 0.8;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

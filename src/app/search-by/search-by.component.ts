@@ -2,6 +2,9 @@ import { Component, ElementRef, OnInit, ViewChild, Renderer2 } from '@angular/co
 import ChartDataLabels from 'chartjs-plugin-datalabels';
 import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip} from 'chart.js';
 import { ApiCallerService } from '../api-caller.service';
+import { MsalService } from '@azure/msal-angular';
+import { AuthenticationResult } from '@azure/msal-browser';
+import { HttpClient } from '@angular/common/http';
 Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, ChartDataLabels);
 
 @Component({
@@ -11,6 +14,7 @@ Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, C
 })
 export class SearchByComponent implements OnInit {
 
+  user: any
   allTimeTables: any
   timeArray = [8,9,10,11,12,13,14,15,16,17,18]
   d1: any
@@ -18,8 +22,28 @@ export class SearchByComponent implements OnInit {
   d3: any
   d4: any
   d5: any  
+
+  profileInfo: any
+
+  languages = new Map<string, string>([
+    ["kz", "Kazaksha"],
+    ["en", "English"],
+    ["ru", "Русский"]
+  ])
+
+  Subjects = [
+    {
+      "title": "",
+      "location": "",
+      "startatime": "",
+      "endTime": "",
+      "tutor": ""
+    }
+  ]
+
+  apiResponse: string
   
-  constructor(private api: ApiCallerService, public renderer: Renderer2) {
+  constructor(private api: ApiCallerService, public renderer: Renderer2, private msalService: MsalService, private httpClient: HttpClient) {
     var response = this.api.sendGetRequest("/getTimetable/1")
     response.subscribe(data => {
       const timeTables = JSON.parse(JSON.stringify(data))
@@ -39,10 +63,45 @@ export class SearchByComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    this.msalService.instance.handleRedirectPromise().then(
+      res => {
+        if(res != null && res.account != null){
+          this.msalService.instance.setActiveAccount(res.account)
+          console.log(this.msalService.instance.getActiveAccount())
+        }
+      }
+    )
   }
 
   ngAfterViewInit(): void {
       // (<HTMLElement>document.getElementById(""+item.classtime_time.chartAt(0))).className = "block"
+  }
+
+  isLoggedIn(){
+    return this.msalService.instance.getActiveAccount() != null
+  }
+
+  login(){
+    this.msalService.loginRedirect();
+    // this.msalService.loginPopup().subscribe( (response: AuthenticationResult) => {
+    //   this.msalService.instance.setActiveAccount(response.account)
+    // })
+  }
+
+  logout(){
+    this.msalService.logout()
+  }
+  
+  getUser(){
+    return this.msalService.instance.getActiveAccount()?.name
+  }
+
+  callProfile(){
+    this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe( res => {
+      this.apiResponse = JSON.stringify(res)
+      this.profileInfo = res
+      console.log(this.profileInfo.positions[0].detail.company.department)
+    })
   }
 
   updateHtml(data: any){
