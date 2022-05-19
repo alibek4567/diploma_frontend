@@ -37,21 +37,12 @@ export class SearchByComponent implements OnInit {
     ["ru", "Русский"]
   ])
 
-  Subjects = [
-    {
-      "title": "",
-      "location": "",
-      "startatime": "",
-      "endTime": "",
-      "tutor": ""
-    }
-  ]
-
   apiResponse: string
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, private msalService: MsalService, private httpClient: HttpClient) {
     var response = this.api.sendGetRequest("/getTimetable/1")
     response.subscribe(data => {
+
       const timeTables = JSON.parse(JSON.stringify(data))
       this.d1 = timeTables.payload["d1"]
       this.d2 = timeTables.payload["d2"]
@@ -63,8 +54,8 @@ export class SearchByComponent implements OnInit {
       this.updateHtml(this.d3)
       this.updateHtml(this.d4)
       this.updateHtml(this.d5)
-    }, error => {
-    })
+
+    }, error => { })
    
    }
 
@@ -83,33 +74,29 @@ export class SearchByComponent implements OnInit {
     )
   }
 
-  ngAfterViewInit(): void {
-      // (<HTMLElement>document.getElementById(""+item.classtime_time.chartAt(0))).className = "block"
-  }
-
-  isLoggedIn(){
+  isLoggedIn() {
     return this.msalService.instance.getActiveAccount() != null
   }
 
-  login(){
+  login() {
     this.msalService.loginRedirect();
     // this.msalService.loginPopup().subscribe( (response: AuthenticationResult) => {
     //   this.msalService.instance.setActiveAccount(response.account)
     // })
   }
 
-  logout(){
+  logout() {
     this.msalService.logout()
     sessionStorage.clear()
   }
   
-  getUser(){
+  getUser() {
     this.username = this.msalService.instance.getActiveAccount()?.name
     this.id = this.msalService.instance.getActiveAccount()?.localAccountId
     this.email = this.msalService.instance.getActiveAccount()?.username
   }
 
-  callProfile(){
+  callProfile() {
     this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe( res => {
       this.apiResponse = JSON.stringify(res)
       this.profileInfo = res
@@ -118,7 +105,7 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  updateHtml(data: any){
+  updateHtml(data: any) {
     if(data!=null){
       for(let item of data){
         let el = (<HTMLElement>document.getElementById(item.classtime_day+"_"+(item.classtime_time).split(':')[0]));

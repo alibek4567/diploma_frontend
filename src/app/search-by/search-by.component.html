@@ -1,19 +1,17 @@
 <mat-toolbar>
-    <button class="menu" mat-icon-button (click)="sidenav.toggle()">
-      <mat-icon *ngIf="!sidenav.opened">
-        menu
-      </mat-icon>
-      <mat-icon *ngIf="sidenav.opened">
-        close
-      </mat-icon>
-    </button>
-    <p id="logo">Astana IT University</p>
-    <mat-select value="en">
-      <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
-        {{item.value}}
-      </mat-option>
-    </mat-select>
-    
+  <button class="menu" mat-icon-button (click)="sidenav.toggle()">
+    <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
+    <mat-icon *ngIf="sidenav.opened">close</mat-icon>
+  </button>
+
+  <p id="logo">Astana IT University</p>
+
+  <mat-select value="en">
+    <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
+      {{item.value}}
+    </mat-option>
+  </mat-select>  
+
   <div class="right">
     <p>{{username}}</p>
     <button *ngIf="!isLoggedIn()" (click)="login()" id="login">Sign In</button>
@@ -21,105 +19,94 @@
 </mat-toolbar>
 
 <mat-sidenav-container>
-    <mat-sidenav #sidenav mode="over">
-      <div class="vertical">
-          <div class="item" routerLink="home" routerDirection="root">
-            <mat-icon>home</mat-icon>
-            <p>Home</p>
-          </div>
-
-          <div class="item" routerLink="settings" routerDirection="root">
-            <mat-icon>settings</mat-icon>
-            <p>Settings</p>
-          </div>
-
-          <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <p>Log Out</p>
-          </div>          
+  <mat-sidenav #sidenav mode="over">
+    <div class="vertical">
+      <div class="item" routerLink="home" routerDirection="root">
+        <mat-icon>home</mat-icon>
+        <p>Home</p>
       </div>
-    </mat-sidenav>
-    <mat-sidenav-content>
-      <div class="content">
 
-        <p *ngIf="search" class="headText">Astana IT University</p>
+      <div class="item" routerLink="settings" routerDirection="root">
+        <mat-icon>settings</mat-icon>
+        <p>Settings</p>
+      </div>
 
-        <div class="searchBar">
-          <mat-select value="Поиск по группам">
-            <mat-option value="Поиск по группам">
-              Search by group
-            </mat-option>
-            <mat-option value="Поиск по учителям">
-              Search by tutor
-            </mat-option>
-            <mat-option value="Поиск по кабинетам">
-              Search by cabinet
-            </mat-option>
-          </mat-select>
-          <input type="text" placeholder="Search...">
-          <button mat-icon-button type="submit">
-            <mat-icon>search</mat-icon>
-          </button>
-        </div>
+      <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
+        <mat-icon>exit_to_app</mat-icon>
+        <p>Log Out</p>
+      </div>          
+    </div>
+  </mat-sidenav>
+  <mat-sidenav-content>
+    <div class="content">
+      <p *ngIf="search" class="headText">Astana IT University</p>
 
-        <h2 class="searchField">SE-1902</h2>
+      <div class="searchBar">
+        <mat-select value="Поиск по группам">
+          <mat-option value="Поиск по группам">
+            Search by group
+          </mat-option>
+          <mat-option value="Поиск по учителям">
+            Search by tutor
+          </mat-option>
+          <mat-option value="Поиск по кабинетам">
+            Search by cabinet
+          </mat-option>
+        </mat-select>
+        <input type="text" placeholder="Search...">
+        <button mat-icon-button type="submit">
+          <mat-icon>search</mat-icon>
+        </button>
+      </div>
 
-       <div class="grid-container">
+      <h2 class="searchField">SE-1902</h2>
+
+      <div class="grid-container">
         <div class="grid-item">
           <div class="day"></div>
           <div class="column">
-            <div class="time" *ngFor="let item of timeArray; let i = index">
-                <p>{{i+8}}</p>
-            </div>
+            <div class="time" *ngFor="let hour of timeArray"><p>{{ hour }}</p></div>
           </div>
         </div>
-          <div class="grid-item">
-            <div class="day">
-              <p>Monday</p>
-            </div>
-            <div class="column">
-              <div id="d1" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        <div class="grid-item">
+          <div class="day"><p>Monday</p></div>
+          <div class="column">
+            <div id="d1" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
-          <div class="grid-item">
-            <div class="day"><p>Tuesday</p></div>
-            <div class="column">
-              <div id="d2" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        </div>
+        <div class="grid-item">
+          <div class="day"><p>Tuesday</p></div>
+          <div class="column">
+            <div id="d2" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
-          <div class="grid-item">
-            <div class="day"><p>Wednesday</p></div>
-            <div class="column">
-              <div id="d3" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        </div>
+        <div class="grid-item">
+          <div class="day"><p>Wednesday</p></div>
+          <div class="column">
+            <div id="d3" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
-          <div class="grid-item">
-            <div class="day"><p>Thursday</p></div>
-            <div class="column">
-              <div id="d4" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        </div>
+        <div class="grid-item">
+          <div class="day"><p>Thursday</p></div>
+          <div class="column">
+            <div id="d4" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
-          <div class="grid-item">
-            <div class="day"><p>Friday</p></div>
-            <div class="column">
-              <div id="d5" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        </div>
+        <div class="grid-item">
+          <div class="day"><p>Friday</p></div>
+          <div class="column">
+            <div id="d5" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
-          <div class="grid-item">
-            <div class="day"><p>Saturday</p></div>
-            <div class="column">
-              <div id="d6" class="empty" *ngFor="let item of timeArray; let i=index">
-              </div>
-            </div>
+        </div>
+        <div class="grid-item">
+          <div class="day"><p>Saturday</p></div>
+          <div class="column">
+            <div id="d6" class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
       </div>
-    </mat-sidenav-content>
+    </div>
+  </mat-sidenav-content>
 </mat-sidenav-container>
 
 
