@@ -179,12 +179,13 @@ h2 {
   display: flex;
   flex-direction: column;
   width: 100%;
+  position: relative;
 }
   
 .day {
   height: 3rem;
   background-color: white;
-  border: 1px solid #eeeeee;
+  border: 0.05rem solid #eeeeee;
   font-size: 1rem;
   display: flex;
   justify-content: center;
@@ -201,6 +202,16 @@ h2 {
   display: flex;
   flex-direction: column;
 }
+
+.subjects {
+  width: 100%;
+  display: flex;
+  flex-direction: column;
+
+  position: absolute;
+  z-index: 5;
+  top: 3.1rem;
+}
   
 .time {
   height: 5rem;
@@ -210,7 +221,7 @@ h2 {
   flex-direction: column;
   justify-content: space-evenly;
   text-align: center;
-  border: 1px solid #eeeeee;
+  border: 0.05rem solid #eeeeee;
   padding: 0 0.5rem;
   
   p {
@@ -226,7 +237,7 @@ h2 {
 .empty {
   height: 5rem;
   background-color: white;
-  border: 1px solid #eeeeee;
+  border: 0.05rem solid #eeeeee;
 }
   
 .lesson {
@@ -235,13 +246,16 @@ h2 {
 }
   
 .block {
+  display: flex;
+  flex-direction: column;
+  position: absolute;
   height: 5rem;
+  width: 97%;
   max-width: 100%;
   background-color: #457CCE;
   color: white;
-  display: flex;
-  flex-direction: column;
-  border: 1px solid #eeeeee;
+  border: 0.05rem solid #eeeeee;
+  border-left: 0.2rem solid lightgreen;
   
   .subject {
     font-weight: 700;
@@ -271,7 +285,7 @@ h2 {
   justify-content: center;
   background-color: lightgray;
   border-radius: 10px;
-  border: 1px solid black;
+  border: 0.05rem solid black;
   padding: 2rem;
 }
   
@@ -282,4 +296,32 @@ h2 {
   align-items: center;
   justify-content: center;
   border-radius: 10px;
+}
+
+.line {
+  //top: 0.2rem;
+  width: 100%;
+  display: block;
+  border-bottom: 0.1rem dashed orange; 
+  position: absolute; 
+  z-index: 10;
+}
+
+#d1_line {
+  display: none;
+}
+#d2_line {
+  display: none;
+}
+#d3_line {
+  display: none;
+}
+#d4_line {
+  display: none;
+}
+#d5_line {
+  display: none;
+}
+#d6_line {
+  display: none;
 }

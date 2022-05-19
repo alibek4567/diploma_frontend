@@ -71,37 +71,61 @@
         <div class="grid-item">
           <div class="day"><p>Monday</p></div>
           <div class="column">
-            <div id="d1" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d1_line"></span>
+            <div id="d1_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
         <div class="grid-item">
           <div class="day"><p>Tuesday</p></div>
           <div class="column">
-            <div id="d2" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d2_line"></span>
+            <div id="d2_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
         <div class="grid-item">
           <div class="day"><p>Wednesday</p></div>
           <div class="column">
-            <div id="d3" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d3_line"></span>
+            <div id="d3_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
         <div class="grid-item">
           <div class="day"><p>Thursday</p></div>
           <div class="column">
-            <div id="d4" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d4_line"></span>
+            <div id="d4_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
         <div class="grid-item">
           <div class="day"><p>Friday</p></div>
           <div class="column">
-            <div id="d5" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d5_line"></span>
+            <div id="d5_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
         <div class="grid-item">
           <div class="day"><p>Saturday</p></div>
           <div class="column">
-            <div id="d6" class="empty" *ngFor="let item of timeArray; let i=index"></div>
+            <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+          </div>
+          <div class="subjects">
+            <span class="line" id="d6_line"></span>
+            <div id="d6_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
           </div>
         </div>
       </div>
