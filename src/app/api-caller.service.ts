@@ -20,4 +20,5 @@ export class ApiCallerService {
 
     return this.http.get(this.addr+url, httpOptions)
   }
+  
 }

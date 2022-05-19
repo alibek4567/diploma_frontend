@@ -1,0 +1,55 @@
+<div class="outer">
+    <div class="content">
+        <div class="formHolder">
+            <h2>Booking Form</h2>
+
+            <div class="inputHolder">
+                <p>Cabinet</p>
+                <input (keyup)="setCabinet($event)" type="text" placeholder="Enter cabinet">
+            </div>
+
+            <div class="inputHolder">
+                <p>Choose a date</p>
+                <div>
+                    <input (keyup)="setDate($event)" (dateChange)="setDate($event)" placeholder="MM/DD/YYYY" matInput [matDatepicker]="picker">
+                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                    <mat-datepicker #picker></mat-datepicker>
+                </div>
+            </div>
+
+            <div class="dateHolder">
+                <div class="inputHolder">
+                    <p>Start Time</p>
+                    <input type="text" placeholder="HH:MM">
+                </div>
+
+                <div class="inputHolder">
+                    <p>End Time</p>
+                    <input type="text" placeholder="HH:MM">
+                </div>
+            </div>
+
+            <div class="inputHolder">
+                <p>Comment</p>
+                <textarea type="text" placeholder="Enter a comment"></textarea>
+            </div>
+
+            <button class="send" type="submit">Send</button>
+
+        </div>
+        <div class="timetableHolder">
+            <h2>Friday 21</h2>
+            <div class="itemHolder" *ngFor="let item of timeTable">
+                <div class="left">
+                    <p>{{sliceString(item.created_time)}}</p>
+                    <p>{{item.end_time}}</p>
+                </div>
+                <div class="right">
+                    <p class="subject">{{item.reason}}</p>
+                    <p class="tutor">{{item.reserver}}</p>
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+
