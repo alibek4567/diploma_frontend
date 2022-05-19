@@ -42,10 +42,7 @@
     <mat-sidenav-content>
       <div class="content">
 
-        <!-- <button (click)="callProfile()">Call Profile</button>
-        <p>{{apiResponse}}</p> -->
-
-        <p class="headText">Astana IT University</p>
+        <p *ngIf="search" class="headText">Astana IT University</p>
 
         <div class="searchBar">
           <mat-select value="Поиск по группам">
@@ -65,7 +62,7 @@
           </button>
         </div>
 
-        <!-- <h2>SE-1902</h2>
+        <h2 class="searchField">SE-1902</h2>
 
        <div class="grid-container">
         <div class="grid-item">
@@ -81,46 +78,46 @@
               <p>Monday</p>
             </div>
             <div class="column">
-              <div id="d1_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d1" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
             <div class="day"><p>Tuesday</p></div>
             <div class="column">
-              <div id="d2_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d2" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
             <div class="day"><p>Wednesday</p></div>
             <div class="column">
-              <div id="d3_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d3" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
             <div class="day"><p>Thursday</p></div>
             <div class="column">
-              <div id="d4_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d4" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
             <div class="day"><p>Friday</p></div>
             <div class="column">
-              <div id="d5_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d5" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
           <div class="grid-item">
             <div class="day"><p>Saturday</p></div>
             <div class="column">
-              <div id="d5_{{item}}" class="empty" *ngFor="let item of timeArray; let i=index">
+              <div id="d6" class="empty" *ngFor="let item of timeArray; let i=index">
               </div>
             </div>
           </div>
-        </div> -->
+        </div>
       </div>
     </mat-sidenav-content>
 </mat-sidenav-container>

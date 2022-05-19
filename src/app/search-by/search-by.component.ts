@@ -19,6 +19,8 @@ export class SearchByComponent implements OnInit {
   id: any
   department: any
 
+  search: false
+
   allTimeTables: any
   timeArray = [8,9,10,11,12,13,14,15,16,17,18]
   d1: any

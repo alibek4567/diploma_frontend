@@ -180,11 +180,12 @@ mat-toolbar {
   
   .day{
     height: 3rem;
-    width: 100%;
     background-color: white;
     border: 1px solid #eeeeee;
     font-size: 1rem;
-    text-align: center;
+    display: flex;
+    justify-content: center;
+    align-items: center;
   
     p{
       padding: 0;
@@ -207,20 +208,22 @@ mat-toolbar {
     justify-content: space-evenly;
     text-align: center;
     border: 1px solid #eeeeee;
-    padding: 0.5rem;
+    padding: 0 0.5rem;
   
     p{
       padding: 0;
       margin: 0;
     }
   }
+
+  .searchField{
+    color: white;
+  }
   
   .empty{
     height: 5rem;
-    max-width: 100%;
     background-color: white;
     border: 1px solid #eeeeee;
-    padding: 0.5rem;
   }
   
   .lesson{
@@ -236,7 +239,6 @@ mat-toolbar {
     display: flex;
     flex-direction: column;
     border: 1px solid #eeeeee;
-    padding: 0.5rem;
   
     .subject{
       font-weight: 700;
