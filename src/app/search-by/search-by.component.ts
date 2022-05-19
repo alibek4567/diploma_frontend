@@ -14,7 +14,11 @@ Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, C
 })
 export class SearchByComponent implements OnInit {
 
-  user: any
+  username: any
+  email: any
+  id: any
+  department: any
+
   allTimeTables: any
   timeArray = [8,9,10,11,12,13,14,15,16,17,18]
   d1: any
@@ -67,7 +71,11 @@ export class SearchByComponent implements OnInit {
       res => {
         if(res != null && res.account != null){
           this.msalService.instance.setActiveAccount(res.account)
-          console.log(this.msalService.instance.getActiveAccount())
+          this.getUser()
+          this.callProfile()
+          sessionStorage.setItem("username", this.username)
+          sessionStorage.setItem("email", this.email)
+          sessionStorage.setItem("id", this.id)
         }
       }
     )
@@ -90,17 +98,21 @@ export class SearchByComponent implements OnInit {
 
   logout(){
     this.msalService.logout()
+    sessionStorage.clear()
   }
   
   getUser(){
-    return this.msalService.instance.getActiveAccount()?.name
+    this.username = this.msalService.instance.getActiveAccount()?.name
+    this.id = this.msalService.instance.getActiveAccount()?.localAccountId
+    this.email = this.msalService.instance.getActiveAccount()?.username
   }
 
   callProfile(){
     this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe( res => {
       this.apiResponse = JSON.stringify(res)
       this.profileInfo = res
-      console.log(this.profileInfo.positions[0].detail.company.department)
+      this.department = this.profileInfo.positions[0].detail.company.department
+      sessionStorage.setItem("department", this.department)
     })
   }
 

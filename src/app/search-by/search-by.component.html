@@ -15,9 +15,8 @@
     </mat-select>
     
   <div class="right">
-    <p>{{getUser()}}</p>
+    <p>{{username}}</p>
     <button *ngIf="!isLoggedIn()" (click)="login()" id="login">Sign In</button>
-    <button *ngIf="isLoggedIn()" (click)="logout()" id="login">Sign Out</button>
   </div>
 </mat-toolbar>
 
@@ -34,7 +33,7 @@
             <p>Settings</p>
           </div>
 
-          <div class="item">
+          <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
             <mat-icon>exit_to_app</mat-icon>
             <p>Log Out</p>
           </div>          
@@ -60,7 +59,7 @@
               Search by cabinet
             </mat-option>
           </mat-select>
-          <input type="text" placeholder="Enter group or cabinet...">
+          <input type="text" placeholder="Search...">
           <button mat-icon-button type="submit">
             <mat-icon>search</mat-icon>
           </button>
