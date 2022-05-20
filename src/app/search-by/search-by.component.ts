@@ -1,11 +1,11 @@
 import { Component, ElementRef, OnInit, ViewChild, Renderer2 } from '@angular/core';
-import ChartDataLabels from 'chartjs-plugin-datalabels';
-import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip} from 'chart.js';
 import { ApiCallerService } from '../api-caller.service';
 import { MsalService } from '@azure/msal-angular';
 import { AuthenticationResult } from '@azure/msal-browser';
 import { HttpClient } from '@angular/common/http';
-Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, ChartDataLabels);
+// Chart.register(BarElement, BarController, CategoryScale, LinearScale, Tooltip, ChartDataLabels);
+// import { BarController, BarElement, CategoryScale, Chart, LinearScale, Tooltip} from 'chart.js';
+// import ChartDataLabels from 'chartjs-plugin-datalabels';
 
 @Component({
   selector: 'app-search-by',
@@ -48,7 +48,8 @@ export class SearchByComponent implements OnInit {
 
   apiResponse: string
   
-  constructor(private api: ApiCallerService, public renderer: Renderer2, private msalService: MsalService, private httpClient: HttpClient) {
+  constructor(private api: ApiCallerService, public renderer: Renderer2, 
+    private msalService: MsalService, private httpClient: HttpClient) {
 
     this.language = sessionStorage.getItem("language")
     if (this.language == null) {
@@ -56,7 +57,6 @@ export class SearchByComponent implements OnInit {
       sessionStorage.setItem("language", this.language)
     }
 
-    
     var response = this.api.sendGetRequest("/timetable/group/1")
     response.subscribe(data => {
       const timeTables = JSON.parse(JSON.stringify(data))

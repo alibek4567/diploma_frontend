@@ -14,10 +14,12 @@ import {MatInputModule} from '@angular/material/input';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import { SwiperModule } from 'swiper/angular';
-import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
+import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
 import { MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG } from '@azure/msal-angular';
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
+import {TranslateHttpLoader} from '@ngx-translate/http-loader';
 
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
@@ -41,6 +43,10 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   };
 }
 
+export function HttpLoaderFactory(http: HttpClient) {
+  return new TranslateHttpLoader(http);
+} 
+
 @NgModule({
   declarations: [
     AppComponent,
@@ -63,7 +69,14 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     SwiperModule,
     HttpClientModule,
     MsalModule,
-    FormsModule
+    FormsModule,
+    TranslateModule.forRoot({
+      loader: {
+          provide: TranslateLoader,
+          useFactory: HttpLoaderFactory,
+          deps: [HttpClient]
+      }
+    })
   ],
   providers: [
     {
@@ -79,7 +92,13 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
       provide: MSAL_INTERCEPTOR_CONFIG,
       useFactory: MSALInterceptorConfigFactory
     },
-    MsalService
+    MsalService,
+    // {
+    //   provide: HTTP_INTERCEPTORS,
+    //   useClass: LanguageInterceptor,
+    //   multi: true
+    // },
+    // HttpClient
   ],
   bootstrap: [AppComponent]
 })

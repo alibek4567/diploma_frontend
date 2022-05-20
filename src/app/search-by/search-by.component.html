@@ -4,7 +4,7 @@
     <mat-icon *ngIf="sidenav.opened">close</mat-icon>
   </button>
 
-  <p id="logo">Astana IT University</p>
+  <p id="logo">Astana IT University - {{ 'HOME.WELCOME' | translate }}</p>
 
   <mat-select value="{{language}}" (selectionChange)="setLanguage($event)">
     <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
@@ -22,13 +22,13 @@
   <mat-sidenav #sidenav mode="over">
     <div class="vertical">
       <div class="item" routerLink="home" routerDirection="root">
-        <mat-icon>home</mat-icon>
-        <p>Home</p>
+        <mat-icon>search</mat-icon>
+        <p>Search</p>
       </div>
 
       <div class="item" routerLink="settings" routerDirection="root">
-        <mat-icon>settings</mat-icon>
-        <p>Settings</p>
+        <mat-icon>event</mat-icon>
+        <p>Booking</p>
       </div>
 
       <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
