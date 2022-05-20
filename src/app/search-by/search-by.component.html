@@ -4,37 +4,47 @@
     <mat-icon *ngIf="sidenav.opened">close</mat-icon>
   </button>
 
-  <p id="logo">Astana IT University - {{ 'HOME.WELCOME' | translate }}</p>
+  <p id="logo">Astana IT University</p>
 
   <mat-select value="{{language}}" (selectionChange)="setLanguage($event)">
     <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
       {{item.value}}
     </mat-option>
-  </mat-select>  
+  </mat-select>
 
   <div class="right">
     <p>{{username}}</p>
-    <button *ngIf="!isLoggedIn()" (click)="login()" id="login">Sign In</button>
+    <button *ngIf="!isLoggedIn()" (click)="login()" id="login">{{ 'HEADER.sign-in' | translate }}</button>
   </div>
 </mat-toolbar>
 
 <mat-sidenav-container>
   <mat-sidenav #sidenav mode="over">
     <div class="vertical">
+      <div class="item" routerLink="" routerDirection="root">
+        <mat-icon>home</mat-icon>
+        <p>{{ 'SIDE-MENU.home-tab' | translate }}</p>
+      </div>
+
       <div class="item" routerLink="home" routerDirection="root">
         <mat-icon>search</mat-icon>
-        <p>Search</p>
+        <p>{{ 'SIDE-MENU.search-tab' | translate }}</p>
       </div>
 
       <div class="item" routerLink="settings" routerDirection="root">
         <mat-icon>event</mat-icon>
-        <p>Booking</p>
+        <p>{{ 'SIDE-MENU.booking-tab' | translate }}</p>
+      </div>
+
+      <div class="item" routerLink="" routerDirection="root">
+        <mat-icon>map</mat-icon>
+        <p>{{ 'SIDE-MENU.graph-map-tab' | translate }}</p>
       </div>
 
       <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
         <mat-icon>exit_to_app</mat-icon>
         <p>Log Out</p>
-      </div>          
+      </div>
     </div>
   </mat-sidenav>
   <mat-sidenav-content>
@@ -44,13 +54,13 @@
       <div class="searchBar">
         <mat-select value="Поиск по группам">
           <mat-option value="Поиск по группам">
-            Search by group
+            {{ 'SEARCH.search-option.by-group' | translate }}
           </mat-option>
           <mat-option value="Поиск по учителям">
-            Search by tutor
+            {{ 'SEARCH.search-option.by-tutor' | translate }}
           </mat-option>
           <mat-option value="Поиск по кабинетам">
-            Search by cabinet
+            {{ 'SEARCH.search-option.by-cabinet' | translate }}
           </mat-option>
         </mat-select>
         <input type="text" placeholder="Search...">
@@ -69,7 +79,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Monday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
           </div>
@@ -79,7 +89,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Tuesday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray"></div>
           </div>
@@ -89,7 +99,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Wednesday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray"></div>
           </div>
@@ -99,7 +109,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Thursday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray"></div>
           </div>
@@ -109,7 +119,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Friday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray"></div>
           </div>
@@ -119,7 +129,7 @@
           </div>
         </div>
         <div class="grid-item">
-          <div class="day"><p>Saturday</p></div>
+          <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}</p></div>
           <div class="column">
             <div class="empty" *ngFor="let item of timeArray"></div>
           </div>
@@ -132,5 +142,3 @@
     </div>
   </mat-sidenav-content>
 </mat-sidenav-container>
-
-

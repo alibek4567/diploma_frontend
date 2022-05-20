@@ -1,6 +1,41 @@
 {
+    "HEADER": {
+        "sign-in": "Вход",
+        "log-out": "Выход"
+    },
+
+    "SIDE-MENU": {
+        "home-tab": "Главное",
+        "search-tab": "Поиск",
+        "booking-tab": "Бронирование",
+        "graph-map-tab": "Графическая карта"
+    },
+
     "HOME": {
-        "WELCOME": "Приветствуем!"
+        "WELCOME": "Hello World!"
+    },
+
+    "SEARCH": {
+        "search-option": {
+            "by-group": "Поиск по группе",
+            "by-tutor": "Поиск по препод.",
+            "by-cabinet": "Поиск по кабинету"
+        },
+        "week-day": {
+            "mon": "ПН",
+            "tue": "ВТ",
+            "wed": "СР",
+            "thu": "ЧТ",
+            "fri": "ПТ",
+            "sat": "СБ"
+        }
+    },
+
+    "BOOKING": {
+        "WELCOME": "Hello World!"
+    },
+
+    "GRAPH-MAP": {
+        "WELCOME": "Hello World!"
     }
-    
 }

@@ -1,6 +1,41 @@
 {
+    "HEADER": {
+        "sign-in": "Кіру",
+        "log-out": "Шығу"
+    },
+
+    "SIDE-MENU": {
+        "home-tab": "Басты бет",
+        "search-tab": "Іздеу",
+        "booking-tab": "Брондау",
+        "graph-map-tab": "Графикалық карта"
+    },
+
     "HOME": {
-        "WELCOME": "Амансыз ба!"
+        "WELCOME": "Hello World!"
+    },
+
+    "SEARCH": {
+        "search-option": {
+            "by-group": "Топ бойынша іздеу",
+            "by-tutor": "Оқытушы бойынша іздеу",
+            "by-cabinet": "Кабинет бойынша іздеу"
+        },
+        "week-day": {
+            "mon": "Дүй",
+            "tue": "Сей",
+            "wed": "Сәр",
+            "thu": "Бей",
+            "fri": "Жұм",
+            "sat": "Сен"
+        }
+    },
+
+    "BOOKING": {
+        "WELCOME": "Hello World!"
+    },
+
+    "GRAPH-MAP": {
+        "WELCOME": "Hello World!"
     }
-    
 }

@@ -1,6 +1,41 @@
 {
+    "HEADER": {
+        "sign-in": "Sign In",
+        "log-out": "Log Out"
+    },
+
+    "SIDE-MENU": {
+        "home-tab": "Home",
+        "search-tab": "Search",
+        "booking-tab": "Booking",
+        "graph-map-tab": "Graphical Map"
+    },
+
     "HOME": {
         "WELCOME": "Hello World!"
+    },
+
+    "SEARCH": {
+        "search-option": {
+            "by-group": "Search by group",
+            "by-tutor": "Search by tutor",
+            "by-cabinet": "Search by cabinet"
+        },
+        "week-day": {
+            "mon": "MON",
+            "tue": "TUE",
+            "wed": "WED",
+            "thu": "THU",
+            "fri": "FRI",
+            "sat": "SAT"
+        }
+    },
+
+    "BOOKING": {
+        "WELCOME": "Hello World!"
+    },
+
+    "GRAPH-MAP": {
+        "WELCOME": "Hello World!"
     }
-    
 }

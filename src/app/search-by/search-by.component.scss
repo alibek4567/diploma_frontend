@@ -4,6 +4,10 @@ mat-toolbar {
   display: flex;
   background: transparent;
   padding: 1rem 1.5rem;
+
+  button {
+    cursor: pointer;
+  }
 }
 
 mat-select {
@@ -23,7 +27,7 @@ mat-select {
 
   #login {
     padding: 0.5rem 1rem;
-    border-radius: 10px;
+    border-radius: 5px;
     font-size: 1.1rem;
     border: none;
     background-color: transparent;
@@ -39,7 +43,7 @@ mat-select {
 /* Side Menu */
 mat-sidenav {
   width: 20rem;
-  border-radius: 0 1rem 1rem 0;
+  //border-radius: 0 1rem 1rem 0;
   padding: 1rem 1rem 4rem 1rem;
   background: #457CCE;
   
@@ -65,6 +69,16 @@ mat-sidenav {
       p {          
         font-size: 1.1rem;
         color: black;
+      }
+    }
+
+    .item:hover {
+      color: white;
+      background: #457CCE;
+      cursor: pointer;
+
+      p {
+        color: white;
       }
     }
   
@@ -159,6 +173,7 @@ mat-sidenav-container {
     border-radius: 10px;
     color: white;
     margin-left: auto;
+    cursor: pointer;
   }
 }
   
