@@ -6,7 +6,7 @@
 
   <p id="logo">Astana IT University</p>
 
-  <mat-select value="en">
+  <mat-select value="{{language}}" (selectionChange)="setLanguage($event)">
     <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
       {{item.value}}
     </mat-option>
