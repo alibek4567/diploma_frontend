@@ -1,4 +1,4 @@
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { HttpClient, HttpContext, HttpHeaders } from '@angular/common/http';
 import { Injectable } from '@angular/core';
 
 @Injectable({
@@ -21,4 +21,14 @@ export class ApiCallerService {
     return this.http.get(this.addr+url, httpOptions)
   }
   
+  sendPostRequest(url: string, data: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        })
+      };
+
+    return this.http.post(this.addr+url, data, httpOptions)
+  }
 }

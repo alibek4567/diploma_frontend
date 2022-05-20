@@ -5,7 +5,12 @@
 
             <div class="inputHolder">
                 <p>Cabinet</p>
-                <input (keyup)="setCabinet($event)" type="text" placeholder="Enter cabinet">
+                <input (change)="setCabinet($event)" type="text" placeholder="C1.113" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
+                      {{room['name']}}
+                    </mat-option>
+                </mat-autocomplete>
             </div>
 
             <div class="inputHolder">
@@ -20,25 +25,25 @@
             <div class="dateHolder">
                 <div class="inputHolder">
                     <p>Start Time</p>
-                    <input type="text" placeholder="HH:MM">
+                    <input (change)="setTime('start',$event)" type="time" placeholder="HH:MM">
                 </div>
 
                 <div class="inputHolder">
                     <p>End Time</p>
-                    <input type="text" placeholder="HH:MM">
+                    <input (change)="setTime('end',$event)" type="time" placeholder="HH:MM">
                 </div>
             </div>
 
             <div class="inputHolder">
                 <p>Comment</p>
-                <textarea type="text" placeholder="Enter a comment"></textarea>
+                <textarea (keyup)="setComment($event)" type="text" placeholder="Enter a comment"></textarea>
             </div>
 
-            <button class="send" type="submit">Send</button>
+            <button class="send" [disabled]="cabinet?.length!=6" (click)="send()" type="submit">Send</button>
 
         </div>
         <div class="timetableHolder">
-            <h2>Friday 21</h2>
+            <h2>{{formatDate(date)}} <span *ngIf="cabinet.length==6">| {{cabinet}}</span></h2>
             <div class="itemHolder" *ngFor="let item of timeTable">
                 <div class="left">
                     <p>{{sliceString(item.created_time)}}</p>
