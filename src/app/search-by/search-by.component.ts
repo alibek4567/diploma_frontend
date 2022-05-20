@@ -44,9 +44,18 @@ export class SearchByComponent implements OnInit {
     ["ru", "Русский"]
   ])
 
+  language:any
+
   apiResponse: string
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, private msalService: MsalService, private httpClient: HttpClient) {
+
+    this.language = sessionStorage.getItem("language")
+    if (this.language == null) {
+      this.language = "en"
+      sessionStorage.setItem("language", this.language)
+    }
+
     
     var response = this.api.sendGetRequest("/timetable/group/1")
     response.subscribe(data => {
@@ -145,6 +154,12 @@ export class SearchByComponent implements OnInit {
       this.department = this.profileInfo.positions[0].detail.company.department
       sessionStorage.setItem("department", this.department)
     })
+  }
+
+  setLanguage(event: any) {
+    console.log(event.value)
+    sessionStorage.setItem("language", event.value)
+    window.location.reload()
   }
 
   updateHtml(data: any) {

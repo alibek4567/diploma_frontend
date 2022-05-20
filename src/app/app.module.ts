@@ -8,17 +8,25 @@ import { MatSidenavModule } from '@angular/material/sidenav';
 import { MatToolbarModule } from '@angular/material/toolbar';
 import { MatIconModule } from '@angular/material/icon';
 import { MatFormFieldModule } from '@angular/material/form-field';
+<<<<<<< HEAD
 import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+=======
+import { MatSelectModule } from '@angular/material/select';
+import { MatDatepickerModule } from '@angular/material/datepicker';
+import { MatInputModule } from '@angular/material/input';
+import { MatNativeDateModule } from '@angular/material/core';
+>>>>>>> 66d1713776153b84ed40fd6f099f41ffce9f7dc4
 import { SwiperModule } from 'swiper/angular';
 import { HttpClientModule, HTTP_INTERCEPTORS } from '@angular/common/http';
-
-import { SearchByComponent } from './search-by/search-by.component';
+import { FormsModule } from '@angular/forms';
 import { MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG } from '@azure/msal-angular';
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
+
+import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
@@ -61,7 +69,8 @@ export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
     MatAutocompleteModule,
     SwiperModule,
     HttpClientModule,
-    MsalModule
+    MsalModule,
+    FormsModule
   ],
   providers: [
     {
