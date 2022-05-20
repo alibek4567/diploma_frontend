@@ -28,7 +28,8 @@
             "thu": "THU",
             "fri": "FRI",
             "sat": "SAT"
-        }
+        },
+        "search": "search"
     },
 
     "BOOKING": {
