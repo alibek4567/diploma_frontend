@@ -24,7 +24,6 @@ export class BookingComponent implements OnInit {
   cabinet = ''
   room_id = ''
   date: Date = new Date();
-  day: any
   startTime: ''
   endTime: ''
   comment: ''
@@ -56,7 +55,6 @@ export class BookingComponent implements OnInit {
   }
 
   formatDate(data: Date){
-    this.day = data.getDay()
     let formDate = data.toString()
     return formDate.slice(0, 11)
   }
