@@ -7,13 +7,13 @@
   <p id="logo">Astana IT University</p>
 
   <mat-select disableOptionCentering value="{{language}}" (selectionChange)="setLanguage($event)">
-    <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
-      {{item.value}}
+    <mat-option *ngFor="let lang of languages | keyvalue" [value]="lang.key">
+      {{ lang.value }}
     </mat-option>
   </mat-select>
 
   <div class="right">
-    <p>{{username}}</p>
+    <p>{{ username }}</p>
     <button *ngIf="!isLoggedIn()" (click)="login()" id="login">{{ 'HEADER.sign-in' | translate }}</button>
   </div>
 </mat-toolbar>
@@ -70,7 +70,7 @@
   
         <div class="actionHolder" [ngStyle]="{'justify-content': search ? 'start' : 'center'}">
           <div *ngIf="cabinet && search" class="date">
-            <h1>{{formatDate(date)}}</h1>
+            <h1>{{ formatDate(date) }}</h1>
             <div class="picker" *ngIf="cabinet">
               <mat-icon>chevron_left</mat-icon>
               <div class="spacer"></div>
@@ -78,19 +78,19 @@
             </div>
           </div>
           <div class="searchBar">
-            <mat-select disableOptionCentering value="Поиск по группам">
-              <mat-option value="Поиск по группам">
+            <mat-select [(ngModel)]="searchMode" disableOptionCentering>
+              <mat-option value="by-group">
                 {{ 'SEARCH.search-option.by-group' | translate }}
               </mat-option>
-              <mat-option value="Поиск по учителям">
+              <mat-option value="by-teacher">
                 {{ 'SEARCH.search-option.by-tutor' | translate }}
               </mat-option>
-              <mat-option value="Поиск по кабинетам">
+              <mat-option value="by-cabinet">
                 {{ 'SEARCH.search-option.by-cabinet' | translate }}
               </mat-option>
             </mat-select>
-            <input type="text" placeholder="{{ 'SEARCH.search' | translate }} ...">
-            <button (click)="setSearch()" mat-icon-button type="submit">
+            <input type="text" [(ngModel)]="searchValue" placeholder="{{ 'SEARCH.search' | translate }} ...">
+            <button type="submit" mat-icon-button (click)="setSearch()">
               <mat-icon>search</mat-icon>
             </button>
           </div>
@@ -100,7 +100,7 @@
           </button>
         </div>
   
-        <!-- <h2 class="searchField">SE-1902</h2> -->
+        <h2 class="searchField">{{ searchResult }}</h2>
         <div *ngIf="search" class="grid-container">
           <div class="grid-item">
             <div class="day">
@@ -109,64 +109,94 @@
               <div class="time" *ngFor="let hour of timeArray"><p>{{ hour }}:00</p></div>
             </div>
           </div>
+
+          <!-- D1 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray; let i=index"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d1_line"></span>
-              <div id="d1_{{item}}" *ngFor="let item of timeArray; let i=index"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d1_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
+
+          <!-- D2 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d2_line"></span>
-              <div id="d2_{{item}}" *ngFor="let item of timeArray"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d2_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
+
+          <!-- D3 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d3_line"></span>
-              <div id="d3_{{item}}" *ngFor="let item of timeArray"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d3_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
+
+          <!-- D4 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d4_line"></span>
-              <div id="d4_{{item}}" *ngFor="let item of timeArray"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d4_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
+
+          <!-- D5 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d5_line"></span>
-              <div id="d5_{{item}}" *ngFor="let item of timeArray"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d5_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
+
+          <!-- D6 -->
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let item of timeArray"></div>
+              <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
               <span class="line" id="d6_line"></span>
-              <div id="d6_{{item}}" *ngFor="let item of timeArray"></div>
+              <div class="block" id="{{ setSubjectId(subject) }}" *ngFor="let subject of d6_schedule" (click)="openSubject(subject)">
+                <h2>{{ subject.subject }}</h2>
+                <p>{{ subject.room }}</p>
+              </div>
             </div>
           </div>
         </div>

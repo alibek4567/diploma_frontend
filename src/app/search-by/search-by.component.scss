@@ -395,13 +395,17 @@ h2 {
 .block {
   display: flex;
   flex-direction: column;
+  visibility: hidden;
+
   position: absolute;
-  height: 5rem;
+  //height: 5rem;
+
   width: 97%;
   max-width: 100%;
+
   background-color: #457CCE;
   color: white;
-  border: 0.05rem solid #eeeeee;
+  //border: 0.05rem solid #eeeeee;
   border-left: 0.2rem solid lightgreen;
   
   .subject {
@@ -410,6 +414,12 @@ h2 {
   
   .teacher {
     font-weight: 500;
+  }
+  
+  h2 {
+    font-size: 1rem;
+    padding: 0;
+    margin: 0 0 0.2rem 0;
   }
   
   p {

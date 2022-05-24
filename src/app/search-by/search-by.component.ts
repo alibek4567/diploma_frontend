@@ -1,8 +1,13 @@
-import { Component, ElementRef, OnInit, ViewChild, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2 } from '@angular/core';
+// import { ElementRef, ViewChild} from '@angular/core';
 import { ApiCallerService } from '../api-caller.service';
 import { MsalService } from '@azure/msal-angular';
-import { AuthenticationResult } from '@azure/msal-browser';
+// import { AuthenticationResult } from '@azure/msal-browser';
 import { HttpClient } from '@angular/common/http';
+import { MatDialog } from '@angular/material/dialog'
+import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
+import { Subject } from '../subject'
+// import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-search-by',
@@ -24,19 +29,23 @@ export class SearchByComponent implements OnInit {
 
   // Search Bar
   search: boolean
+  searchValue: string = ''
+  searchResult: string = ''
+  searchMode: string = 'by-group'
 
   // Search by cabinet
   cabinet: boolean
 
   // Schedule parameters
-  allTimeTables: any
+  startTime: number
+  endTime: number
   timeArray = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
-  d1: any // Monday
-  d2: any // Tuesday
-  d3: any // Wednesday
-  d4: any // Thursday
-  d5: any // Friday
-  d6: any // Saturday
+  d1_schedule: Subject[] // Monday
+  d2_schedule: Subject[] // Tuesday
+  d3_schedule: Subject[] // Wednesday
+  d4_schedule: Subject[] // Thursday
+  d5_schedule: Subject[] // Friday
+  d6_schedule: Subject[] // Saturday
 
   lessonDuration: number = 50
 
@@ -52,68 +61,21 @@ export class SearchByComponent implements OnInit {
   apiResponse: string
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, 
-    private msalService: MsalService, private httpClient: HttpClient) {
+    private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog) {
 
     this.search = false
     this.cabinet = false
 
     this.language = sessionStorage.getItem("language")
-    if (this.language == null) {
-      this.language = "en"
-      sessionStorage.setItem("language", this.language)
-    }
+    // if (this.language == null) {
+      // this.language = "en"
+      // sessionStorage.setItem("language", this.language)
+    //   this.language = sessionStorage.getItem('language') || 'en';
+    // }
 
-    var response = this.api.sendGetRequest("/timetable/group/1")
-    response.subscribe(data => {
-      const timeTables = JSON.parse(JSON.stringify(data))
-
-      this.d1 = timeTables.payload["d1"]
-      this.d2 = timeTables.payload["d2"]
-      this.d3 = timeTables.payload["d3"]
-      this.d4 = timeTables.payload["d4"]
-      this.d5 = timeTables.payload["d5"]
-      this.d5 = timeTables.payload["d6"]
-
-      this.setSubjects(this.d1)
-      this.setSubjects(this.d2)
-      this.setSubjects(this.d3)
-      this.setSubjects(this.d4)
-      this.setSubjects(this.d5)
-      this.setSubjects(this.d6)
-
-      this.updateHtml(this.d1)
-      this.updateHtml(this.d2)
-      this.updateHtml(this.d3)
-      this.updateHtml(this.d4)
-      this.updateHtml(this.d5)
-      this.updateHtml(this.d6)
-    }, error => { console.log(error) })
-
-    // Work of Time Line
-    window.addEventListener('load', function () {
-
-      var dateTime = getTodaysDate(+6) // Todays Date and Time with Timezone +6
-
-      var dateTimeArray = dateTime.split(',');
-
-      var dayOfTheWeek = parseInt(dateTimeArray[0])
-      var date = dateTimeArray[1]
-      var time = dateTimeArray[2].split(':')
-      var hours = parseInt(time[0])
-      var minutes = parseInt(time[1]) / 60
-      var final = 0
-      if (hours < 8) {
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-      } else if (hours > 21) {
-        hours = 22
-        minutes = 0
-        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-      } else {
-        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-      }
-    })
+    // waitForElm('#login').then(() => {
+    //   console.log("Success?")
+    // });
   }
 
   ngOnInit(): void {
@@ -131,19 +93,123 @@ export class SearchByComponent implements OnInit {
     )
   }
 
-  setSearch(){
+  setSearch() {
     this.search = true
+
+    if (this.searchValue == '') {
+      console.log("Empty")
+    } else {
+      this.searchResult = this.searchValue
+      switch(this.searchMode) { 
+        case 'by-group': { 
+          this.searchByGroup()
+          break; 
+        }
+        case 'by-teacher': { 
+          this.searchByTeacher()
+          break; 
+        }
+        case 'by-cabinet': { 
+          this.searchByCabinet()
+          break; 
+       } 
+        default: { 
+           console.log("ERROR")
+        } 
+     } 
+    }
   }  
 
-  setDate(event: any) { 
-    this.date = event.target.value;
+  searchByGroup() {
+    var response = this.api.sendGetRequest("/timetable/group/" + this.searchValue)
+    response.subscribe(data => {
+      const timeTables = JSON.parse(JSON.stringify(data))
+
+      this.d1_schedule = timeTables.payload["d1"]
+      this.d2_schedule = timeTables.payload["d2"]
+      this.d3_schedule = timeTables.payload["d3"]
+      this.d4_schedule = timeTables.payload["d4"]
+      this.d5_schedule = timeTables.payload["d5"]
+      this.d5_schedule = timeTables.payload["d6"]
+
+      waitForElm('.grid-container').then(async () => {
+        await this.setSubjects(this.d1_schedule)
+        await this.setSubjects(this.d2_schedule)
+        await this.setSubjects(this.d3_schedule)
+        await this.setSubjects(this.d4_schedule)
+        await this.setSubjects(this.d5_schedule)
+        await this.setSubjects(this.d6_schedule)
+    });
+    }, error => { console.log(error) })
   }
 
-  formatDate(data: Date){
+  searchByTeacher() {
+    var response = this.api.sendGetRequest("/timetable/tutor/" + this.searchValue)
+    response.subscribe(data => {
+      const temp = JSON.parse(JSON.stringify(data))
+      console.log(temp)
+
+    }, error => { console.log(error) })
+  }
+
+  searchByCabinet() {
+    var response = this.api.sendGetRequest("/timetable/room/" + this.searchValue)
+    response.subscribe(data => {
+      const temp = JSON.parse(JSON.stringify(data))
+      console.log(temp)
+
+    }, error => { console.log(error) })
+  }
+
+  async setSubjects(subjects: any) {
+    if (subjects != null) {
+      for (let subject of subjects) {
+        
+        var timer = subject.classtime_time.split(':');
+        // Get Subject Time + Time starts from 8:00
+        var hours = parseInt(timer[0]) //- 8 
+        var minutes = parseInt(timer[1]) /// 60
+
+        await waitForElm('#' + subject.classtime_day + "t" + timer[0] + timer[1]).then(() => {
+
+          const el = (<HTMLElement>document.getElementById(subject.classtime_day + "t" + timer[0] + timer[1]));
+  
+          el.style.height = (this.lessonDuration * 5 / 60) + "rem"
+  
+          // Displacement = (Borders) + (Full Hours) + (Minutes)
+          var final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
+          el.style.top = final
+
+          el.style.visibility = "visible"
+        })
+      }
+    } else {
+      console.log("NULL")
+    }
+  }
+
+  setSubjectId(subject: Subject): string {
+    let time = subject.classtime_time.split(':');
+    return subject.classtime_day + "t" + time[0] + time[1]
+  }
+
+  openSubject(subject: Subject) {
+    this.dialogRef.open(SubjectPopUpComponent, {
+      data: {
+        title: subject.subject,
+        tutor: subject.tutor,
+        room: subject.room,
+        time: subject.classtime_time
+      }
+    })
+  }
+
+  formatDate(data: Date) {
     let formDate = data.toString()
     return formDate.slice(0, 11)
   }
 
+  // Auth
   isLoggedIn() {
     return this.msalService.instance.getActiveAccount() != null
   }
@@ -175,52 +241,37 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  setLanguage(event: any) {
-    console.log(event.value)
+  public setLanguage(event: any) {
     sessionStorage.setItem("language", event.value)
     window.location.reload()
   }
 
-  updateHtml(data: any) {
-    if (data != null) {
-      for (let item of data) {
-        let el = (<HTMLElement>document.getElementById(item.classtime_day+"_"+(item.classtime_time).split(':')[0]));
-        el.className = "block";
-        el.insertAdjacentHTML("beforeend", "<p style='margin: 0 0 0.2rem 0;; padding: 0.2rem 0 0 0; font-size:0.8rem'>"+item.subject+"</p>");
-        // el.insertAdjacentHTML("beforeend", "<p style='margin: 0 0 0.5rem 0;; padding: 0; font-size:0.8rem'>"+item.tutor+"</p>")
-        el.insertAdjacentHTML("beforeend", "<p style='margin: 0 0 0.2rem 0;; padding: 0 0 0.2rem 0; font-size:0.7rem'>"+item.room+"</p>");
+  setTimeline() {
+    // Work of Time Line
+    window.addEventListener('load', function () {
+
+      var dateTime = getTodaysDate(+6) // Todays Date and Time with Timezone +6
+
+      var dateTimeArray = dateTime.split(',');
+
+      var dayOfTheWeek = parseInt(dateTimeArray[0])
+      var date = dateTimeArray[1]
+      var time = dateTimeArray[2].split(':')
+      var hours = parseInt(time[0])
+      var minutes = parseInt(time[1]) / 60
+      var final = 0
+      if (hours < 8) {
+        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+      } else if (hours > 21) {
+        hours = 22
+        minutes = 0
+        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
+        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+      } else {
+        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
+        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
       }
-    }
-  }
-
-  setSubjects(data: any) {
-    if (data != null) {
-      for (let item of data) {
-        let el = (<HTMLElement>document.getElementById(item.classtime_day+"_"+(item.classtime_time).split(':')[0]));
-        el.style.position = "absolute"
-
-        // height = 5rem = 60 min = 100%
-        // height = 4.16666667rem = 50 min
-        el.style.height = (this.lessonDuration * 5 / 60) + "rem"
-        
-        var timer = item.classtime_time.split(':');
-        // Get Subject Time + Time starts from 8:00
-        var hours = parseInt(timer[0]) - 8 
-        var minutes = parseInt(timer[1]) / 60
-        // Displacement = (Borders) + (Full Hours) + (Minutes)
-        var final = ((0.1 * hours) + (hours * 5) + minutes * 5) + "rem"
-
-        el.style.top = final
-        el.style.left = "0.1rem";
-
-        // Выставление ширины блока в зависимости от ширины колонны
-        // let element = <HTMLElement>document.getElementById('test');
-        // let style = window.getComputedStyle(element);
-        // let width = style.getPropertyValue('width');
-        // // console.log(width);
-        // el.style.width = width;
-      }
-    }
+    })
   }
 }
 
@@ -235,4 +286,24 @@ function setVerticalLocation(elementId: string, number: number) {
   let element = <HTMLElement>document.getElementById(elementId);
   element.style.display = "block";
   element.style.top = number + "rem"
+}
+
+function waitForElm(selector: string) {
+  return new Promise(resolve => {
+      if (document.querySelector(selector)) {
+          return resolve(document.querySelector(selector));
+      }
+
+      const observer = new MutationObserver(mutations => {
+          if (document.querySelector(selector)) {
+              resolve(document.querySelector(selector));
+              observer.disconnect();
+          }
+      });
+
+      observer.observe(document.body, {
+          childList: true,
+          subtree: true
+      });
+  });
 }
