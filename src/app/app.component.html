@@ -1,1 +1,53 @@
-<router-outlet></router-outlet>
+<mat-toolbar>
+    <button class="menu" mat-icon-button (click)="sidenav.toggle()">
+      <mat-icon *ngIf="!sidenav.opened">menu</mat-icon>
+      <mat-icon *ngIf="sidenav.opened">close</mat-icon>
+    </button>
+  
+    <p id="logo">Astana IT University</p>
+  
+    <mat-select disableOptionCentering value="{{language}}" (selectionChange)="setLanguage($event)">
+      <mat-option *ngFor="let item of languages | keyvalue" [value]="item.key">
+        {{item.value}}
+      </mat-option>
+    </mat-select>
+  
+    <div class="right">
+      <p>{{username}}</p>
+      <button *ngIf="!isLoggedIn()" (click)="login()" id="login">{{ 'HEADER.sign-in' | translate }}</button>
+    </div>
+  </mat-toolbar>
+  
+  <mat-sidenav-container>
+    <mat-sidenav #sidenav mode="over">
+        <div class="vertical">
+          <div class="item" routerLink="" routerDirection="root">
+            <mat-icon>home</mat-icon>
+            <p>{{ 'SIDE-MENU.home-tab' | translate }}</p>
+          </div>
+    
+          <div class="item" routerLink="home" routerDirection="root">
+            <mat-icon>search</mat-icon>
+            <p>{{ 'SIDE-MENU.search-tab' | translate }}</p>
+          </div>
+    
+          <div class="item" routerLink="settings" routerDirection="root">
+            <mat-icon>event</mat-icon>
+            <p>{{ 'SIDE-MENU.booking-tab' | translate }}</p>
+          </div>
+    
+          <div class="item" routerLink="" routerDirection="root">
+            <mat-icon>map</mat-icon>
+            <p>{{ 'SIDE-MENU.graph-map-tab' | translate }}</p>
+          </div>
+    
+          <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
+            <mat-icon>exit_to_app</mat-icon>
+            <p>Log Out</p>
+          </div>
+        </div>
+      </mat-sidenav>
+      <mat-sidenav-content>
+        <router-outlet></router-outlet>
+      </mat-sidenav-content>
+    </mat-sidenav-container>

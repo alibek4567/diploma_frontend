@@ -13,6 +13,8 @@ import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
 import {MatNativeDateModule} from '@angular/material/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
+import {MatTabsModule} from '@angular/material/tabs';
+import {MatButtonToggleModule} from '@angular/material/button-toggle';
 import { SwiperModule } from 'swiper/angular';
 import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common/http';
 import { FormsModule } from '@angular/forms';
@@ -66,6 +68,8 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatNativeDateModule,
     MatInputModule,
     MatAutocompleteModule,
+    MatTabsModule,
+    MatButtonToggleModule,
     SwiperModule,
     HttpClientModule,
     MsalModule,

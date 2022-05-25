@@ -4,6 +4,10 @@
 @use '@angular/material' as mat;
 // Plus imports for other components in your app.
 
+// Segmented buttons
+@use '@material/ripple/common';
+@use '@material/segmented-button/styles';
+
 // Include the common styles for Angular Material. We include this here so that you only
 // have to load a single css file for Angular Material in your app.
 // Be sure that you only ever include this mixin once!
@@ -70,6 +74,10 @@ body { margin: 0; }
 
 .mat-option:hover{
   opacity: 0.8;
+}
+
+.mat-button-toggle-label-content{
+  line-height: 2rem !important;
 }
 
 html, body { height: 100%; }

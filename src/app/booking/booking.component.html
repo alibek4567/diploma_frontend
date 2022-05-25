@@ -3,10 +3,34 @@
         <div class="formHolder">
             <h2>Booking Form</h2>
 
+            <div class="selectHolder" >
+                <p>Select by</p>
+                <mat-button-toggle-group name="fontStyle" (change)="setSelect()" aria-label="Font Style">
+                    <mat-button-toggle value="Date">Date</mat-button-toggle>
+                    <mat-button-toggle value="Room">Room</mat-button-toggle>
+                  </mat-button-toggle-group>
+            </div>
+
             <div class="inputHolder">
+                <p>Cabinet</p>
+                <mat-select value="None">
+                    <mat-option value="None"></mat-option>
+                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
+                        {{room['name']}}
+                    </mat-option>
+                </mat-select>
+                <!-- <input (change)="setCabinet($event)" type="text" placeholder="C1.113" [matAutocomplete]="auto">
+                <mat-autocomplete #auto="matAutocomplete">
+                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
+                      {{room['name']}}
+                    </mat-option>
+                </mat-autocomplete> -->
+            </div>
+
+            <div class="inputHolder" >
                 <p>Choose a date</p>
                 <div>
-                    <input (keyup)="setDate($event)" (dateChange)="setDate($event)" [value]="date" matInput [matDatepicker]="picker">
+                    <input (dateChange)="setDate($event)" [min]="today" [max]="maxDate" [value]="date" matInput [matDatepicker]="picker" readonly="true">
                     <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                     <mat-datepicker #picker></mat-datepicker>
                 </div>
@@ -20,31 +44,21 @@
 
                 <div class="inputHolder">
                     <p>End Time</p>
-                    <input (change)="setTime('end',$event)" type="time" placeholder="HH:MM">
+                    <input (change)="setTime('end',$event)" placeholder="HH:MM">
                 </div>
             </div>
 
-            <div class="inputHolder">
-                <p>Cabinet</p>
-                <input (change)="setCabinet($event)" type="text" placeholder="C1.113" [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
-                      {{room['name']}}
-                    </mat-option>
-                </mat-autocomplete>
-            </div>
-
-            <div class="inputHolder">
+            <div class="inputHolder" >
                 <p>Comment</p>
                 <textarea (keyup)="setComment($event)" type="text" placeholder="Enter a comment"></textarea>
             </div>
 
-            <button class="send" [disabled]="cabinet?.length!=6" (click)="send()" type="submit">Send</button>
+            <button [ngStyle]="{'order': '6'}" class="send" [disabled]="cabinet?.length!=6" (click)="send()" type="submit">Send</button>
 
         </div>
         <div class="timetableHolder">
             <h2>{{formatDate(date)}} <span *ngIf="cabinet.length==6">| {{cabinet}}</span></h2>
-            <div class="itemHolder" *ngFor="let item of timeTable">
+            <div class="itemHolder" *ngFor="let item of events">
                 <div class="left">
                     <p>{{sliceString(item.created_time)}}</p>
                     <p>{{item.end_time}}</p>

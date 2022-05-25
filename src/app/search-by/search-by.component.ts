@@ -12,14 +12,6 @@ import { HttpClient } from '@angular/common/http';
 
 export class SearchByComponent implements OnInit {
 
-  // Personal Info - Auth
-  profileInfo: any
-
-  username: any
-  email: any
-  id: any
-  department: any
-
   date: Date = new Date();
 
   // Search Bar
@@ -39,29 +31,12 @@ export class SearchByComponent implements OnInit {
   d6: any // Saturday
 
   lessonDuration: number = 50
-
-  // Language
-  languages = new Map<string, string>([
-    ["kz", "Қазақша"],
-    ["en", "English"],
-    ["ru", "Русский"]
-  ])
-
-  language:any
-
-  apiResponse: string
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, 
     private msalService: MsalService, private httpClient: HttpClient) {
 
     this.search = false
-    this.cabinet = false
-
-    this.language = sessionStorage.getItem("language")
-    if (this.language == null) {
-      this.language = "en"
-      sessionStorage.setItem("language", this.language)
-    }
+    this.cabinet = true
 
     var response = this.api.sendGetRequest("/timetable/group/1")
     response.subscribe(data => {
@@ -116,20 +91,7 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  ngOnInit(): void {
-    this.msalService.instance.handleRedirectPromise().then(
-      res => {
-        if(res != null && res.account != null){
-          this.msalService.instance.setActiveAccount(res.account)
-          this.getUser()
-          this.callProfile()
-          sessionStorage.setItem("username", this.username)
-          sessionStorage.setItem("email", this.email)
-          sessionStorage.setItem("id", this.id)
-        }
-      }
-    )
-  }
+  ngOnInit(): void {}
 
   setSearch(){
     this.search = true
@@ -141,44 +103,7 @@ export class SearchByComponent implements OnInit {
 
   formatDate(data: Date){
     let formDate = data.toString()
-    return formDate.slice(0, 11)
-  }
-
-  isLoggedIn() {
-    return this.msalService.instance.getActiveAccount() != null
-  }
-
-  login() {
-    this.msalService.loginRedirect();
-    // this.msalService.loginPopup().subscribe( (response: AuthenticationResult) => {
-    //   this.msalService.instance.setActiveAccount(response.account)
-    // })
-  }
-
-  logout() {
-    this.msalService.logout()
-    sessionStorage.clear()
-  }
-  
-  getUser() {
-    this.username = this.msalService.instance.getActiveAccount()?.name
-    this.id = this.msalService.instance.getActiveAccount()?.localAccountId
-    this.email = this.msalService.instance.getActiveAccount()?.username
-  }
-
-  callProfile() {
-    this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe( res => {
-      this.apiResponse = JSON.stringify(res)
-      this.profileInfo = res
-      this.department = this.profileInfo.positions[0].detail.company.department
-      sessionStorage.setItem("department", this.department)
-    })
-  }
-
-  setLanguage(event: any) {
-    console.log(event.value)
-    sessionStorage.setItem("language", event.value)
-    window.location.reload()
+    return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
   }
 
   updateHtml(data: any) {
