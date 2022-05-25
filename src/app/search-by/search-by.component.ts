@@ -18,7 +18,6 @@ export class SearchByComponent implements OnInit {
   weekDates = new Map<string, string>()
 
   // Search Bar
-  search: boolean = false
   searchStart: boolean = false
   searchMode: string = 'by-group'
   searchValue: string = ''
