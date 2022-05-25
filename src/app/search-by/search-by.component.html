@@ -61,11 +61,12 @@
 
       <!-- D1 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}</p><p *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d1')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d1')) }}</span></p></div>
         <div class="column">
           <div class="empty" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
+          <div class="cover-column" id="d1_cover-column"></div>
           <span class="line" id="d1_line"></span>
           <div class="block" id="d1_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d1') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d1_{{ setSubjectId(subject.key) }}_title"></p>
@@ -76,11 +77,12 @@
 
       <!-- D2 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d2')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d2')) }}</span></p></div>
         <div class="column">
           <div class="empty" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
+          <div class="cover-column" id="d2_cover-column"></div>
           <span class="line" id="d2_line"></span>
           <div class="block" id="d2_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d2') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d2_{{ setSubjectId(subject.key) }}_title"></p>
@@ -91,7 +93,7 @@
 
       <!-- D3 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d3')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d3')) }}</span></p></div>
         <div class="column">
           <div class="empty" id="d3_{{ hour }}" *ngFor="let hour of timeArray"></div>
         </div>
@@ -107,11 +109,12 @@
 
       <!-- D4 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d4')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d4')) }}</span></p></div>
         <div class="column">
           <div class="empty" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
+          <div class="cover-column" id="d4_cover-column"></div>
           <span class="line" id="d4_line"></span>
           <div class="block" id="d4_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d4') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d4_{{ setSubjectId(subject.key) }}_title"></p>
@@ -122,11 +125,12 @@
 
       <!-- D5 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d5')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d5')) }}</span></p></div>
         <div class="column">
           <div class="empty" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
+          <div class="cover-column" id="d5_cover-column"></div>
           <span class="line" id="d5_line"></span>
           <div class="block" id="d5_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d5') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d5_{{ setSubjectId(subject.key) }}_title"></p>
@@ -137,11 +141,12 @@
 
       <!-- D6 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d6')) }}</p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d6')) }}</span></p></div>
         <div class="column">
           <div class="empty" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
+          <div class="cover-column" id="d6_cover-column"></div>
           <span class="line" id="d6_line"></span>
           <div class="block" id="d6_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d6') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d6_{{ setSubjectId(subject.key) }}_title"></p>

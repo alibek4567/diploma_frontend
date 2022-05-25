@@ -30,8 +30,8 @@ export class SearchByComponent implements OnInit {
   cabinet: boolean = false
 
   // Schedule parameters
-  startTime: number
-  endTime: number
+  scheduleStartTime: string = "22:00"
+  scheduleEndTime: string = "8:00"
   timeArray: string[] = [
     "8:00", "8:30", "9:00", "9:30",
     "10:00", "10:30", "11:00", "11:30",
@@ -65,7 +65,7 @@ export class SearchByComponent implements OnInit {
   ngOnInit(): void {}
 
   setSearch() {
-    console.log(this.searchMode)
+    //console.log(this.searchMode)
     if (this.searchValue == '') {
       console.log(this.searchValue)
     } else {
@@ -111,6 +111,7 @@ export class SearchByComponent implements OnInit {
       for (let i = 1; i < 7; i++) {
         if (schedule.payload["d" + i] != null) {
           for (let item of schedule.payload["d" + i]) {
+
             if (this.weekSchedule.get("d" + i) != undefined) {
               if (this.weekSchedule.get("d" + i)?.get(item.classtime_time) != undefined) {
                 this.weekSchedule.get("d" + i)?.get(item.classtime_time)?.push(item)
@@ -124,6 +125,42 @@ export class SearchByComponent implements OnInit {
           }
         }
       }
+
+      // Compare time -----
+      for (let i = 1; i < 7; i++) {
+        if (this.weekSchedule.get("d" + i) != undefined) {
+          let times = this.weekSchedule.get("d" + i)?.keys()
+          if (times != undefined) {
+            for (let time of times) {
+              let result = compareTime(time, this.scheduleEndTime)
+              if (result == 1) {
+                this.scheduleEndTime = time
+              }
+              result = compareTime(time, this.scheduleStartTime)
+              if (result == -1) {
+                this.scheduleStartTime = time
+              }
+            }
+          }
+        }
+      }
+      console.log(this.scheduleStartTime, this.scheduleEndTime)
+
+      // Time Array Values:
+
+      // this.scheduleStartTime
+      // this.scheduleEndTime
+
+      //this.timeArray = []
+      // let myArray = []
+      // for (let i = parseInt(this.scheduleStartTime.split(':')[0]); i++; i< (parseInt(this.scheduleEndTime.split(':')[0]) + 2)) {
+      //   myArray.push(i + ':00')
+      //   myArray.push(i + ':30')
+      // }
+      // console.log(myArray)
+
+      // ------------------
+
       // Drawing
       waitForElm('.grid-container').then(async () => {
         for (let i = 1; i < 7; i++) {
@@ -135,39 +172,62 @@ export class SearchByComponent implements OnInit {
 
   async setSubjects(day: string, daySchedule: any) {
     if (daySchedule != null) {
-        daySchedule.forEach(async (value: Subject[], key: string) => {
 
-        var timer = key.split(':');
-        // Get Subject Time + Time starts from 8:00
-        var hours = parseInt(timer[0]) //- 8 
-        var minutes = parseInt(timer[1]) /// 60
+      var dateTime = getTodaysDate(+6).split(',') // Todays Date and Time with Timezone +6
+      var dayOfTheWeek = parseInt(dateTime[0])
+      var otherDay = true
+      if (day == ('d' + dayOfTheWeek)) {
+        otherDay = false
+      }
 
-        await waitForElm('#' + day + "_t" + timer[0] + timer[1]).then(() => {
-          const el = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1]));
+      daySchedule.forEach(async (value: Subject[], key: string) => {
+
+      var timer = key.split(':');
+      // Get Subject Time + Time starts from 8:00
+      var hours = parseInt(timer[0]) //- 8 
+      var minutes = parseInt(timer[1]) /// 60
+
+      await waitForElm('#' + day + "_t" + timer[0] + timer[1]).then(() => {
+        const el = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1]));
           
-          el.style.height = (this.lessonDuration * 5 / 60) + "rem"
-          // Displacement = (Borders) + (Full Hours) + (Minutes)
-          el.style.top = ((0.1 * 2 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
-          el.style.visibility = "visible"
+        el.style.height = (this.lessonDuration * 5 / 60) + "rem"
+        // Displacement = (Borders) + (Full Hours) + (Minutes)
 
-          const el_title = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_title"));
-          const el_room = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_room"));
-          el_title.textContent = ''
-          el_room.textContent = ''
+        // test this.scheduleStartTime.split(':')[0]
 
-          let title: string = ''
-          let room: string = ''
-          for (let subject of value) {
-            title += subject.subject + ' / '
-            room += subject.room + ' / '
+         el.style.top = ((0.1 * 2 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
+        el.style.visibility = "visible"
+
+        const el_title = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_title"));
+        const el_room = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_room"));
+        el_title.textContent = ''
+        el_room.textContent = ''
+
+        let title: string = ''
+        let room: string = ''
+        for (let subject of value) {
+          title += subject.subject + ' / '
+          room += subject.room + ' / '
+        }
+
+        if (value.length > 1) {
+          el.style.background = 'linear-gradient(90deg, rgb(69, 124, 206), rgb(165, 52, 214))';
+        }
+
+        el_title.textContent = title.slice(0, -3);
+        el_room.textContent = room.slice(0, -3);
+
+        if (!otherDay) {
+          let result = compareTime(dateTime[2], key)
+          if (result == 1 || result == 0) {
+            el.style.background = 'gray'
+            el.style.borderLeft = '0.2rem solid rgb(240,128,128)'
           }
-
-          el_title.textContent = title.slice(0, -3);
-          el_room.textContent = room.slice(0, -3);
-        })
+        }
       })
-    } 
-  }
+    })
+  } 
+}
 
   setSubjectId(subject: string): string {
     let time = subject.split(':');
@@ -189,30 +249,30 @@ export class SearchByComponent implements OnInit {
 
   setTimeline() {
     // Work of Time Line
-      var dateTime = getTodaysDate(+6) // Todays Date and Time with Timezone +6
+    var dateTime = getTodaysDate(+6).split(',') // Todays Date and Time with Timezone +6
 
-      var dateTimeArray = dateTime.split(',');
+    //var dateTimeArray = dateTime.split(',');
 
-      var dayOfTheWeek = parseInt(dateTimeArray[0])
-      var date = dateTimeArray[1]
-      var time = dateTimeArray[2].split(':')
-      var hours = parseInt(time[0])
-      var minutes = parseInt(time[1]) / 60
-      var final = 0
-      if (hours < 8) {
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
-      } else if (hours > 21) {
-        hours = 22
-        minutes = 0
-        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
-      } else {
-        final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
-        setVerticalLocation("d" + dayOfTheWeek + "_line", final)
-        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
-      }
+    var dayOfTheWeek = parseInt(dateTime[0])
+    //var date = dateTimeArray[1]
+    var time = dateTime[2].split(':')
+    var hours = parseInt(time[0])
+    var minutes = parseInt(time[1]) / 60
+    var final = 0
+    if (hours < 8) {
+      setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+      setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
+    } else if (hours > 21) {
+      hours = 22
+      minutes = 0
+      final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
+      setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+      setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
+    } else {
+      final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
+      setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+      setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
+    }
   }
 
   // HTML interface functions
