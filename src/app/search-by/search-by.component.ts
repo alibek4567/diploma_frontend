@@ -58,27 +58,33 @@ export class SearchByComponent implements OnInit {
     let dateInFormat = date[2] + '/' + date[1] + '/' + date[0]
     let time = getTodaysDate(+6).split(',')[2].trim()
     this.weekDates = getWeekDates(dateInFormat + ' ' + time)
+
+    // console.log(compareTime('24:00', '14:00'))
   }
 
   ngOnInit(): void {}
 
   setSearch() {
+    console.log(this.searchMode)
     if (this.searchValue == '') {
-      console.log("Empty")
+      console.log(this.searchValue)
     } else {
       this.search = true
 
       this.searchResult = this.searchValue
       switch(this.searchMode) { 
         case 'by-group': { 
+          //this.cabinet = false
           this.getSearchResult("/timetable/group/" + this.searchValue)
           break; 
         }
         case 'by-teacher': { 
+          //this.cabinet = false
           this.getSearchResult("/timetable/tutor/" + this.searchValue)
           break; 
         }
         case 'by-cabinet': { 
+          //this.cabinet = true
           this.getSearchResult("/timetable/room/" + this.searchValue)
           // Booking part to add
           break; 
@@ -86,7 +92,7 @@ export class SearchByComponent implements OnInit {
         default: { 
            console.log("ERROR")
         } 
-     } 
+      } 
     }
   }  
 
@@ -268,3 +274,20 @@ function setHeightHTML(elementId: string, number: number) {
   element.style.height = number + "rem"
 }
 
+function compareTime(time1: string, time2: string): number {
+  // 1 = time1 > time2
+  // 0 = time1 == time2
+  // -1 = time1 < time2
+
+  var time1date = new Date("1970-01-01 " + time1)
+  var time2date = new Date("1970-01-01 " + time2)
+
+  if (time1date.getTime() > time2date.getTime()) {
+    return 1
+  } else if (time1date.getTime() < time2date.getTime()) {
+    return -1
+  }
+  return 0
+
+  // 24:00 and 00:00 = ?
+}
