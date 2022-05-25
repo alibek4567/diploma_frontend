@@ -5,67 +5,131 @@
 
             <div class="selectHolder" >
                 <p>Select by</p>
-                <mat-button-toggle-group name="fontStyle" (change)="setSelect()" aria-label="Font Style">
+                <mat-button-toggle-group name="fontStyle" value="Date" (change)="setSelect($event)" aria-label="Font Style">
                     <mat-button-toggle value="Date">Date</mat-button-toggle>
                     <mat-button-toggle value="Room">Room</mat-button-toggle>
                   </mat-button-toggle-group>
             </div>
 
-            <div class="inputHolder">
-                <p>Cabinet</p>
-                <mat-select value="None">
-                    <mat-option value="None"></mat-option>
-                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
-                        {{room['name']}}
-                    </mat-option>
-                </mat-select>
-                <!-- <input (change)="setCabinet($event)" type="text" placeholder="C1.113" [matAutocomplete]="auto">
-                <mat-autocomplete #auto="matAutocomplete">
-                    <mat-option *ngFor="let room of items.rooms" (onSelectionChange)="pickCabinet(room['name'], room['id'])" [value]="room['name']">
-                      {{room['name']}}
-                    </mat-option>
-                </mat-autocomplete> -->
-            </div>
-
-            <div class="inputHolder" >
-                <p>Choose a date</p>
-                <div>
-                    <input (dateChange)="setDate($event)" [min]="today" [max]="maxDate" [value]="date" matInput [matDatepicker]="picker" readonly="true">
-                    <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
-                    <mat-datepicker #picker></mat-datepicker>
+            <div *ngIf="select=='Room'">
+                <div class="dateHolder">
+                    <div class="inputHolder">
+                        <p>Cabinet</p>
+                        <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" type="text" placeholder="C1.113" [matAutocomplete]="auto">
+                        <mat-autocomplete #auto="matAutocomplete">
+                            <mat-option *ngFor="let room of searchedRooms" (onSelectionChange)="cabinetByRoom(); setId(room['id'])" [value]="room['name']">
+                                {{room['name']}}
+                            </mat-option>
+                        </mat-autocomplete>
+                    </div>
+        
+                    <div class="inputHolder" >
+                        <p>Choose a date</p>
+                        <input (dateChange)="cabinetByRoom()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+                </div>
+    
+                <div class="spacer"></div>
+    
+                <div class="dateHolder">
+                    <div class="inputHolder" style="width: 45% !important;">
+                        <p>Start Time</p>
+                        <input [(ngModel)]="byRoom.startTime" type="time" placeholder="HH:MM">
+                    </div>
+    
+                    <div class="inputHolder" style="width: 45% !important;">
+                        <p>End Time</p>
+                        <input [(ngModel)]="byRoom.endTime" type="time" placeholder="HH:MM">
+                    </div>
+                </div>
+    
+                <div class="inputHolder" >
+                    <p>Comment</p>
+                    <textarea [(ngModel)]="byRoom.comment" type="text" placeholder="Enter a comment"></textarea>
                 </div>
             </div>
 
-            <div class="dateHolder">
+            <div *ngIf="select=='Date'">
+                <div class="inputHolder" >
+                    <p>Choose a date</p>
+                    <div>
+                        <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true">
+                        <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
+                        <mat-datepicker #picker></mat-datepicker>
+                    </div>
+                </div>
+    
+                <div class="dateHolder">
+                    <div class="inputHolder" style="width: 45% !important;">
+                        <p>Start Time</p>
+                        <input [(ngModel)]="byDate.startTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
+                    </div>
+    
+                    <div class="inputHolder" style="width: 45% !important;">
+                        <p>End Time</p>
+                        <input [(ngModel)]="byDate.endTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
+                    </div>
+                </div>
+
+                <!-- <div class="spacer"></div>
+
                 <div class="inputHolder">
-                    <p>Start Time</p>
-                    <input (change)="setTime('start',$event)" type="time" placeholder="HH:MM">
-                </div>
-
-                <div class="inputHolder">
-                    <p>End Time</p>
-                    <input (change)="setTime('end',$event)" placeholder="HH:MM">
+                    <p>Cabinet</p>
+                    <mat-select disableOptionCentering placeholder="Select Room" [(ngModel)]="byDate.cabinet">
+                        <mat-option *ngFor="let room of rooms" [value]="room['id']+'-'+room['name']">
+                            {{room['name']}}
+                        </mat-option>
+                    </mat-select>
+                </div> -->
+    
+                <div class="inputHolder" >
+                    <p>Comment</p>
+                    <textarea [(ngModel)]="byDate.comment" type="text" placeholder="Enter a comment"></textarea>
                 </div>
             </div>
 
-            <div class="inputHolder" >
-                <p>Comment</p>
-                <textarea (keyup)="setComment($event)" type="text" placeholder="Enter a comment"></textarea>
-            </div>
-
-            <button [ngStyle]="{'order': '6'}" class="send" [disabled]="cabinet?.length!=6" (click)="send()" type="submit">Send</button>
+            <button class="send" (click)="send()" type="submit">Send</button>
 
         </div>
+        
         <div class="timetableHolder">
-            <h2>{{formatDate(date)}} <span *ngIf="cabinet.length==6">| {{cabinet}}</span></h2>
-            <div class="itemHolder" *ngFor="let item of events">
-                <div class="left">
-                    <p>{{sliceString(item.created_time)}}</p>
-                    <p>{{item.end_time}}</p>
+            <div *ngIf="select=='Room'">
+                <h2>{{formatDate(byRoom.date)}} <span *ngIf="byRoom.cabinet">| {{byRoom.cabinet}}</span></h2>
+                <div *ngIf="message == 'success'">
+                    <div class="itemHolder" *ngFor="let item of events">
+                        <div class="left">
+                            <p>{{item.start_time}}</p>
+                            <p>{{item.end_time}}</p>
+                        </div>
+                        <div class="right">
+                            <p class="subject">{{item.reason}}</p>
+                            <p class="tutor">{{item.reserver}}</p>
+                        </div>
+                    </div>
                 </div>
-                <div class="right">
-                    <p class="subject">{{item.reason}}</p>
-                    <p class="tutor">{{item.reserver}}</p>
+                <div *ngIf="message == 'empty'">
+                    <h3>No Available Rooms</h3>
+                </div>
+            </div>
+
+            <div *ngIf="select=='Date'">
+                <h2>{{formatDate(byDate.date)}} <span *ngIf="byDate.cabinet">| {{byDate.cabinet}}</span></h2>
+                <div *ngIf="message == 'success'">
+                    <div class="itemHolder" *ngFor="let item of rooms">
+                        <div class="right">
+                            <p class="subject">{{item.name}} | {{item.type}}</p>
+                        </div>
+                        <div class="check">
+                            <section class="example-section">
+                                <mat-checkbox [checked]="checked === item.id" (change)="setCheck(item.name,item.id)"></mat-checkbox>
+                              </section>
+                        </div>
+                    </div>
+                </div>
+                <div *ngIf="message == 'empty'">
+                    <h3>No Events</h3>
                 </div>
             </div>
         </div>

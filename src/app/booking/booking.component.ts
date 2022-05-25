@@ -2,85 +2,134 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { Router } from '@angular/router';
+import { retry } from 'rxjs';
 import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
+
+export interface Select {
+  date: Date,
+  cabinet: string,
+  startTime: string,
+  endTime: string,
+  comment: string,
+  cabinet_id: string
+}
 
 @Component({
   selector: 'app-booking',
   templateUrl: './booking.component.html',
   styleUrls: ['./booking.component.scss']
 })
+
 export class BookingComponent implements OnInit {
+
+  // By Date = set Date + Time
+  // By Room = set Date + Room
 
   events: any
   rooms: any
 
+  searchedRooms: any
+
+  today = new Date()
+  maxDate = new Date( new Date().setDate(this.today.getDate() + 14) )
+  cabinet: string
+  room_id: string
+  date: Date = new Date();
+  select = "Date"
+  message: string
+  checked: number
+
+  byRoom: Select = {
+    cabinet: '',
+    startTime: '',
+    endTime: '',
+    comment: '',
+    date: new Date,
+    cabinet_id: ''
+  }
+
+  byDate: Select = {
+    cabinet: '',
+    startTime: '',
+    endTime: '',
+    comment: '',
+    date: new Date,
+    cabinet_id: ''
+  }
+
   constructor(private api: ApiCallerService, private router: Router, public items: ItemsLoaderService) {
-    console.log(this.maxDate);
-    
-    this.select = false
+    this.searchedRooms = this.items.rooms
   }
 
   ngOnInit(): void {
   }
 
-  today = new Date()
-  maxDate = new Date( new Date().setDate(this.today.getDate() + 14) )
-  cabinet = ''
-  room_id = ''
-  date: Date = new Date();
-  startTime: ''
-  endTime: ''
-  comment: ''
-
-  select: boolean
-
-  minTime = '08:00'
-
-  setCabinet(event: any) { 
-    this.cabinet = event.target.value;
+  formatCabinet(room: string){
+    return room.split('-')[1]
   }
 
-  pickCabinet(name: any, id: any) {
-    this.cabinet = name
-    this.room_id = id
-    var response = this.api.sendGetRequest("/booking/room/"+id)
+  cabinetByRoom() {
+    var response = this.api.sendGetRequest("/booking/room/"+this.byRoom.cabinet_id)
     response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
       if(data.payload['d'+this.date.getDay()] != null){
         this.events = data.payload['d'+this.date.getDay()]
+        this.message = "success"
+        console.log(this.events);
       }
       else{
-        console.log("No events")
+        this.message = "empty"
       }
     }, error => {
+      this.message = "empty"
     })
   }
 
-  // listCabinet(date: any, startTime: any, endTime: any){
-  //   if(date && startTime && endTime && (endTime > startTime)){
-  //     console.log(date, startTime, endTime)
-  //     let data = {date: date, start_time: startTime, end_time: endTime}
-  //     var response = this.api.sendPostRequest("/booking/datetime", data)
-  //     response.subscribe(data => {
-  //       const timeTables = JSON.parse(JSON.stringify(data))
-  //       this.rooms = timeTables.payload
-  //       console.log(this.rooms);
-  //     }, error => {
-  //     })
-  //   }
-  //   else{
-  //     this.rooms = null
-  //   }
-  // }
+  filter(){
+    this.searchedRooms = this.items.rooms.filter((data: any) => {
+      return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
+    })
+    console.log(this.byRoom.cabinet);
+  }
 
-  setSelect() {
-    this.select = !this.select
+  cabinetByDate(){
+    if(this.byDate.date && this.byDate.startTime && this.byDate.endTime && (this.byDate.endTime > this.byDate.startTime)){
+      let data = {
+        date: this.byDate.date, 
+        start_time: this.byDate.startTime , 
+        end_time: this.byDate.endTime
+      }
+      var response = this.api.sendPostRequest("/booking/datetime", data)
+      response.subscribe(data => {
+        const timeTables = JSON.parse(JSON.stringify(data))
+        this.rooms = timeTables.payload
+        this.message = 'success'
+        console.log(this.rooms);
+      }, error => {
+      })
+    }
+    else{
+      this.message = 'empty'
+      this.rooms = null
+      console.log("test")
+    }
+  }
+
+  setSelect(event: any) {
+    this.select = event.value
   }
 
   setDate(event: any) { 
-    this.date = event.target.value;
+    this.date = event.value;
     // this.timeTable = this.timeTables['d'+this.date.getDay()]
+  }
+
+  setCheck(name: string,id: string){
+    this.checked = parseInt(id)
+    this.byDate.cabinet = name
+    this.byDate.cabinet_id = id
+    console.log(this.byDate.cabinet, this.byDate.cabinet_id)
   }
 
   sliceString(data: string){
@@ -92,36 +141,52 @@ export class BookingComponent implements OnInit {
     return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
   }
 
-  setTime(message: string, event: any){
-    if(message == "start"){
-      this.startTime = event.target.value
+  show(select: string){
+    if(select == 'Date'){
+      console.log(this.byDate);
     }
-    this.endTime = event.target.value
+    else{
+      console.log(this.byRoom);
+    }
   }
 
-  setComment(event: any){
-    this.comment = event.target.value;
+  setId(id: string){
+    this.byRoom.cabinet_id = id
   }
 
   send(){
+    let data = null
+    if(this.select == 'Room'){
+      data = this.byRoom
+    }
+    else if(this.select == 'Date'){
+      data = this.byDate
+    }
+    else{
+      return
+    }
+
     let values = {
-      room: this.cabinet, 
+      room: data.cabinet, 
       reserver: sessionStorage.getItem("username"), 
       reserver_info: sessionStorage.getItem("department"), 
-      day: "d1",
-      start_time: this.startTime,
-      end_time: this.endTime,
-      reason: this.comment,
-      room_id: 1,
+      day: "d"+this.date.getDay(),
+      start_time: data.startTime,
+      end_time: data.endTime,
+      reason: data.comment,
+      room_id: parseInt(data.cabinet_id),
       reserver_id: sessionStorage.getItem("id"),
-      date: this.date,
-  }
+      date: data.date,
+    }
 
-    var response = this.api.sendPostRequest("/booking/create", values)
+    var response = this.api.sendPostRequestWithAuth("/booking/create", values)
     response.subscribe(data => {
       this.router.navigateByUrl('/booking');
     }, error => {
       console.log(error)
     });
+    
   }
+
 }
+

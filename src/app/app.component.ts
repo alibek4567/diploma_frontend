@@ -53,6 +53,8 @@ export class AppComponent implements OnInit{
       this.language = "en"
       sessionStorage.setItem("language", this.language)
     }
+
+    this.username = sessionStorage.getItem('username')
   }
 
   ngOnInit(): void {
@@ -66,6 +68,14 @@ export class AppComponent implements OnInit{
           console.log(this.msalService.instance.getActiveAccount());
           sessionStorage.setItem("email", this.email)
           sessionStorage.setItem("id", this.id)
+          var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: "Astana IT University"})
+          response.subscribe(data => {
+            const r = JSON.parse(JSON.stringify(data))
+            this.api.jwt = r.payload       
+            console.log(this.api.jwt);
+          }, error => {
+            console.log(error)
+          });
         }
       }
     )

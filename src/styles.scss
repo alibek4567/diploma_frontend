@@ -80,5 +80,9 @@ body { margin: 0; }
   line-height: 2rem !important;
 }
 
+.mat-checkbox-checked.mat-accent .mat-checkbox-background {
+  background-color: #457CCE !important;
+}
+
 html, body { height: 100%; }
 body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }

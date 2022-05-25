@@ -24,6 +24,11 @@
     display: flex;
     flex-direction: column;
 
+    .spacer{
+        width: 100%;
+        height: 2rem;
+    }
+
     .selectHolder{
         width: 100%;
         display: flex;
@@ -77,6 +82,13 @@
         input:focus{
             outline: none;
         }
+
+        mat-select{
+            width: fit-content !important;
+            margin: 0;
+            padding: 0.5rem;
+            border-bottom: 1px solid black;
+        }
     }
 }
 
@@ -86,7 +98,7 @@
     justify-content: space-between;
 
     div{
-        width: 45% !important;
+        width: fit-content !important;
     }
 }
 
@@ -113,6 +125,7 @@
         width: calc(100% - 2rem);
         display: flex;
         background-color: white;
+        align-items: center;
         padding: 1rem;
         border-radius: 5px;
         margin-bottom: 1rem;
@@ -146,6 +159,10 @@
             .tutor{
                 font-size: 0.9rem;
             }
+        }
+
+        .check{
+            margin-left: auto;
         }
     }
 }

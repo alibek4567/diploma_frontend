@@ -9,6 +9,7 @@ export class ApiCallerService {
   constructor(public http: HttpClient) { }
 
   addr = "http://localhost:4003"
+  jwt = ''
 
   sendGetRequest(url: string) {
     const httpOptions = {
@@ -29,6 +30,17 @@ export class ApiCallerService {
         })
       };
 
+    return this.http.post(this.addr+url, data, httpOptions)
+  }
+
+  sendPostRequestWithAuth(url: string, data: any) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        'Gao-Jwt-Token': this.jwt
+        })
+      };
     return this.http.post(this.addr+url, data, httpOptions)
   }
 }
