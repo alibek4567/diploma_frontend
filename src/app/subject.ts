@@ -2,6 +2,8 @@
 export class Subject {
     classtime_day: string
     classtime_time: string
+    start_time: string
+    end_time: string
     elective_id: number
     id: number
     lesson_type: string

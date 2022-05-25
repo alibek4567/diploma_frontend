@@ -35,7 +35,7 @@ export class SearchByComponent implements OnInit {
   // d1 = MON; d2 = TUS; d3 = WED; d4 = THU; d5 = FRI; d6 = SAT
   weekSchedule = new Map<string, Map<string, Subject[]>>()
 
-  lessonDuration: number = 50
+  //lessonDuration: number = 50
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, 
     private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog) {
@@ -85,40 +85,30 @@ export class SearchByComponent implements OnInit {
      
     var response = this.api.sendGetRequest(request)
     response.subscribe(data => {
-      console.log('request')
       this.searchSuccess = true
-      //
       const schedule = JSON.parse(JSON.stringify(data))
       // Sorting
       for (let i = 1; i < 7; i++) {
         if (schedule.payload["d" + i] != null) {
           for (let item of schedule.payload["d" + i]) {
+            // Time set
+            if (compareTime(item.start_time, this.scheduleStartTime) == -1) {
+              this.scheduleStartTime = item.start_time
+            }
+            if (compareTime(item.end_time, this.scheduleEndTime) == 1) {
+              this.scheduleEndTime = item.end_time
+            }
+
+            // Mapping
             if (this.weekSchedule.get("d" + i) != undefined) {
-              if (this.weekSchedule.get("d" + i)?.get(item.classtime_time) != undefined) {
-                this.weekSchedule.get("d" + i)?.get(item.classtime_time)?.push(item)
+              if (this.weekSchedule.get("d" + i)?.get(item.start_time) != undefined) {
+                this.weekSchedule.get("d" + i)?.get(item.start_time)?.push(item)
               } else {
-                this.weekSchedule.get("d" + i)?.set(item.classtime_time, [item])
+                this.weekSchedule.get("d" + i)?.set(item.start_time, [item])
               }
             } else {
               this.weekSchedule.set("d" + i, new Map())
-              this.weekSchedule.get("d" + i)?.set(item.classtime_time, [item])
-            }
-          }
-        }
-      }
-
-      // Time Table cut
-      for (let i = 1; i < 7; i++) {
-        if (this.weekSchedule.get("d" + i) != undefined) {
-          let times = this.weekSchedule.get("d" + i)?.keys()
-          if (times != undefined) {
-            for (let time of times) {
-              if (compareTime(time, this.scheduleEndTime) == 1) {
-                this.scheduleEndTime = time
-              }
-              if (compareTime(time, this.scheduleStartTime) == -1) {
-                this.scheduleStartTime = time
-              }
+              this.weekSchedule.get("d" + i)?.set(item.start_time, [item])
             }
           }
         }
@@ -127,7 +117,7 @@ export class SearchByComponent implements OnInit {
       // Drawing Time blocks
       let myArray: string[] = []
       let start = parseInt(this.scheduleStartTime.split(':')[0])
-      let end = parseInt(this.scheduleEndTime.split(':')[0]) + 2
+      let end = parseInt(this.scheduleEndTime.split(':')[0])
       for (let i = start; i < end; i++) {
         myArray.push(i + ':00')
         myArray.push(i + ':30')
@@ -150,58 +140,45 @@ export class SearchByComponent implements OnInit {
 
   async setSubjects(day: string, daySchedule: any) {
     if (daySchedule != null) {
+      daySchedule.forEach(async (subjects: Subject[]) => {
 
-      var dateTime = getTodaysDate(+6).split(',') // Todays Date and Time with Timezone +6
-      var dayOfTheWeek = parseInt(dateTime[0])
-      var otherDay = true
-      if (day == ('d' + dayOfTheWeek)) {
-        otherDay = false
-      }
+      var subjectStartTime = subjects[0].start_time.split(':');
+      var hours = parseInt(subjectStartTime[0])
+      var minutes = parseInt(subjectStartTime[1])
 
-      daySchedule.forEach(async (value: Subject[], key: string) => {
+      let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
 
-      var timer = key.split(':');
-      // Get Subject Time + Time starts from 8:00
-      var hours = parseInt(timer[0]) //- 8 
-      var minutes = parseInt(timer[1]) /// 60
+      await waitForElm('#' + id).then(() => {
+        const el = (<HTMLElement>document.getElementById(id));
 
-      await waitForElm('#' + day + "_t" + timer[0] + timer[1]).then(() => {
-        const el = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1]));
-          
-        el.style.height = (this.lessonDuration * 5 / 60) + "rem"
+        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+
+        el.style.height = (duration * 5 / 60) + "rem"
+
         // Displacement = (Borders) + (Full Hours) + (Minutes)
-
-        // test this.scheduleStartTime.split(':')[0]
-
-         el.style.top = ((0.1 * 2 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
+        let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
+        el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
         el.style.visibility = "visible"
 
-        const el_title = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_title"));
-        const el_room = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_room"));
+        const el_title = (<HTMLElement>document.getElementById(id + "_title"));
+        const el_room = (<HTMLElement>document.getElementById(id + "_room"));
         el_title.textContent = ''
         el_room.textContent = ''
 
         let title: string = ''
         let room: string = ''
-        for (let subject of value) {
+        for (let subject of subjects) {
           title += subject.subject + ' / '
           room += subject.room + ' / '
         }
 
-        if (value.length > 1) {
+        if (subjects.length > 1) {
           el.style.background = 'linear-gradient(90deg, rgb(69, 124, 206), rgb(165, 52, 214))';
         }
 
         el_title.textContent = title.slice(0, -3);
         el_room.textContent = room.slice(0, -3);
 
-        if (!otherDay) {
-          let result = compareTime(dateTime[2], key)
-          if (result == 1 || result == 0) {
-            el.style.background = 'gray'
-            el.style.borderLeft = '0.2rem solid rgb(240,128,128)'
-          }
-        }
       })
     })
   } 
@@ -288,4 +265,10 @@ function compareTime(time1: string, time2: string): number {
   return 0
 
   // 24:00 and 00:00 = ?
+}
+
+function stringTimeInMinutes(time: string): number {
+  let hours = parseInt(time.split(':')[0])
+  let minutes = parseInt(time.split(':')[1])
+  return (hours * 60) + minutes
 }

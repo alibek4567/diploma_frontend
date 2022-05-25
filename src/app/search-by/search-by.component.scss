@@ -244,15 +244,17 @@ h2 {
       padding: 0;
       margin: 0;
     }
-  
-    .bold {
-      font-size: 1rem;
-    }
-  
-    .regular {
-      font-size: 0.95rem;
-      color: darkgray;
-    }
+  }
+
+  .bold {
+    font-size: 1rem;
+    //border-top: 0.05rem solid black;
+  }
+
+  .regular {
+    font-size: 0.95rem;
+    color: darkgray;
+    //border-top: 0.05rem solid lightgray;
   }
 }
 
@@ -268,11 +270,11 @@ h2 {
   .block {
     display: flex;
     flex-direction: column;
-    // visibility: hidden;
+    visibility: hidden;
   
     position: absolute;
   
-    width: 97%;
+    width: 98%;
     max-width: 100%;
   
     background-color: #457CCE;
