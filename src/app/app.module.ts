@@ -27,6 +27,7 @@ import { MatDialogModule } from '@angular/material/dialog';
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
 import { SubjectPopUpComponent } from './subject-pop-up/subject-pop-up.component';
+import { GraphicMapComponent } from './graphic-map/graphic-map.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -57,6 +58,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     SearchByComponent,
     BookingComponent,
     SubjectPopUpComponent,
+    GraphicMapComponent,
   ],
   imports: [
     BrowserModule,

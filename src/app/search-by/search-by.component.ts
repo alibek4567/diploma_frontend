@@ -85,7 +85,9 @@ export class SearchByComponent implements OnInit {
      
     var response = this.api.sendGetRequest(request)
     response.subscribe(data => {
-      this.searchSuccess = false
+      console.log('request')
+      this.searchSuccess = true
+      //
       const schedule = JSON.parse(JSON.stringify(data))
       // Sorting
       for (let i = 1; i < 7; i++) {
