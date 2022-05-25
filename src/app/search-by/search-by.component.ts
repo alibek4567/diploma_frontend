@@ -32,7 +32,15 @@ export class SearchByComponent implements OnInit {
   // Schedule parameters
   startTime: number
   endTime: number
-  timeArray = [8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20, 21]
+  timeArray: string[] = [
+    "8:00", "8:30", "9:00", "9:30",
+    "10:00", "10:30", "11:00", "11:30",
+    "12:00", "12:30", "13:00", "13:30", 
+    "14:00", "14:30", "15:00", "15:30",
+    "16:00", "16:30", "17:00", "17:30",
+    "18:00", "18:30", "19:00", "19:30",
+    "20:00", "20:30", "21:00", "21:30"
+  ]
 
   // d1 = MON; d2 = TUS; d3 = WED; d4 = THU; d5 = FRI; d6 = SAT
   weekSchedule = new Map<string, Map<string, Subject[]>>()
@@ -49,10 +57,7 @@ export class SearchByComponent implements OnInit {
     let date = temp.split('.')
     let dateInFormat = date[2] + '/' + date[1] + '/' + date[0]
     let time = getTodaysDate(+6).split(',')[2].trim()
-
     this.weekDates = getWeekDates(dateInFormat + ' ' + time)
-
-    console.log(this.weekDates)
   }
 
   ngOnInit(): void {}
@@ -87,6 +92,11 @@ export class SearchByComponent implements OnInit {
 
   getSearchResult(request: string) {
     this.weekSchedule.clear()
+    
+    waitForElm('.grid-container').then(async () => {
+      this.setTimeline()
+      setInterval(this.setTimeline, 60 * 1000);
+    });
      
     var response = this.api.sendGetRequest(request)
     response.subscribe(data => {
@@ -131,7 +141,7 @@ export class SearchByComponent implements OnInit {
           
           el.style.height = (this.lessonDuration * 5 / 60) + "rem"
           // Displacement = (Borders) + (Full Hours) + (Minutes)
-          el.style.top = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
+          el.style.top = ((0.1 * 2 * (hours - 8)) + ((hours - 8) * 5) + (minutes/60) * 5) + "rem"
           el.style.visibility = "visible"
 
           const el_title = (<HTMLElement>document.getElementById(day + "_t" + timer[0] + timer[1] + "_title"));
@@ -173,8 +183,6 @@ export class SearchByComponent implements OnInit {
 
   setTimeline() {
     // Work of Time Line
-    window.addEventListener('load', function () {
-
       var dateTime = getTodaysDate(+6) // Todays Date and Time with Timezone +6
 
       var dateTimeArray = dateTime.split(',');
@@ -187,18 +195,21 @@ export class SearchByComponent implements OnInit {
       var final = 0
       if (hours < 8) {
         setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
       } else if (hours > 21) {
         hours = 22
         minutes = 0
         final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
         setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
       } else {
         final = ((0.1 * (hours - 8)) + ((hours - 8) * 5) + minutes * 5)
         setVerticalLocation("d" + dayOfTheWeek + "_line", final)
+        setHeightHTML("d" + dayOfTheWeek + "_cover-column", final)
       }
-    })
   }
 
+  // HTML interface functions
   formatDayAndWeek(date: string | undefined): string {
     if (date == undefined) {
       return ''
@@ -249,5 +260,11 @@ function setVerticalLocation(elementId: string, number: number) {
   let element = <HTMLElement>document.getElementById(elementId);
   element.style.display = "block";
   element.style.top = number + "rem"
+}
+
+function setHeightHTML(elementId: string, number: number) {
+  let element = <HTMLElement>document.getElementById(elementId);
+  element.style.display = "block";
+  element.style.height = number + "rem"
 }
 

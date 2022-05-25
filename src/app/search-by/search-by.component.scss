@@ -88,7 +88,7 @@
   color: white;
   display: flex;
   align-items: flex-end;
-  justify-content: start;
+  justify-content: flex-start; //start;
 
   .picker{
     margin-left: 2rem;
@@ -243,28 +243,38 @@ h2 {
 }
   
 .time {
-  height: 5rem;
+  height: 2.5rem;
   background-color: white;
   color: black;
   display: flex;
   flex-direction: column;
-  justify-content: space-evenly;
+  justify-content: flex-start; //space-evenly;
   text-align: center;
-  border: 0.05rem solid #eeeeee;
+  border: 0.025rem solid #eeeeee;
   padding: 0 0.5rem;
   
   p {
     padding: 0;
     margin: 0;
   }
+
+  .bold {
+    font-size: 1rem;
+  }
+
+  .regular {
+    font-size: 0.95rem;
+    color: darkgray;
+  }
 }
 
 .searchField {
   color: white;
+  margin-bottom: 2rem;
 }
   
 .empty {
-  height: 5rem;
+  height: 2.5rem;
   background-color: white;
   border: 0.05rem solid #eeeeee;
 }
@@ -289,11 +299,16 @@ h2 {
   color: white;
   //border: 0.05rem solid #eeeeee;
   border-left: 0.2rem solid lightgreen;
+  z-index: 5;
   
   h2 {
     font-size: 1rem;
     padding: 0;
     margin: 0 0 0.2rem 0;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap
   }
   
   p {
@@ -304,6 +319,10 @@ h2 {
     font-weight: 200;
     padding-left: 0.1rem;
     color: white;
+
+    text-overflow: ellipsis;
+    overflow: hidden;
+    white-space: nowrap
   }
 }
   
@@ -354,5 +373,14 @@ h2 {
   display: none;
 }
 #d6_line {
+  display: none;
+}
+
+.cover-column {
+  background: lightgray;
+  z-index: 3;
+  opacity: 0.5;
+}
+#d3_cover-column {
   display: none;
 }

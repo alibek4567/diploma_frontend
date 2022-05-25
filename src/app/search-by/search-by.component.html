@@ -62,7 +62,7 @@
 
       <div class="content">
         <p *ngIf="!search" class="headText">Astana IT University</p>
-  
+
         <div class="actionHolder" [ngStyle]="{'justify-content': search ? 'start' : 'center'}">
           <div *ngIf="cabinet && search" class="date">
             <h1>{{ formatDate(date) }}</h1>
@@ -89,25 +89,25 @@
               <mat-icon>search</mat-icon>
             </button>
           </div>
-  
+
           <button *ngIf="search" class="export" mat-icon-button>
             <p>Export JPEG</p>
           </button>
         </div>
-  
+
         <h2 class="searchField">{{ searchResult }}</h2>
         <div *ngIf="search" class="grid-container">
           <div class="grid-item">
             <div class="day">
             </div>
             <div class="column">
-              <div class="time" *ngFor="let hour of timeArray"><p>{{ hour }}:00</p></div>
+              <div class="time" *ngFor="let hour of timeArray"><p [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'">{{ hour }}</p></div>
             </div>
           </div>
 
           <!-- D1 -->
           <div class="grid-item">
-            <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d1')) }}</p></div>
+            <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}</p><p *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d1')) }}</p></div>
             <div class="column">
               <div class="empty" *ngFor="let hour of timeArray"></div>
             </div>
@@ -139,9 +139,10 @@
           <div class="grid-item">
             <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br>{{ formatDayAndWeek(weekDates.get('d3')) }}</p></div>
             <div class="column">
-              <div class="empty" *ngFor="let hour of timeArray"></div>
+              <div class="empty" id="d3_{{ hour }}" *ngFor="let hour of timeArray"></div>
             </div>
             <div class="subjects">
+              <div class="cover-column" id="d3_cover-column"></div>
               <span class="line" id="d3_line"></span>
               <div class="block" id="d3_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d3') | keyvalue" (click)="openSubject(subject.value)">
                 <p id="d3_{{ setSubjectId(subject.key) }}_title"></p>
