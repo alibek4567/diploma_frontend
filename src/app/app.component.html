@@ -26,19 +26,24 @@
             <p>{{ 'SIDE-MENU.home-tab' | translate }}</p>
           </div>
     
-          <div class="item" routerLink="home" routerDirection="root">
+          <div class="item" routerLink="search" routerDirection="root">
             <mat-icon>search</mat-icon>
             <p>{{ 'SIDE-MENU.search-tab' | translate }}</p>
           </div>
     
-          <div class="item" routerLink="settings" routerDirection="root">
+          <div class="item" routerLink="booking" routerDirection="root">
             <mat-icon>event</mat-icon>
             <p>{{ 'SIDE-MENU.booking-tab' | translate }}</p>
           </div>
     
-          <div class="item" routerLink="" routerDirection="root">
+          <div class="item" routerLink="graph-map" routerDirection="root">
             <mat-icon>map</mat-icon>
             <p>{{ 'SIDE-MENU.graph-map-tab' | translate }}</p>
+          </div>
+
+          <div class="item" *ngIf="isLoggedIn()" routerLink="adminboard" routerDirection="root">
+            <mat-icon>admin</mat-icon>
+            <p>Adminboard</p>
           </div>
     
           <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">

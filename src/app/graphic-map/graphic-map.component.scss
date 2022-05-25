@@ -1,0 +1,26 @@
+
+.outer {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
+}
+
+.content {
+    flex-grow: 2;
+    min-height: 100%;
+    width: 80%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1rem;
+    background-color: #485461;
+    background: transparent
+}
+
+.headText {
+    margin-top: 7rem;
+    color: white;
+    font-size: 4rem;
+}
+  

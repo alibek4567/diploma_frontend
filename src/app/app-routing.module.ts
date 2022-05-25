@@ -3,8 +3,9 @@ import { RouterModule, Routes } from '@angular/router';
 import { AdminBoardComponent } from './admin-board/admin-board.component';
 import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admin-confirmed-requests.component';
 import { AdminHistoryComponent } from './admin-history/admin-history.component';
-import { BookingComponent } from './booking/booking.component';
 import { SearchByComponent } from './search-by/search-by.component';
+import { BookingComponent } from './booking/booking.component';
+import { GraphicMapComponent } from './graphic-map/graphic-map.component';
 
 const routes: Routes = [
   {
@@ -12,8 +13,16 @@ const routes: Routes = [
     component: SearchByComponent
   },
   {
+    path: 'search',
+    component: SearchByComponent
+  },
+  {
     path: 'booking',
     component: BookingComponent
+  },
+  {
+    path: 'graph-map',
+    component: GraphicMapComponent
   },
   {
     path: 'admin-board',

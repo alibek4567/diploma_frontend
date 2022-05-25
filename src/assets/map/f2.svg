@@ -1,15 +1,8 @@
-<div class="outer">
-    <div class="content">
-        <h2 class="headText">Interactive map of University</h2>
-
-        <!-- <button>Left</button>
-        <button>Right</button> -->
-        <button>Up</button>
-        <button>Down</button>
-    
-        <div style="background: white" id="map">
-            <!-- <img style="width: 100%;" src="../../assets/map/f2.svg"> -->
-<svg version="1.0" xmlns="http://www.w3.org/2000/svg" width="100%" height="600px" viewBox="0 0 2900.000000 1270.000000"
+<?xml version="1.0" standalone="no"?>
+<!DOCTYPE svg PUBLIC "-//W3C//DTD SVG 20010904//EN"
+ "http://www.w3.org/TR/2001/REC-SVG-20010904/DTD/svg10.dtd">
+<svg version="1.0" xmlns="http://www.w3.org/2000/svg"
+ width="2900.000000pt" height="1270.000000pt" viewBox="0 0 2900.000000 1270.000000"
  preserveAspectRatio="xMidYMid meet">
 
 <g transform="translate(0.000000,1270.000000) scale(0.100000,-0.100000)"
@@ -11594,10 +11587,9 @@ c0 -18 -53 -113 -60 -109 -10 6 39 115 52 115 4 0 8 -3 8 -6z m120 -41 c-2
 <path d="M25256 5965 c-9 -26 -7 -32 5 -12 6 10 9 21 6 23 -2 3 -7 -2 -11 -11z"/>
 <path d="M24597 5923 c-4 -3 -7 -11 -7 -17 0 -6 5 -4 10 4 9 13 14 11 35 -13
 14 -15 25 -24 25 -19 0 9 -42 52 -51 52 -3 0 -9 -3 -12 -7z"/>
-<a style="background-color: yellow; color: purple" href="#">
 <path d="M25225 5891 c-7 -23 -46 -32 -60 -13 -6 7 -27 15 -48 19 -33 5 -37 3
 -37 -15 0 -15 12 -24 51 -38 28 -11 54 -24 56 -31 9 -24 43 5 42 35 -1 15 2
-35 6 45 4 9 5 17 2 17 -3 0 -8 -9 -12 -19z"/></a>
+35 6 45 4 9 5 17 2 17 -3 0 -8 -9 -12 -19z"/>
 <path d="M24661 5837 c0 -16 -5 -36 -11 -46 -8 -16 0 -22 63 -46 40 -15 168
 -66 286 -112 118 -46 217 -80 221 -76 4 4 15 30 24 56 14 36 22 47 33 42 13
 -4 14 -3 3 10 -17 21 -18 20 -36 -25 -16 -40 -28 -47 -52 -31 -8 5 -11 17 -7
@@ -14586,7 +14578,3 @@ c11 4 26 8 33 8 6 0 12 4 12 7 0 4 14 13 30 20 17 7 29 15 26 17 -2 2 -18 -3
 <path d="M4538 113 c6 -2 18 -2 25 0 6 3 1 5 -13 5 -14 0 -19 -2 -12 -5z"/>
 </g>
 </svg>
-
-        </div>
-    </div>
-</div>
