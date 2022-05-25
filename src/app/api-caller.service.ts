@@ -9,7 +9,7 @@ export class ApiCallerService {
   constructor(public http: HttpClient) { }
 
   addr = "http://localhost:4003"
-  jwt = ''
+  jwt = sessionStorage.getItem('token')
 
   sendGetRequest(url: string) {
     const httpOptions = {
@@ -38,9 +38,20 @@ export class ApiCallerService {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': this.jwt
+        'Gao-Jwt-Token': this.jwt || ''
         })
       };
     return this.http.post(this.addr+url, data, httpOptions)
+  }
+
+  sendPatchRequestWithAuth(url: string) {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        'Gao-Jwt-Token': this.jwt || ''
+        })
+      };
+    return this.http.patch(this.addr+url, httpOptions)
   }
 }

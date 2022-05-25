@@ -181,7 +181,10 @@ export class BookingComponent implements OnInit {
 
     var response = this.api.sendPostRequestWithAuth("/booking/create", values)
     response.subscribe(data => {
-      this.router.navigateByUrl('/booking');
+      this.router.navigate([''])
+      .then(() => {
+        window.location.reload();
+      });
     }, error => {
       console.log(error)
     });

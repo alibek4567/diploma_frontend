@@ -1,0 +1,94 @@
+.outer{
+    height: 100%;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
+}
+
+.content{
+    width: 95%;
+    height: 90%;
+    background-color: white;
+    border-radius: 1rem;
+}
+
+.topHolder {
+    display: flex;
+    flex-direction: column;
+    margin-top: 1rem;
+    margin-left: 0.5rem;
+
+    button{
+        border-radius: 5px;
+        background-color: dodgerblue;
+        color: white;
+        font-size: 1rem;
+        padding: 0.5rem;
+    }
+
+    h2{
+        margin: 0 0 0.5rem 0.5rem;
+    }
+
+    input{
+        width: fit-content;
+        border-radius: 5px;
+        height: 2rem;
+        margin-left: 0.5rem;
+        padding: 0 0.5rem;
+    }
+}
+
+.tableHolder{
+    width: calc(100% - 2rem);
+     height: fit-content;
+     background-color: white;
+     margin-top: 0.5rem;
+     padding: 1rem;
+    }
+
+    table{
+        width: 100%;
+        border: 1px solid black;
+    
+        tr{
+            border: 1px solid black;
+    
+            th{
+                padding: 1rem;
+                border: 1px solid black;
+            }
+
+            .center{
+                display: flex;
+                align-items: center;
+                justify-content: center;
+
+                button{
+                    padding: 1rem;
+                    border: none;
+                    border-radius: 0.5rem;
+                    color: white;
+                }
+
+                #accept{
+                    background-color: #5abc2f;
+                }
+
+                #reject{
+                    background-color: #ff0000;
+                }
+            }
+    
+            td{
+                text-align: center;
+                padding: 1rem;
+                border: 1px solid black;
+
+                b{
+                    font-size: 0.9rem;
+                }
+            }
+        }
+    }

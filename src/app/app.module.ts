@@ -29,6 +29,9 @@ import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
 import { SubjectPopUpComponent } from './subject-pop-up/subject-pop-up.component';
 import { GraphicMapComponent } from './graphic-map/graphic-map.component';
+import { AdminBoardComponent } from './admin-board/admin-board.component';
+import { AdminHistoryComponent } from './admin-history/admin-history.component';
+import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admin-confirmed-requests.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -60,6 +63,9 @@ export function HttpLoaderFactory(http: HttpClient) {
     BookingComponent,
     SubjectPopUpComponent,
     GraphicMapComponent,
+    AdminBoardComponent,
+    AdminHistoryComponent,
+    AdminConfirmedRequestsComponent,
   ],
   imports: [
     BrowserModule,

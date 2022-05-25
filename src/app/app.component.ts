@@ -71,8 +71,8 @@ export class AppComponent implements OnInit{
           var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: "Astana IT University"})
           response.subscribe(data => {
             const r = JSON.parse(JSON.stringify(data))
-            this.api.jwt = r.payload       
-            console.log(this.api.jwt);
+            // this.api.jwt = r.payload       
+            sessionStorage.setItem('token', r.payload)
           }, error => {
             console.log(error)
           });
