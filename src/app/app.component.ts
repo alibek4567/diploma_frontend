@@ -21,8 +21,6 @@ export class AppComponent implements OnInit{
     ["ru", "Русский"]
   ])
 
-  language:any
-
   //Authorization data
   apiResponse: string
   email: any
@@ -31,16 +29,22 @@ export class AppComponent implements OnInit{
   profileInfo: any
   name = sessionStorage.getItem('username')
 
-  constructor(
-    translate: TranslateService, 
-    private titleService: Title, 
-    private api: ApiCallerService, 
-    private msalService: MsalService,
-    public httpClient: HttpClient) {  
+  language: string | null
 
+  constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
+    private msalService: MsalService,
+    public httpClient: HttpClient) {    
     translate.setDefaultLang("en")
 
-    translate.use(sessionStorage.getItem('language') || 'en');
+    //translate.use(sessionStorage.getItem('language') || 'en');
+
+    // Re check it
+    this.language = sessionStorage.getItem('language')
+    if (this.language == null) {
+      this.language = 'en'
+      sessionStorage.setItem('language', this.language)
+    }
+    translate.use(this.language)
 
     this.setTitle("AITU Schedule")
 
@@ -98,14 +102,12 @@ export class AppComponent implements OnInit{
     sessionStorage.clear()
   }
 
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle)
-  }
-
-  setLanguage(event: any) {
-    console.log(event.value)
+  public setLanguage(event: any) {
     sessionStorage.setItem("language", event.value)
     window.location.reload()
   }
 
+  public setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle)
+  }
 }

@@ -20,11 +20,13 @@ import { HttpClientModule, HttpClient, HTTP_INTERCEPTORS } from '@angular/common
 import { FormsModule } from '@angular/forms';
 import { MsalInterceptor, MsalInterceptorConfiguration, MsalModule, MsalService, MSAL_INSTANCE, MSAL_INTERCEPTOR_CONFIG } from '@azure/msal-angular';
 import { InteractionType, IPublicClientApplication, PublicClientApplication } from '@azure/msal-browser';
-import {TranslateModule, TranslateLoader} from '@ngx-translate/core';
-import {TranslateHttpLoader} from '@ngx-translate/http-loader';
+import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
+import { TranslateHttpLoader } from '@ngx-translate/http-loader';
+import { MatDialogModule } from '@angular/material/dialog';
 
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
+import { SubjectPopUpComponent } from './subject-pop-up/subject-pop-up.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -54,6 +56,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AppComponent,
     SearchByComponent,
     BookingComponent,
+    SubjectPopUpComponent,
   ],
   imports: [
     BrowserModule,
@@ -74,6 +77,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     HttpClientModule,
     MsalModule,
     FormsModule,
+    MatDialogModule,
     TranslateModule.forRoot({
       loader: {
           provide: TranslateLoader,
