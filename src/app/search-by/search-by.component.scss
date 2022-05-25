@@ -337,6 +337,7 @@ h2 {
   }
 
   p {
+    text-align: center;
     font-weight: 600;
     color: white;
     padding: 0;
@@ -395,7 +396,7 @@ h2 {
 .block {
   display: flex;
   flex-direction: column;
-  visibility: hidden;
+  // visibility: hidden;
 
   position: absolute;
   //height: 5rem;
@@ -407,14 +408,6 @@ h2 {
   color: white;
   //border: 0.05rem solid #eeeeee;
   border-left: 0.2rem solid lightgreen;
-  
-  .subject {
-    font-weight: 700;
-  }
-  
-  .teacher {
-    font-weight: 500;
-  }
   
   h2 {
     font-size: 1rem;

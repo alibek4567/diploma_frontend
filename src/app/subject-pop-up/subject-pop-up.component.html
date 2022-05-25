@@ -1,4 +1,14 @@
-<h2>Subject: {{ subject }}</h2>
+
+<!-- <h2>Subject: {{ subject }}</h2>
 <p>Tutor: {{ tutor }}</p>
 <p>Location: {{ location }}</p>
-<p>Start time: {{ startTime }}</p>
+<p>Start time: {{ startTime }}</p> -->
+<div class="contentHolder">
+    <div class="subject" *ngFor="let subject of subjects">
+        <h2>Subject: {{ subject.subject }}</h2>
+        <p>Type: {{ subject.lesson_type }}</p>
+        <p>Location: {{ subject.room }}</p>
+        <P>Tutor: {{ subject.tutor }}</P>
+        <p>Time: {{ subject.classtime_time }}</p>
+  </div>
+</div>
