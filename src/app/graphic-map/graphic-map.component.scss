@@ -24,3 +24,18 @@
     font-size: 4rem;
 }
   
+.picker {
+    //margin-left: 2rem;
+    //margin-bottom: 0.5rem;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    .spacer {
+      width: 1.5rem;
+    }
+
+    mat-icon {
+      transform: scale(1.5);
+    }
+  }

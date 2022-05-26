@@ -1,6 +1,6 @@
 <div class="outer">
   <div *ngIf="cabinet && searchStart" class="calendarHolder">
-    <mat-calendar [(selected)]="date"></mat-calendar>
+    <mat-calendar [(selected)]="selectedDate"></mat-calendar>
 
     <div class="legend">
       <p>Events</p>
@@ -20,7 +20,7 @@
 
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
       <div *ngIf="cabinet && searchStart" class="date">
-        <h1>{{ formatDate(date) }}</h1>
+        <h1>{{ formatDate(selectedDate) }}</h1>
         <div class="picker" *ngIf="cabinet">
           <mat-icon>chevron_left</mat-icon>
             <div class="spacer"></div>
@@ -39,7 +39,7 @@
             {{ 'SEARCH.search-option.by-cabinet' | translate }}
           </mat-option>
         </mat-select>
-        <input type="text" [(ngModel)]="searchValue" placeholder="{{ 'SEARCH.search' | translate }} ...">
+        <input type="text" [(ngModel)]="searchValue" placeholder="{{ 'SEARCH.search' | translate }} &hellip;">
         <button type="submit" mat-icon-button (click)="setSearch()">
           <mat-icon>search</mat-icon>
         </button>
@@ -70,6 +70,10 @@
             <p id="d1_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d1_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
+          <div class="block" id="d1_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d1') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d1_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d1_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
         </div>
       </div>
 
@@ -81,6 +85,10 @@
         </div>
         <div class="subjects">
           <div class="block" id="d2_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d2') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d2_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d2_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
+          <div class="block" id="d2_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d2') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d2_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d2_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
@@ -98,6 +106,10 @@
             <p id="d3_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d3_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
+          <div class="block" id="d3_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d3') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d3_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d3_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
         </div>
       </div>
 
@@ -109,6 +121,10 @@
         </div>
         <div class="subjects">
           <div class="block" id="d4_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d4') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d4_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d4_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
+          <div class="block" id="d4_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d4') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d4_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d4_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
@@ -126,6 +142,10 @@
             <p id="d5_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d5_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
+          <div class="block" id="d5_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d5') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d5_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d5_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
         </div>
       </div>
 
@@ -137,6 +157,10 @@
         </div>
         <div class="subjects">
           <div class="block" id="d6_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d6') | keyvalue" (click)="openSubject(subject.value)">
+            <p id="d6_{{ setSubjectId(subject.key) }}_title"></p>
+            <p id="d6_{{ setSubjectId(subject.key) }}_room"></p>
+          </div>
+          <div class="block" id="d6_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d6') | keyvalue" (click)="openSubject(subject.value)">
             <p id="d6_{{ setSubjectId(subject.key) }}_title"></p>
             <p id="d6_{{ setSubjectId(subject.key) }}_room"></p>
           </div>

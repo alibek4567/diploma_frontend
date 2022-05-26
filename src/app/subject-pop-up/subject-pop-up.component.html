@@ -5,10 +5,11 @@
 <p>Start time: {{ startTime }}</p> -->
 <div class="contentHolder">
     <div class="subject" *ngFor="let subject of subjects">
-        <h2>Subject: {{ subject.subject }}</h2>
-        <p>Type: {{ subject.lesson_type }}</p>
+        <h2 *ngIf="subject.subject">Subject: {{ subject.subject }}</h2>
+        <h2 *ngIf="subject.reason">Title: {{ subject.reason }}</h2>
+        <p>Type: {{ subject.lesson_type || 'booking' }}</p>
         <p>Location: {{ subject.room }}</p>
-        <P>Tutor: {{ subject.tutor }}</P>
+        <P *ngIf="subject.tutor">Tutor: {{ subject.tutor }}</P>
         <p>Time: {{ subject.start_time }}-{{ subject.end_time}}</p>
   </div>
 </div>

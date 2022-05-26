@@ -7,9 +7,19 @@ import { Component, OnInit } from '@angular/core';
 })
 export class GraphicMapComponent implements OnInit {
 
+  floor: number = 1
+
   constructor() {
     
-   }
+  }
+
+  setUpperFloor() {
+    this.floor++
+  }
+
+  setLowerFloor() {
+    this.floor--
+  }
 
   ngOnInit(): void { }
 
