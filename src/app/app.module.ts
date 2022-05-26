@@ -24,6 +24,7 @@ import { InteractionType, IPublicClientApplication, PublicClientApplication } fr
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatDialogModule } from '@angular/material/dialog';
+import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
 
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
@@ -32,6 +33,7 @@ import { GraphicMapComponent } from './graphic-map/graphic-map.component';
 import { AdminBoardComponent } from './admin-board/admin-board.component';
 import { AdminHistoryComponent } from './admin-history/admin-history.component';
 import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admin-confirmed-requests.component';
+import { HomePageComponent } from './home-page/home-page.component';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -66,6 +68,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     AdminBoardComponent,
     AdminHistoryComponent,
     AdminConfirmedRequestsComponent,
+    HomePageComponent,
   ],
   imports: [
     BrowserModule,
@@ -83,6 +86,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatTabsModule,
     MatButtonToggleModule,
     MatCheckboxModule,
+    MatProgressSpinnerModule,
     SwiperModule,
     HttpClientModule,
     MsalModule,

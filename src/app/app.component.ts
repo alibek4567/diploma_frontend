@@ -4,6 +4,7 @@ import { TranslateService } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { ApiCallerService } from './api-caller.service';
 import { HttpClient } from '@angular/common/http';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-root',
@@ -28,12 +29,12 @@ export class AppComponent implements OnInit{
   department: any
   profileInfo: any
   name = sessionStorage.getItem('username')
-
   language: string | null
 
   constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
     private msalService: MsalService,
-    public httpClient: HttpClient) {    
+    public httpClient: HttpClient,
+    public router: Router) {    
     translate.setDefaultLang("en")
 
     //translate.use(sessionStorage.getItem('language') || 'en');
@@ -58,7 +59,7 @@ export class AppComponent implements OnInit{
   }
 
   ngOnInit(): void {
-    this.msalService.instance.handleRedirectPromise().then(
+    this.msalService.instance.handleRedirectPromise().then( 
       res => {
         if(res != null && res.account != null){
           this.msalService.instance.setActiveAccount(res.account)
@@ -88,7 +89,7 @@ export class AppComponent implements OnInit{
   }
 
   callProfile() {
-    this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe( res => {
+    this.httpClient.get("https://graph.microsoft.com/beta/me/profile").subscribe(res => {
       this.apiResponse = JSON.stringify(res)
       this.profileInfo = res
       this.department = this.profileInfo.positions[0].detail.company.department

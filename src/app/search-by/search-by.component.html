@@ -1,6 +1,6 @@
 <div class="outer">
-  <div *ngIf="cabinet && searchStart" class="calendarHolder">
-    <mat-calendar [(selected)]="selectedDate"></mat-calendar>
+  <div *ngIf="searchStart" class="calendarHolder">
+    <mat-calendar *ngIf="cabinet" [(selected)]="selectedDate"></mat-calendar>
 
     <div class="legend">
       <p>Events</p>
@@ -16,7 +16,8 @@
   </div>
 
   <div class="content">
-    <p *ngIf="!searchStart" class="headText">Astana IT University</p>
+    <mat-spinner *ngIf="loading"></mat-spinner>
+    <p *ngIf="!loading && !searchStart" class="headText">Astana IT University</p>
 
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
       <div *ngIf="cabinet && searchStart" class="date">
@@ -27,8 +28,8 @@
           <mat-icon>chevron_right</mat-icon>
         </div>
       </div>
-      <div class="searchBar">
-        <mat-select [(ngModel)]="searchMode" disableOptionCentering>
+      <div *ngIf="!loading"class="searchBar">
+        <mat-select [(ngModel)]="searchMode" (selectionChange)="setArray()" disableOptionCentering>
           <mat-option value="by-group">
             {{ 'SEARCH.search-option.by-group' | translate }}
           </mat-option>
@@ -39,7 +40,12 @@
             {{ 'SEARCH.search-option.by-cabinet' | translate }}
           </mat-option>
         </mat-select>
-        <input type="text" [(ngModel)]="searchValue" placeholder="{{ 'SEARCH.search' | translate }} &hellip;">
+        <input type="text" #autoCompleteInput matInput [(ngModel)]="searchValue" (ngModelChange)="filter()" placeholder="{{ 'SEARCH.search' | translate }} &hellip;" [matAutocomplete]="auto">
+        <mat-autocomplete #auto="matAutocomplete">
+          <mat-option *ngFor="let item of searchedArray" [value]="item['name']">
+              {{item['name']}}
+          </mat-option>
+      </mat-autocomplete>
         <button type="submit" mat-icon-button (click)="setSearch()">
           <mat-icon>search</mat-icon>
         </button>

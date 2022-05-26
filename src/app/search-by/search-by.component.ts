@@ -1,10 +1,12 @@
-import { Component, OnInit, Renderer2 } from '@angular/core';
+import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
 import { ApiCallerService } from '../api-caller.service';
 import { MsalService } from '@azure/msal-angular';
 import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog'
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
+import { ItemsLoaderService } from '../items-loader.service';
+import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 
 @Component({
   selector: 'app-search-by',
@@ -13,6 +15,10 @@ import { Subject } from '../subject'
 })
 
 export class SearchByComponent implements OnInit {
+
+  @ViewChild('autoCompleteInput', { read: MatAutocompleteTrigger }) autoComplete: MatAutocompleteTrigger;
+
+  loading = true
 
   // dates
   selectedDate: Date = new Date();
@@ -24,6 +30,8 @@ export class SearchByComponent implements OnInit {
   searchValue: string = ''
   searchResult: string = ''
   searchSuccess: boolean = false
+  itemsArray: any[]
+  searchedArray: any[]
 
   // search by cabinet
   cabinet: boolean = false
@@ -41,8 +49,17 @@ export class SearchByComponent implements OnInit {
   bookingSchedule = new Map<string, Map<string, Subject[]>>()
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, 
-    private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog) {
+    private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog,
+    public items: ItemsLoaderService) {
 
+    let interval = setInterval(() => {
+      if(items.loadedGroups && items.loadedRooms && items.loadedTeachers){
+        clearInterval(interval)
+        this.loading = false
+        this.searchedArray = items.groups 
+      }
+    }, 10);
+    
     // current Week Date
     let temp = getTodaysDate(+6).split(',')[1].trim()
     let date = temp.split('.')
@@ -65,16 +82,22 @@ export class SearchByComponent implements OnInit {
       switch(this.searchMode) { 
         case 'by-group': { 
           this.cabinet = false
+          this.itemsArray = this.items.groups
+          console.log(this.itemsArray);
           this.getSearchResult("/timetable/group/" + this.searchValue)
           break; 
         }
         case 'by-teacher': { 
           this.cabinet = false
+          this.itemsArray = this.items.teachers
+          console.log(this.itemsArray);
           this.getSearchResult("/timetable/tutor/" + this.searchValue)
           break; 
         }
         case 'by-cabinet': { 
           this.cabinet = true
+          this.itemsArray = this.items.rooms
+          console.log(this.itemsArray);
           this.getSearchResult("/timetable/room/" + this.searchValue)
           // Booking part to add
           this.getBookingData("/booking/room/" + this.searchValue)
@@ -86,6 +109,55 @@ export class SearchByComponent implements OnInit {
       } 
     }
   }  
+
+  setArray(){
+    switch(this.searchMode) { 
+      case 'by-group': {
+        this.searchValue = ''
+        this.searchedArray = [] 
+        this.itemsArray = this.items.groups
+        console.log(this.itemsArray);
+        break; 
+      }
+      case 'by-teacher': { 
+        this.searchValue = '' 
+        this.searchedArray = [] 
+        this.itemsArray = this.items.teachers
+        console.log(this.itemsArray);
+        break; 
+      }
+      case 'by-cabinet': { 
+        this.searchValue = '' 
+        this.searchedArray = [] 
+        this.itemsArray = this.items.rooms
+        console.log(this.itemsArray);
+        break; 
+     } 
+      default: { 
+         console.log("No Array")
+      } 
+    } 
+  }
+
+  // checkItemsLoader(){
+  //   i
+  // }
+
+  filter(){
+    if(this.searchValue.length==0){
+      this.searchedArray = []
+    }
+    else{
+      this.searchedArray = this.itemsArray.filter((data: any) => {
+        return data.name.toLowerCase().includes(this.searchValue.toLowerCase());
+      })
+      console.log(this.searchValue);
+    }
+  }
+
+  setValue(value: string){
+    this.searchValue = value
+  }
 
   getSearchResult(request: string) {
     this.weekSchedule.clear()

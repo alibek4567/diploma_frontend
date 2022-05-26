@@ -1,0 +1,305 @@
+.outer {
+    width: 100%;
+    min-height: 100%;
+    display: flex;
+    background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
+    justify-content: center;
+
+    mat-spinner{
+        margin: auto 0;
+    }
+  }
+  
+  .calendarHolder {
+    width: 25%;
+    min-height: 100%;
+    display: flex;
+    flex-direction: column;
+    background: transparent;
+  
+    .legend {
+      margin-top: 2rem;
+      margin-left: 1rem;
+      border-radius: 10px;
+      background-color: white;
+      padding: 1rem;
+  
+      p {
+        font-weight: 600;
+        padding: 0;
+        margin: 0 0 1rem 0;
+      }
+  
+      .item{
+        background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
+          color: white;
+          padding: 0.5rem;
+          border-radius: 0.5rem;
+          width: calc(100% - 1rem);
+          display: flex;
+          flex-direction: column;
+          align-items: flex-start;
+          margin-bottom: 0.5rem;
+
+          p{
+            font-size: 0.9rem;
+            margin: 0 0 0.5rem 0;
+          }
+      }
+    }
+  }
+    
+  .content {
+    margin-top: 2rem;
+    flex-grow: 2;
+    min-height: 100%;
+    width: 75%;
+    display: flex;
+    align-items: center;
+    flex-direction: column;
+    font-size: 1rem;
+    background-color: #485461;
+    background: transparent
+  }
+  
+  .headText {
+    margin-top: 7rem;
+    color: white;
+    font-size: 4rem;
+  }
+  
+  .actionHolder {
+    width: 95%;
+    display: flex;
+    align-items: center;
+  }
+  
+  .date {
+    margin-right: auto;
+    color: white;
+    display: flex;
+    align-items: flex-end;
+    justify-content: flex-start;
+  
+    .picker {
+      margin-left: 2rem;
+      margin-bottom: 0.5rem;
+      display: flex;
+      align-items: center;
+  
+      .spacer {
+        width: 1.5rem;
+      }
+  
+      mat-icon {
+        transform: scale(1.5);
+      }
+    }
+  
+    h1 {
+      padding: 0;
+      margin: 0;
+    }
+  }
+    
+  .searchBar {
+    padding: 0.7rem;
+    border-radius: 10px;
+    margin: 3rem 0;
+    width: 40%;
+    display: flex;
+    align-items: center;
+    background-color: white;
+    
+    select {
+      margin-left: 1rem;
+      border: none;
+      font-size: 1.1rem;
+      background-color: white;
+    }
+    
+    input {
+      width: 70%;
+      margin-left: 1rem;
+      padding: 0.5rem 0.5rem 0.5rem 1rem;
+      background-color: white;
+      font-size: 1.1rem;
+      border: none;
+      border-left: 2px solid black;
+    }
+    
+    input:focus, select:focus {
+      outline: none;
+    }
+    
+    button {
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      border: none;
+      padding: 0.5rem;
+      background-color: #457CCE;
+      border-radius: 10px;
+      color: white;
+      margin-left: auto;
+      cursor: pointer;
+    }
+  }
+  
+  .export {
+    margin-left: 2rem;
+    height: fit-content;
+    border-radius: 10px;
+    display: flex;
+    align-items: center;
+    padding: 0.4rem 1rem;
+    border: none;
+    background-color: #457CCE;
+    color: white;
+  
+    p {
+      font-size: 1rem;
+    }
+  }
+    
+  h2 {
+    margin: 0;
+    padding: 0;
+  }
+    
+  .grid-container {
+    width: 95%;
+    margin: 0 0 2rem 0;
+    display: grid;
+    gap: 0;
+    grid-template-columns: 0.1fr repeat(6, 1fr);
+  }
+  
+  .grid-container:first-child {
+    border-top-left-radius: 10px;
+    background-color: black !important;
+  }
+    
+  .grid-item {
+    display: flex;
+    flex-direction: column;
+    width: 100%;
+    position: relative;
+  }
+    
+  .day {
+    height: 3rem;
+    background-color: transparent;
+    border: none;
+    font-size: 1rem;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+  
+    mat-icon {
+      color: white;
+    }
+  
+    p {
+      text-align: center;
+      font-weight: 600;
+      color: white;
+      padding: 0;
+      margin: 0;
+    }
+  }
+    
+  .column {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  
+    .empty {
+      height: 2.5rem;
+      background-color: white;
+      border: 0.05rem solid #eeeeee;
+    }
+  
+    .time {
+      height: 2.5rem;
+      background-color: white;
+      color: black;
+      display: flex;
+      flex-direction: column;
+      justify-content: flex-start; //space-evenly;
+      text-align: center;
+      border: 0.025rem solid #eeeeee;
+      padding: 0 0.5rem;
+      
+      p {
+        padding: 0;
+        margin: 0;
+      }
+    }
+  
+    .bold {
+      font-size: 1rem;
+      //border-top: 0.05rem solid black;
+    }
+  
+    .regular {
+      font-size: 0.95rem;
+      color: darkgray;
+      //border-top: 0.05rem solid lightgray;
+    }
+  }
+  
+  .subjects {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+  
+    position: absolute;
+    z-index: 5;
+    top: 3.1rem;
+  
+    .block {
+      display: flex;
+      flex-direction: column;
+      visibility: hidden;
+    
+      position: absolute;
+    
+      width: 98%;
+      max-width: 100%;
+    
+      background-color: #457CCE;
+      color: white;
+      border-left: 0.2rem solid lightgreen;
+      z-index: 5;
+      
+      h2 {
+        font-size: 1rem;
+        padding: 0;
+        margin: 0 0 0.2rem 0;
+    
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap
+      }
+      
+      p {
+        width: 100%;
+        margin: 0 0 0.5rem 0;
+        padding: 0;
+        font-size: 0.9rem;
+        font-weight: 200;
+        padding-left: 0.1rem;
+        color: white;
+    
+        text-overflow: ellipsis;
+        overflow: hidden;
+        white-space: nowrap
+      }
+    }
+  }
+  
+  .searchField {
+    color: white;
+    margin-bottom: 2rem;
+  }
