@@ -1,9 +1,19 @@
+<mat-spinner *ngIf="loading"></mat-spinner>
 <div class="outer">
-  <div *ngIf="searchStart" class="calendarHolder">
+  <div *ngIf="cabinet && searchStart" class="calendarHolder">
     <mat-calendar *ngIf="cabinet" [(selected)]="selectedDate"></mat-calendar>
 
     <div class="legend">
-      <p>Events</p>
+      <p>Legend:</p>
+      <div class="legendItem">
+        <div class="circle" id="blue"></div>
+        <p>One Lesson</p>
+      </div>
+      <div class="legendItem">
+        <div class="circle" id="myGradient"></div>
+        <p>Several Lessons</p>
+      </div>
+      <p style="margin-top: 1rem">Booking:</p>
       <div class="legendItem">
         <div class="circle" id="green"></div>
         <p>Approved</p>
@@ -16,17 +26,30 @@
   </div>
 
   <div class="content">
-    <mat-spinner *ngIf="loading"></mat-spinner>
+    
     <p *ngIf="!loading && !searchStart" class="headText">Astana IT University</p>
 
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
+
+      <div *ngIf="!cabinet && searchStart" class="legend nonCabinetLegend">
+        <p>Legend:</p>
+        <div class="legendItem">
+          <div class="circle" id="blue"></div>
+          <p>One Lesson</p>
+        </div>
+        <div class="legendItem">
+          <div class="circle" id="myGradient"></div>
+          <p>Several Lessons</p>
+        </div>
+      </div>
+
       <div *ngIf="cabinet && searchStart" class="date">
         <h1>{{ formatDate(selectedDate) }}</h1>
-        <div class="picker" *ngIf="cabinet">
+        <!-- <div class="picker" *ngIf="cabinet">
           <mat-icon>chevron_left</mat-icon>
             <div class="spacer"></div>
           <mat-icon>chevron_right</mat-icon>
-        </div>
+        </div> -->
       </div>
       <div *ngIf="!loading"class="searchBar">
         <mat-select [(ngModel)]="searchMode" (selectionChange)="setArray()" disableOptionCentering>
@@ -50,10 +73,9 @@
           <mat-icon>search</mat-icon>
         </button>
       </div>
-
-      <button *ngIf="searchStart" class="export" mat-icon-button>
+      <!-- <button *ngIf="searchStart" class="export" mat-icon-button>
         <p>Export JPEG</p>
-      </button>
+      </button> -->
     </div>
 
     <h2 class="searchField">{{ searchResult }}</h2>
@@ -67,17 +89,17 @@
 
       <!-- D1 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d1')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d1')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d1_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d1') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d1_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d1_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d1_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d1_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d1') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d1_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d1_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d1_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>
@@ -85,17 +107,17 @@
 
       <!-- D2 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d2')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d2')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d2_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d2') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d2_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d2_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d2_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d2_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d2') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d2_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d2_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d2_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>
@@ -103,17 +125,17 @@
 
       <!-- D3 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d3')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d3')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d3_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d3') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d3_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d3_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d3_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d3_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d3') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d3_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d3_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d3_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>
@@ -121,17 +143,17 @@
 
       <!-- D4 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d4')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d4')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d4_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d4') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d4_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d4_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d4_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d4_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d4') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d4_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d4_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d4_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>
@@ -139,17 +161,17 @@
 
       <!-- D5 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d5')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d5')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d5_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d5') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d5_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d5_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d5_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d5_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d5') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d5_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d5_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d5_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>
@@ -157,17 +179,17 @@
 
       <!-- D6 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br><span *ngIf="searchMode == 'by-cabinet'">{{ formatDayAndWeek(weekDates.get('d6')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && cabinet">{{ formatDayAndWeek(weekDates.get('d6')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(hour.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let hour of timeArray"></div>
         </div>
         <div class="subjects">
           <div class="block" id="d6_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.weekSchedule.get('d6') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d6_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d6_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d6_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
           <div class="block" id="d6_{{ setSubjectId(subject.key) }}" *ngFor="let subject of this.bookingSchedule.get('d6') | keyvalue" (click)="openSubject(subject.value)">
-            <p id="d6_{{ setSubjectId(subject.key) }}_title"></p>
+            <h2 id="d6_{{ setSubjectId(subject.key) }}_title"></h2>
             <p id="d6_{{ setSubjectId(subject.key) }}_room"></p>
           </div>
         </div>

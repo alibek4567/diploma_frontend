@@ -83,24 +83,36 @@ export class SearchByComponent implements OnInit {
         case 'by-group': { 
           this.cabinet = false
           this.itemsArray = this.items.groups
-          console.log(this.itemsArray);
+          //console.log(this.itemsArray);
           this.getSearchResult("/timetable/group/" + this.searchValue)
           break; 
         }
         case 'by-teacher': { 
           this.cabinet = false
           this.itemsArray = this.items.teachers
-          console.log(this.itemsArray);
-          this.getSearchResult("/timetable/tutor/" + this.searchValue)
+          // console.log(this.itemsArray);
+          let requestId = 0
+          for (let i of this.itemsArray) {
+            if (i.name == this.searchValue) {
+              requestId = i.id
+            }
+          }
+          this.getSearchResult("/timetable/tutor/" + requestId)
           break; 
         }
         case 'by-cabinet': { 
           this.cabinet = true
           this.itemsArray = this.items.rooms
-          console.log(this.itemsArray);
-          this.getSearchResult("/timetable/room/" + this.searchValue)
+          //console.log(this.itemsArray);
+          let requestId = 0
+          for (let i of this.itemsArray) {
+            if (i.name == this.searchValue) {
+              requestId = i.id
+            }
+          }
+          this.getSearchResult("/timetable/room/" + requestId)
           // Booking part to add
-          this.getBookingData("/booking/room/" + this.searchValue)
+          this.getBookingData("/booking/room/" + requestId)
           break; 
        } 
         default: { 
@@ -138,10 +150,6 @@ export class SearchByComponent implements OnInit {
       } 
     } 
   }
-
-  // checkItemsLoader(){
-  //   i
-  // }
 
   filter(){
     if(this.searchValue.length==0){
@@ -217,6 +225,13 @@ export class SearchByComponent implements OnInit {
       console.log(error) 
       //this.searchResult = 'No lessons schedule'
       this.timeArray = [ ]
+
+      if (error.status = 404) {
+        this.searchResult = 'No Records'
+      }
+      if (error.status = 400 || error.status == 401) {
+        this.searchResult = 'No Records'
+      }
     })
   }
 
@@ -273,9 +288,13 @@ async setBooking(day: string, daySchedule: any) {
   if (daySchedule != null) {
     daySchedule.forEach(async (subjects: Subject[]) => {
 
+      console.log(subjects[0].id)
+
     var subjectStartTime = subjects[0].start_time.split(':');
     var hours = parseInt(subjectStartTime[0])
     var minutes = parseInt(subjectStartTime[1])
+
+    var confirmed = subjects[0].confirmed
 
     //console.log(subjects[0].start_time, subjects[0].end_time)
 
@@ -294,25 +313,18 @@ async setBooking(day: string, daySchedule: any) {
       el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
       el.style.visibility = "visible"
 
+      if (confirmed) {
+        el.style.background = "#15BE4C"
+        //el.style.color = "#EABC04"
+      } else {
+        el.style.background = "#EABC04"
+        //el.style.color = "#15BE4C"
+      }
+
       const el_title = (<HTMLElement>document.getElementById(id + "_title"));
       const el_room = (<HTMLElement>document.getElementById(id + "_room"));
-      el_title.textContent = ''
-      el_room.textContent = ''
-
-      let title: string = ''
-      let room: string = ''
-      for (let subject of subjects) {
-        title += subject.reason + ' / '
-        room += subject.room + ' / '
-      }
-
-      if (subjects.length > 1) {
-        el.style.background = 'linear-gradient(90deg, rgb(69, 124, 206), rgb(165, 52, 214))';
-      }
-
-      el_title.textContent = title.slice(0, -3);
-      el_room.textContent = room.slice(0, -3);
-
+      el_title.textContent = subjects[0].reason
+      el_room.textContent = subjects[0].room
     })
   })
 } 
@@ -394,6 +406,11 @@ async setBooking(day: string, daySchedule: any) {
           await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
           //console.log("d" + i, this.bookingSchedule.get("d" + i))
         }
+
+        for (let i = 1; i < 7; i++) {
+          await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
+          //console.log("d" + i, this.bookingSchedule.get("d" + i))
+        }
       });
 
     }, error => {
@@ -413,7 +430,8 @@ async setBooking(day: string, daySchedule: any) {
   openSubject(subject: Subject[]) {
     this.dialogRef.open(SubjectPopUpComponent, {
       data: {
-        object: subject
+        object: subject,
+        panelClass: 'my-custom-dialog-class'
       }
     })
   }
