@@ -4,18 +4,18 @@
           <h2>{{ 'ADMIN-BOARD.confirmedBookings' | translate }}</h2>
             <input type="text" [(ngModel)]="request" placeholder="Search by Room" (ngModelChange)="filter()">
           </div>
-        
+
             <div class="tableHolder">
               <table>
                 <tr>
                   <th>
-                    {{ 'ADMIN-BOARD.cabinet' | translate }} 
+                    {{ 'ADMIN-BOARD.cabinet' | translate }}
                   </th>
                   <th>
-                    {{ 'ADMIN-BOARD.sender' | translate }} 
+                    {{ 'ADMIN-BOARD.sender' | translate }}
                   </th>
                   <th>
-                    {{ 'ADMIN-BOARD.senderInfo' | translate }} 
+                    {{ 'ADMIN-BOARD.senderInfo' | translate }}
                   </th>
                   <th>
                     {{ 'ADMIN-BOARD.reason' | translate }}
@@ -35,29 +35,29 @@
                 </tr>
                 <tr *ngFor="let item of searchedRequests">
                   <td>
-                    <b>{{item.room}}</b> 
+                    <b>{{item.room}}</b>
                   </td>
                   <td>
-                    <b>{{item.reserver}}</b> 
+                    <b>{{item.reserver}}</b>
                   </td>
                   <td>
-                    <b>{{item.reserver_info}}</b> 
+                    <b>{{item.reserver_info}}</b>
                   </td>
                   <td>
-                    <b>{{item.reason}}</b> 
+                    <b>{{item.reason}}</b>
                   </td>
                   <td>
-                    <b>{{formatDate(item.date)}}</b> 
+                    <b>{{formatDate(item.date)}}</b>
                   </td>
                   <td>
-                    <b>{{item.start_time}}</b> 
+                    <b>{{item.start_time}}</b>
                   </td>
                   <td>
-                    <b>{{item.end_time}}</b> 
+                    <b>{{item.end_time}}</b>
                   </td>
                   <td>
                       <div class="center">
-                        <button id="reject" (click)="reject(item.id, item.reserver_info)">{{ 'ADMIN-BOARD.delete' | translate }}</button>
+                        <button id="reject" (click)="reject(item.id, item.reserver_email)">Delete</button>
                       </div>
                   </td>
                 </tr>
@@ -65,5 +65,3 @@
             </div>
     </div>
 </div>
-
-

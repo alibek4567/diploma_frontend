@@ -1,4 +1,4 @@
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiCallerService } from '../api-caller.service';
@@ -25,7 +25,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     response.subscribe(data => {
       this.requests = JSON.parse(JSON.stringify(data)).payload
       this.searchedRequests = this.requests
-      console.log(this.requests)
+      console.log(this.searchedRequests)
     }, error => {
     })
   }
@@ -45,6 +45,10 @@ export class AdminConfirmedRequestsComponent implements OnInit {
 
   reject(data: any, email: string){
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
+    const message = response.subscribe(data =>{
+    },error =>{
+      console.log(error);
+    })
     
     const sendMail = {
       message: {
@@ -64,9 +68,20 @@ export class AdminConfirmedRequestsComponent implements OnInit {
       saveToSentItems: 'true'
     };
 
-    this.api.sendPostRequest("https://graph.microsoft.com/v1.0/me/sendMail", sendMail).subscribe(res => {
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        })
+      };
+
+    this.httpClient.post("https://graph.microsoft.com/beta/me/sendMail", sendMail, httpOptions).subscribe(res => {
       const message = JSON.stringify(res)
       console.log(message);
     })
+    this.router.navigate(['/admin-confirmed'])
+    .then(() => {
+      window.location.reload();
+    });
   }
 }

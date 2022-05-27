@@ -45,7 +45,11 @@ export class AdminBoardComponent implements OnInit {
 
   accept(data: any){
     const response = this.api.sendPostRequestWithAuth('/booking/confirm/'+data, '')
-    this.router.navigate(['/adminboard'])
+    const message = response.subscribe(data =>{
+    },error =>{
+      console.log(error);
+    })
+    this.router.navigate(['/admin-board'])
     .then(() => {
       window.location.reload();
     });
@@ -53,7 +57,11 @@ export class AdminBoardComponent implements OnInit {
 
   reject(data: any){
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    this.router.navigate(['/adminboard'])
+    const message = response.subscribe(data =>{
+    },error =>{
+      console.log(error);
+    })
+    this.router.navigate(['/admin-board'])
     .then(() => {
       window.location.reload();
     });
