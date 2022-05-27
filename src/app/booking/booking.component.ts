@@ -26,7 +26,8 @@ export class BookingComponent implements OnInit {
   // By Date = set Date + Time
   // By Room = set Date + Room
 
-  events: any
+  events: any[] = []
+  timetables: any[] = []
   rooms: any
 
   searchedRooms: any
@@ -70,11 +71,17 @@ export class BookingComponent implements OnInit {
   }
 
   cabinetByRoom() {
-    var response = this.api.sendGetRequest("/booking/room/"+this.byRoom.cabinet_id)
+    var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
     response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
-      if(data.payload['d'+this.date.getDay()] != null){
-        this.events = data.payload['d'+this.date.getDay()]
+      if(data.payload != null){
+        for(let item of data.payload){
+          let roomDate = item.date
+          if(roomDate.split('T')[0] == this.dateSplit(this.byRoom.date)){
+            this.events.push(item)
+            this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
+          }
+        }
         this.message = "success"
         console.log(this.events);
       }
@@ -89,8 +96,14 @@ export class BookingComponent implements OnInit {
   filter(){
     this.searchedRooms = this.items.rooms.filter((data: any) => {
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
-    })
-    console.log(this.byRoom.cabinet);
+    })  
+  }
+
+  getData(){
+    this.events = []
+    console.log(this.events);
+    this.cabinetByRoom()
+    this.getTimetableByDate()
   }
 
   cabinetByDate(){
@@ -112,8 +125,23 @@ export class BookingComponent implements OnInit {
     else{
       this.message = 'empty'
       this.rooms = null
-      console.log("test")
     }
+  }
+
+  getTimetableByDate(){
+    const response = this.api.sendGetRequest("/timetable/room/" + this.byRoom.cabinet_id)
+    response.subscribe(data => {
+      const schedule = JSON.parse(JSON.stringify(data))
+      if(schedule.payload['d'+this.byRoom.date.getDay()] != undefined){
+        for(let item of schedule.payload['d'+this.byRoom.date.getDay()]){
+          this.events.push({start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor})
+          this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
+        }
+        this.message = 'success'
+      }
+      console.log(this.events);
+    }, error => {
+    })
   }
 
   setSelect(event: any) {
@@ -141,6 +169,12 @@ export class BookingComponent implements OnInit {
     return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
   }
 
+  dateSplit(date: Date){
+    let date2 = date.toLocaleString().split(',')[0]
+    let date3 = date2.split('.')
+    return date3[2]+'-'+date3[1]+'-'+date3[0]
+  }
+
   show(select: string){
     if(select == 'Date'){
       console.log(this.byDate);
@@ -150,8 +184,14 @@ export class BookingComponent implements OnInit {
     }
   }
 
-  setId(id: string){
-    this.byRoom.cabinet_id = id
+  showEvent(event: any){
+    console.log(event);
+  }
+
+  setValues(event: any){
+    this.byRoom.cabinet_id = event.option.value.split('-')[1]
+    this.byRoom.cabinet = event.option.value.split('-')[0]
+    console.log(this.byRoom.cabinet_id, this.byRoom.cabinet);
   }
 
   send(){
@@ -181,7 +221,7 @@ export class BookingComponent implements OnInit {
 
     var response = this.api.sendPostRequestWithAuth("/booking/create", values)
     response.subscribe(data => {
-      this.router.navigate([''])
+      this.router.navigate(['/booking'])
       .then(() => {
         window.location.reload();
       });

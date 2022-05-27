@@ -9,7 +9,6 @@ export class ApiCallerService {
   constructor(public http: HttpClient) { }
 
   addr = "http://localhost:4003"
-  jwt = sessionStorage.getItem('token')
 
   sendGetRequest(url: string) {
     const httpOptions = {
@@ -19,6 +18,19 @@ export class ApiCallerService {
         })
       };
 
+    return this.http.get(this.addr+url, httpOptions)
+  }
+
+  sendGetRequestWithAuth(url: string) {
+    console.log(sessionStorage.getItem('token'));
+    
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
+        })
+      };
     return this.http.get(this.addr+url, httpOptions)
   }
   
@@ -38,7 +50,7 @@ export class ApiCallerService {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': this.jwt || ''
+        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
         })
       };
     return this.http.post(this.addr+url, data, httpOptions)
@@ -49,7 +61,7 @@ export class ApiCallerService {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': this.jwt || ''
+        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
         })
       };
     return this.http.patch(this.addr+url, httpOptions)

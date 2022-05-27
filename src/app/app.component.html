@@ -15,13 +15,14 @@
     <div class="right">
       <p>{{username}}</p>
       <button *ngIf="!isLoggedIn()" (click)="login()" id="login">{{ 'HEADER.sign-in' | translate }}</button>
+      <button *ngIf="isLoggedIn()" (click)="logout()" id="login">Log Out</button>
     </div>
   </mat-toolbar>
   
   <mat-sidenav-container>
     <mat-sidenav #sidenav mode="over">
         <div class="vertical">
-          <div class="item" routerLink="" routerDirection="root">
+          <div *ngIf="isLoggedIn()" class="item" routerLink="" routerDirection="root">
             <mat-icon>home</mat-icon>
             <p>{{ 'SIDE-MENU.home-tab' | translate }}</p>
           </div>
@@ -31,24 +32,29 @@
             <p>{{ 'SIDE-MENU.search-tab' | translate }}</p>
           </div>
     
-          <div class="item" routerLink="booking" routerDirection="root">
+          <div *ngIf="isLoggedIn()" class="item" routerLink="booking" routerDirection="root">
             <mat-icon>event</mat-icon>
             <p>{{ 'SIDE-MENU.booking-tab' | translate }}</p>
           </div>
     
-          <div class="item" routerLink="graph-map" routerDirection="root">
+          <!-- <div  class="item" routerLink="graph-map" routerDirection="root">
             <mat-icon>map</mat-icon>
             <p>{{ 'SIDE-MENU.graph-map-tab' | translate }}</p>
-          </div>
+          </div> -->
 
-          <div class="item" *ngIf="isLoggedIn()" routerLink="admin-board" routerDirection="root">
+          <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-board" routerDirection="root">
             <mat-icon>developer_board</mat-icon>
             <p>Adminboard</p>
           </div>
-    
-          <div class="item" id="logout" *ngIf="isLoggedIn()" (click)="logout()">
-            <mat-icon>exit_to_app</mat-icon>
-            <p>Log Out</p>
+
+          <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-history" routerDirection="root">
+            <mat-icon>history</mat-icon>
+            <p>Booking History</p>
+          </div>
+
+          <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-confirmed" routerDirection="root">
+            <mat-icon>check_box</mat-icon>
+            <p>Confirmed Bookings</p>
           </div>
         </div>
       </mat-sidenav>

@@ -12,27 +12,25 @@
             </div>
 
             <div *ngIf="select=='Room'">
-                <div class="dateHolder">
-                    <div class="inputHolder">
-                        <p>Cabinet</p>
-                        <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" type="text" placeholder="C1.113" [matAutocomplete]="auto">
-                        <mat-autocomplete #auto="matAutocomplete">
-                            <mat-option *ngFor="let room of searchedRooms" (onSelectionChange)="cabinetByRoom(); setId(room['id'])" [value]="room['name']">
-                                {{room['name']}}
-                            </mat-option>
-                        </mat-autocomplete>
-                    </div>
-        
-                    <div class="inputHolder" >
-                        <p>Choose a date</p>
-                        <input (dateChange)="cabinetByRoom()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true">
+                <div class="inputHolder">
+                    <p>Cabinet</p>
+                    <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" type="text" placeholder="C1.113" [matAutocomplete]="auto">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValues($event); getData()">
+                        <mat-option *ngFor="let room of searchedRooms" [value]="room['name']+'-'+room['id']">
+                            {{room['name']}}
+                        </mat-option>
+                    </mat-autocomplete>
+                </div>
+
+                <div class="inputHolder" >
+                    <p>Choose a date</p>
+                    <div>
+                        <input (dateChange)="getData()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </div>
                 </div>
-    
-                <div class="spacer"></div>
-    
+        
                 <div class="dateHolder">
                     <div class="inputHolder" style="width: 45% !important;">
                         <p>Start Time</p>
@@ -45,8 +43,8 @@
                     </div>
                 </div>
     
-                <div class="inputHolder" >
-                    <p>Comment</p>
+                <div class="inputHolder" style="width: 100%;">
+                    <p>Reason</p>
                     <textarea [(ngModel)]="byRoom.comment" type="text" placeholder="Enter a comment"></textarea>
                 </div>
             </div>
@@ -84,8 +82,8 @@
                     </mat-select>
                 </div> -->
     
-                <div class="inputHolder" >
-                    <p>Comment</p>
+                <div class="inputHolder" style="width: 100%">
+                    <p>Reason</p>
                     <textarea [(ngModel)]="byDate.comment" type="text" placeholder="Enter a comment"></textarea>
                 </div>
             </div>
@@ -110,7 +108,7 @@
                     </div>
                 </div>
                 <div *ngIf="message == 'empty'">
-                    <h3>No Available Rooms</h3>
+                    <h3>No Events</h3>
                 </div>
             </div>
 
@@ -120,6 +118,7 @@
                     <div class="itemHolder" *ngFor="let item of rooms">
                         <div class="right">
                             <p class="subject">{{item.name}} | {{item.type}}</p>
+                            <p class="subject">Seats: {{item.seats}}</p>
                         </div>
                         <div class="check">
                             <section class="example-section">
@@ -129,7 +128,7 @@
                     </div>
                 </div>
                 <div *ngIf="message == 'empty'">
-                    <h3>No Events</h3>
+                    <h3>No Available Rooms</h3>
                 </div>
             </div>
         </div>

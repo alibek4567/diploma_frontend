@@ -30,11 +30,25 @@ export class AppComponent implements OnInit{
   profileInfo: any
   name = sessionStorage.getItem('username')
   language: string | null
+  isAdmin = false
 
   constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
     private msalService: MsalService,
     public httpClient: HttpClient,
     public router: Router) {    
+
+    if(this.isLoggedIn()){
+      console.log(sessionStorage.getItem('id'));
+      const response = api.sendGetRequestWithAuth('/isAdmin/'+sessionStorage.getItem('id'))
+      response.subscribe(data =>{
+        const r = JSON.parse(JSON.stringify(data))
+        console.log(r.payload);
+        if(r.payload != null){
+          this.isAdmin = true
+        }
+      }, error => {
+      })
+    }  
     translate.setDefaultLang("en")
 
     //translate.use(sessionStorage.getItem('language') || 'en');

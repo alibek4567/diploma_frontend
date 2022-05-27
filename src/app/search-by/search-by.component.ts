@@ -151,7 +151,6 @@ export class SearchByComponent implements OnInit {
       this.searchedArray = this.itemsArray.filter((data: any) => {
         return data.name.toLowerCase().includes(this.searchValue.toLowerCase());
       })
-      console.log(this.searchValue);
     }
   }
 

@@ -2,6 +2,7 @@ import { HttpClient } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiCallerService } from '../api-caller.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-admin-board',
@@ -14,9 +15,11 @@ export class AdminBoardComponent implements OnInit {
   searchedRequests: any
   room: string
 
-  constructor(public api: ApiCallerService, public httpClient: HttpClient, public router: Router) {
-    console.log(api.jwt);
-    
+  constructor(public api: ApiCallerService, public httpClient: HttpClient, public router: Router, public app: AppComponent) {
+    if(!app.isLoggedIn() && !app.isAdmin){
+      router.navigateByUrl('')
+    }
+        
     var response = api.sendGetRequest("/booking/requests")
     response.subscribe(data => {
       this.requests = JSON.parse(JSON.stringify(data)).payload
@@ -42,10 +45,6 @@ export class AdminBoardComponent implements OnInit {
 
   accept(data: any){
     const response = this.api.sendPostRequestWithAuth('/booking/confirm/'+data, '')
-    response.subscribe(data => {
-      console.log(this.api.jwt)
-    }, error => {
-    })
     this.router.navigate(['/adminboard'])
     .then(() => {
       window.location.reload();
@@ -54,10 +53,6 @@ export class AdminBoardComponent implements OnInit {
 
   reject(data: any){
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    response.subscribe(data => {
-      console.log(this.api.jwt)
-    }, error => {
-    })
     this.router.navigate(['/adminboard'])
     .then(() => {
       window.location.reload();

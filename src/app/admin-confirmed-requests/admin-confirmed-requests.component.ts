@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
 import { ApiCallerService } from '../api-caller.service';
+import { AppComponent } from '../app.component';
 
 @Component({
   selector: 'app-admin-confirmed-requests',
@@ -14,7 +15,11 @@ export class AdminConfirmedRequestsComponent implements OnInit {
   requests: any
   searchedRequests: any
 
-  constructor(public api: ApiCallerService, public router: Router) { 
+  constructor(public api: ApiCallerService, public router: Router, public app: AppComponent) { 
+    if(!app.isLoggedIn() && !app.isAdmin){
+      router.navigateByUrl('')
+    }
+
     var response = api.sendGetRequest("/booking/confirm")
     response.subscribe(data => {
       this.requests = JSON.parse(JSON.stringify(data)).payload
@@ -39,10 +44,6 @@ export class AdminConfirmedRequestsComponent implements OnInit {
 
   reject(data: any){
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    response.subscribe(data => {
-      console.log(this.api.jwt)
-    }, error => {
-    })
     this.router.navigate(['/adminConfirmed'])
     .then(() => {
       window.location.reload();
