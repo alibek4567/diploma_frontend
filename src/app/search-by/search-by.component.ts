@@ -47,6 +47,9 @@ export class SearchByComponent implements OnInit {
   // schedule for cabinet consists also the bookings
   bookingOverall: Subject[]
   bookingSchedule = new Map<string, Map<string, Subject[]>>()
+
+  errorTimeTable: number = 0
+  errorBooking: number = 0
   
   constructor(private api: ApiCallerService, public renderer: Renderer2, 
     private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog,
@@ -70,7 +73,7 @@ export class SearchByComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  setSearch() {
+  async setSearch() {
     if (this.searchValue == '') {
       console.log(this.searchValue)
     } else {
@@ -101,6 +104,8 @@ export class SearchByComponent implements OnInit {
           break; 
         }
         case 'by-cabinet': { 
+          this.errorTimeTable = 0
+          this.errorBooking = 0
           this.cabinet = true
           this.itemsArray = this.items.rooms
           //console.log(this.itemsArray);
@@ -110,9 +115,8 @@ export class SearchByComponent implements OnInit {
               requestId = i.id
             }
           }
+          await this.getBookingData("/booking/room/" + requestId)
           this.getSearchResult("/timetable/room/" + requestId)
-          // Booking part to add
-          this.getBookingData("/booking/room/" + requestId)
           break; 
        } 
         default: { 
@@ -162,11 +166,11 @@ export class SearchByComponent implements OnInit {
     }
   }
 
-  setValue(value: string){
-    this.searchValue = value
-  }
+  // setValue(value: string){
+  //   this.searchValue = value
+  // }
 
-  getSearchResult(request: string) {
+  async getSearchResult(request: string) {
     this.weekSchedule.clear()
     //this.timeArray = []
      
@@ -218,6 +222,9 @@ export class SearchByComponent implements OnInit {
         for (let i = 1; i < 7; i++) {
           await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
         }
+        for (let i = 1; i < 7; i++) {
+          await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
+        }
       });
     }, error => { 
       this.searchSuccess = false
@@ -225,12 +232,14 @@ export class SearchByComponent implements OnInit {
       //this.searchResult = 'No lessons schedule'
       this.timeArray = [ ]
 
-      if (error.status = 404) {
+      if (error.status = 404 && !this.cabinet) {
         this.searchResult = 'No Records'
       }
-      if (error.status = 400 || error.status == 401) {
-        this.searchResult = 'No Records'
+      if ((error.status = 400 || error.status == 401) && !this.cabinet) {
+        this.searchResult = 'Incorrect field name'
       }
+
+      this.errorTimeTable = error.status
     })
   }
 
@@ -283,78 +292,29 @@ export class SearchByComponent implements OnInit {
   } 
 }
 
-async setBooking(day: string, daySchedule: any) {
-  if (daySchedule != null) {
-    daySchedule.forEach(async (subjects: Subject[]) => {
-
-      console.log(subjects[0].id)
-
-    var subjectStartTime = subjects[0].start_time.split(':');
-    var hours = parseInt(subjectStartTime[0])
-    var minutes = parseInt(subjectStartTime[1])
-
-    var confirmed = subjects[0].confirmed
-
-    //console.log(subjects[0].start_time, subjects[0].end_time)
-
-    let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
-
-    await waitForElm('#' + id).then(() => {
-      console.log('success?')
-      const el = (<HTMLElement>document.getElementById(id));
-
-      let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
-
-      el.style.height = (duration * 5 / 60) + "rem"
-
-      // Displacement = (Borders) + (Full Hours) + (Minutes)
-      let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
-      el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
-      el.style.visibility = "visible"
-
-      if (confirmed) {
-        el.style.background = "#15BE4C"
-        //el.style.color = "#EABC04"
-      } else {
-        el.style.background = "#EABC04"
-        //el.style.color = "#15BE4C"
-      }
-
-      const el_title = (<HTMLElement>document.getElementById(id + "_title"));
-      const el_room = (<HTMLElement>document.getElementById(id + "_room"));
-      el_title.textContent = subjects[0].reason
-      el_room.textContent = subjects[0].room
-    })
-  })
-} 
-}
-
-  getBookingData(request: string) {
+  async getBookingData(request: string) {
     this.bookingSchedule.clear()
 
-    let temp = getTodaysDate(+6).split(',')[1].trim()
+    //let temp = getTodaysDate(+6).split(',')[1].trim()
+    let temp1 = this.selectedDate.toLocaleString().split(',')[0]
+    let temp2 = temp1.split('.')
+    let calculatedDate = temp2[2] + '-' + temp2[1] + '-' + temp2[0]
 
-    let casualDateArray = temp.split('.')
-    let formatDate = casualDateArray[2] + '-' + casualDateArray[1] + '-' + casualDateArray[0]
-    formatDate += 'T00:00:00Z'
-    //console.log(formatDate)
+    this.weekDates = getWeekDates(calculatedDate + ' 00:00:00')
+
     let data = {
-      date: formatDate, //"2022-06-19T00:00:00Z", 
+      date: calculatedDate + 'T00:00:00Z', //"2022-06-19T00:00:00Z", 
     }
     var response = this.api.sendPostRequest(request, data)
     response.subscribe(data => {
       const schedule = JSON.parse(JSON.stringify(data))
       this.searchSuccess = true
-      //const rooms = timeTables.payload
-      //console.log(rooms)
 
       this.bookingOverall = schedule.payload
-      //console.log(this.bookingOverall)
 
       for (let date of this.weekDates) {
-        let i = 1
+        //let i = 1
         let timetableDay = date[0]
-        //console.log(date[0])
 
         let dateNeeded = date[1].split(',')[0]
         let dateCustom = dateNeeded.split('.')
@@ -418,7 +378,49 @@ async setBooking(day: string, daySchedule: any) {
       if (this.weekSchedule == null) {
         this.timeArray = []
       }
+      this.errorBooking = error.status
     })
+  }
+
+  async setBooking(day: string, daySchedule: any) {
+    if (daySchedule != null) {
+      daySchedule.forEach(async (subjects: Subject[]) => {
+  
+      var subjectStartTime = subjects[0].start_time.split(':');
+      var hours = parseInt(subjectStartTime[0])
+      var minutes = parseInt(subjectStartTime[1])
+  
+      var confirmed = subjects[0].confirmed
+  
+      let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
+  
+      await waitForElm('#' + id).then(() => {
+        const el = (<HTMLElement>document.getElementById(id));
+  
+        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+  
+        el.style.height = (duration * 5 / 60) + "rem"
+  
+        // Displacement = (Borders) + (Full Hours) + (Minutes)
+        let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
+        el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
+        el.style.visibility = "visible"
+  
+        if (confirmed) {
+          el.style.background = "#15BE4C"
+          //el.style.color = "#EABC04"
+        } else {
+          el.style.background = "#EABC04"
+          //el.style.color = "#15BE4C"
+        }
+  
+        const el_title = (<HTMLElement>document.getElementById(id + "_title"));
+        const el_room = (<HTMLElement>document.getElementById(id + "_room"));
+        el_title.textContent = subjects[0].reason
+        el_room.textContent = subjects[0].room
+      })
+    })
+  } 
   }
 
   setSubjectId(subject: string): string {
