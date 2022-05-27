@@ -4,12 +4,14 @@
 <p>Location: {{ location }}</p>
 <p>Start time: {{ startTime }}</p> -->
 <div class="contentHolder">
-    <div class="subject" *ngFor="let subject of subjects">
-        <h2 *ngIf="subject.subject">Subject: {{ subject.subject }}</h2>
-        <h2 *ngIf="subject.reason">Title: {{ subject.reason }}</h2>
-        <p>Type: {{ subject.lesson_type || 'booking' }}</p>
-        <p>Location: {{ subject.room }}</p>
-        <P *ngIf="subject.tutor">Tutor: {{ subject.tutor }}</P>
-        <p>Time: {{ subject.start_time }}-{{ subject.end_time}}</p>
+  <div class="subject" *ngFor="let subject of subjects; let i = index">
+    <h2 *ngIf="subject.subject">Subject: <span id="valueSubject">{{ subject.subject }}</span></h2>
+    <h2 *ngIf="subject.reason">Title: <span id="valueBooking">{{ subject.reason }}</span></h2>
+    <hr style="border-top: dashed 1px;">
+    <p><b>Type:</b> {{ subject.lesson_type || 'booking' }}</p>
+    <p><b>Location:</b> {{ subject.room }}</p>
+    <p><b>Time:</b> {{ subject.start_time }}-{{ subject.end_time}}</p>
+    <P *ngIf="subject.tutor"><b>Tutor:</b> {{ subject.tutor }}</P>
+    <hr style="border-top: solid 4px;">
   </div>
 </div>
