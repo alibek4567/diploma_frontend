@@ -15,14 +15,14 @@
     <div class="right">
       <p>{{username}}</p>
       <button *ngIf="!isLoggedIn()" (click)="login()" id="login">{{ 'HEADER.sign-in' | translate }}</button>
-      <button *ngIf="isLoggedIn()" (click)="logout()" id="login">Log Out</button>
+      <button *ngIf="isLoggedIn()" (click)="logout()" id="login">{{ 'HEADER.log-out' | translate }}</button>
     </div>
   </mat-toolbar>
   
   <mat-sidenav-container>
     <mat-sidenav #sidenav mode="over">
         <div class="vertical">
-          <div *ngIf="isLoggedIn()" class="item" routerLink="" routerDirection="root">
+          <div *ngIf="isLoggedIn()" class="item" routerLink="home-page" routerDirection="root">
             <mat-icon>home</mat-icon>
             <p>{{ 'SIDE-MENU.home-tab' | translate }}</p>
           </div>
@@ -44,17 +44,17 @@
 
           <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-board" routerDirection="root">
             <mat-icon>developer_board</mat-icon>
-            <p>Adminboard</p>
+            <p>{{ 'SIDE-MENU.dev-board-tab' | translate }}</p>
           </div>
 
           <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-history" routerDirection="root">
             <mat-icon>history</mat-icon>
-            <p>Booking History</p>
+            <p>{{ 'SIDE-MENU.history-tab' | translate }}</p>
           </div>
 
           <div class="item" *ngIf="isLoggedIn() && isAdmin" routerLink="admin-confirmed" routerDirection="root">
             <mat-icon>check_box</mat-icon>
-            <p>Confirmed Bookings</p>
+            <p>{{ 'SIDE-MENU.confirm-tab' | translate }}</p>
           </div>
         </div>
       </mat-sidenav>

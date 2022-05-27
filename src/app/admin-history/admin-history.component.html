@@ -1,7 +1,7 @@
 <div class="outer">
     <div class="content">
         <div class="topHolder">
-            <h2>Booking History</h2>
+            <h2>{{ 'ADMIN-BOARD.bookingHistory' | translate }}</h2>
             <input type="text" [(ngModel)]="room" placeholder="Search by Room" (ngModelChange)="filter()">
           </div>
         
@@ -9,25 +9,25 @@
               <table>
                 <tr>
                   <th>
-                    Cabinet 
+                    {{ 'ADMIN-BOARD.cabinet' | translate }} 
                   </th>
                   <th>
-                    Sender 
+                    {{ 'ADMIN-BOARD.sender' | translate }} 
                   </th>
                   <th>
-                    Sender Info 
+                    {{ 'ADMIN-BOARD.senderInfo' | translate }} 
                   </th>
                   <th>
-                    Reason
+                    {{ 'ADMIN-BOARD.reason' | translate }}
                   </th>
                   <th>
-                    Date
+                    {{ 'ADMIN-BOARD.date' | translate }}
                   </th>
                   <th>
-                    Start Time
+                    {{ 'ADMIN-BOARD.startTime' | translate }}
                   </th>
                   <th>
-                    End Time
+                    {{ 'ADMIN-BOARD.endTime' | translate }}
                   </th>
                 </tr>
                 <tr *ngFor="let item of searchedBookings">

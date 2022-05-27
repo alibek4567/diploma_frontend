@@ -1,12 +1,12 @@
 <div class="outer">
     <div class="calendarHolder">
       <div class="legend">
-        <p>Bookings</p>
+        <p>{{ 'HOME.bookings' | translate }}</p>
         <div class="item" *ngFor="let item of bookings">
-            <p>Room: {{item.room}}</p>
-            <p>Date: {{item.date.split('T')[0]}}</p>
-            <p>Reason: {{item.reason}}</p>
-            <p>Status: <span [ngStyle]="{'color': item.confirmed ? '#1ad740' : '#e1a42b'}">{{item.confirmed ? 'confirmed' : 'pending...'}}</span></p>
+            <p>{{ 'HOME.room' | translate }}: {{item.room}}</p>
+            <p>{{ 'HOME.date' | translate }}: {{item.date.split('T')[0]}}</p>
+            <p>{{ 'HOME.reason' | translate }}: {{item.reason}}</p>
+            <p>{{ 'HOME.status' | translate }}: <span [ngStyle]="{'color': item.confirmed ? '#1ad740' : '#e1a42b'}">{{item.confirmed ? 'confirmed' : 'pending...'}}</span></p>
         </div>
       </div>
     </div>

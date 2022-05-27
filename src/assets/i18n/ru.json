@@ -8,11 +8,18 @@
         "home-tab": "Главное",
         "search-tab": "Поиск",
         "booking-tab": "Бронирование",
-        "graph-map-tab": "Карта университета"
+        "graph-map-tab": "Карта университета",
+        "dev-board-tab": "Админ Панель",
+        "history-tab": "История Бронирования",
+        "confirm-tab": "Подтвержденные Бронирования"
     },
 
     "HOME": {
-        "WELCOME": "Hello World!"
+        "bookings": "Бронирования",
+        "room": "Кабинет",
+        "date": "Дата",
+        "reason": "Причины",
+        "status": "Статус"
     },
 
     "SEARCH": {
@@ -29,14 +36,59 @@
             "fri": "ПТ",
             "sat": "СБ"
         },
-        "search": "поиск"
+        "search": "поиск",
+        "legend": "Пояснение",
+        "oneLesson": "Одно занятие",
+        "severalLessons": "Несколько занятий",
+        "booking": "Бронирование",
+        "approved": "Одобренный",
+        "pending": "В обработке"
     },
 
     "BOOKING": {
-        "WELCOME": "Hello World!"
+        "bookingForm": "Форма Бронирования",
+        "selectBy": "Выбор по.",
+        "date": "Дата",
+        "room": "Кабинет",
+        "cabinet": "Кабинет",
+        "chooseDate": "Выберите дату",
+        "startTime": "Время начало",
+        "endTime": "Время окончания",
+        "reason": "Причина",
+        "send": "Отправить",
+        "noEvents": "Нет событий",
+        "seats": "Мест",
+        "noRooms": "Нет свободных кабинетов",
+        "enterComment": "Введите комментарий"
+    },
+
+    "POP-UP": {
+        "subject": "Предмет",
+        "title": "Название",
+        "type": "Тип",
+        "location": "Место",
+        "time": "Время",
+        "tutor": "Преподаватель"
+    },
+
+    "ADMIN-BOARD": {
+        "adminBoard": "Админ Панель",
+        "confirmedBookings": "Подтвержденные Бронирования",
+        "bookingHistory": "История Бронирования",
+        "cabinet": "Кабинет",
+        "sender": "Отправитель",
+        "senderInfo": "Отправитель Инф.",
+        "reason": "Пояснение",
+        "date": "Дата",
+        "startTime": "Время начало",
+        "endTime": "Время окончания",
+        "actions": "Действия",
+        "accept": "Одобрить",
+        "reject": "Отклонить",
+        "delete": "Удалить"
     },
 
     "GRAPH-MAP": {
-        "WELCOME": "Hello World!"
+        "WELCOME": "Привет мир!"
     }
 }

@@ -8,11 +8,18 @@
         "home-tab": "Home",
         "search-tab": "Search",
         "booking-tab": "Booking",
-        "graph-map-tab": "University Map"
+        "graph-map-tab": "University Map",
+        "dev-board-tab": "Adminboard",
+        "history-tab": "Booking History",
+        "confirm-tab": "Confirmed Bookings"
     },
 
     "HOME": {
-        "WELCOME": "Hello World!"
+        "bookings": "Bookings",
+        "room": "Room",
+        "date": "Date",
+        "reason": "Reason",
+        "status": "Status"
     },
 
     "SEARCH": {
@@ -29,11 +36,56 @@
             "fri": "FRI",
             "sat": "SAT"
         },
-        "search": "Search"
+        "search": "Search",
+        "legend": "Legend",
+        "oneLesson": "One Lesson",
+        "severalLessons": "Several Lessons",
+        "booking": "booking",
+        "approved": "approved",
+        "pending": "pending"
     },
 
     "BOOKING": {
-        "WELCOME": "Hello World!"
+        "bookingForm": "Booking Form",
+        "selectBy": "Select by",
+        "date": "Date",
+        "room": "Cabinet",
+        "cabinet": "Cabinet",
+        "chooseDate": "Choose a date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "reason": "Reason",
+        "send": "Send",
+        "noEvents": "No Events",
+        "seats": "Seats",
+        "noRooms": "No Available Rooms",
+        "enterComment": "Enter a comment"
+    },
+
+    "POP-UP": {
+        "subject": "Subject",
+        "title": "Title",
+        "type": "Type",
+        "location": "Location",
+        "time": "Time",
+        "tutor": "Tutor"
+    },
+
+    "ADMIN-BOARD": {
+        "adminBoard": "Adminboard",
+        "confirmedBookings": "Confirmed Bookings",
+        "bookingHistory": "Booking History",
+        "cabinet": "Cabinet",
+        "sender": "Sender",
+        "senderInfo": "Sender Info",
+        "reason": "Reason",
+        "date": "Date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "actions": "Actions",
+        "accept": "Accept",
+        "reject": "Reject",
+        "delete": "Delete"
     },
 
     "GRAPH-MAP": {

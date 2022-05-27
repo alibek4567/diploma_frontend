@@ -1,19 +1,19 @@
 <div class="outer">
     <div class="content">
         <div class="formHolder">
-            <h2>Booking Form</h2>
+            <h2>{{ 'BOOKING.bookingForm' | translate }}</h2>
 
             <div class="selectHolder" >
-                <p>Select by</p>
+                <p>{{ 'BOOKING.selectBy' | translate }}</p>
                 <mat-button-toggle-group name="fontStyle" value="Date" (change)="setSelect($event)" aria-label="Font Style">
-                    <mat-button-toggle value="Date">Date</mat-button-toggle>
-                    <mat-button-toggle value="Room">Room</mat-button-toggle>
+                    <mat-button-toggle value="Date">{{ 'BOOKING.date' | translate }}</mat-button-toggle>
+                    <mat-button-toggle value="Room">{{ 'BOOKING.room' | translate }}</mat-button-toggle>
                   </mat-button-toggle-group>
             </div>
 
             <div *ngIf="select=='Room'">
                 <div class="inputHolder">
-                    <p>Cabinet</p>
+                    <p>{{ 'BOOKING.cabinet' | translate }}</p>
                     <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" type="text" placeholder="C1.113" [matAutocomplete]="auto">
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValues($event); getData()">
                         <mat-option *ngFor="let room of searchedRooms" [value]="room['name']+'-'+room['id']">
@@ -23,7 +23,7 @@
                 </div>
 
                 <div class="inputHolder" >
-                    <p>Choose a date</p>
+                    <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
                         <input (dateChange)="getData()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -33,25 +33,25 @@
         
                 <div class="dateHolder">
                     <div class="inputHolder" style="width: 45% !important;">
-                        <p>Start Time</p>
+                        <p>{{ 'BOOKING.startTime' | translate }}</p>
                         <input [(ngModel)]="byRoom.startTime" type="time" placeholder="HH:MM">
                     </div>
     
                     <div class="inputHolder" style="width: 45% !important;">
-                        <p>End Time</p>
+                        <p>{{ 'BOOKING.endTime' | translate }}</p>
                         <input [(ngModel)]="byRoom.endTime" type="time" placeholder="HH:MM">
                     </div>
                 </div>
     
                 <div class="inputHolder" style="width: 100%;">
-                    <p>Reason</p>
-                    <textarea [(ngModel)]="byRoom.comment" type="text" placeholder="Enter a comment"></textarea>
+                    <p>{{ 'BOOKING.reason' | translate }}</p>
+                    <textarea [(ngModel)]="byRoom.comment" type="text" placeholder=""></textarea>
                 </div>
             </div>
 
             <div *ngIf="select=='Date'">
                 <div class="inputHolder" >
-                    <p>Choose a date</p>
+                    <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
                         <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
@@ -61,12 +61,12 @@
     
                 <div class="dateHolder">
                     <div class="inputHolder" style="width: 45% !important;">
-                        <p>Start Time</p>
+                        <p>{{ 'BOOKING.startTime' | translate }}</p>
                         <input [(ngModel)]="byDate.startTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
                     </div>
     
                     <div class="inputHolder" style="width: 45% !important;">
-                        <p>End Time</p>
+                        <p>{{ 'BOOKING.endTime' | translate }}</p>
                         <input [(ngModel)]="byDate.endTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
                     </div>
                 </div>
@@ -83,12 +83,12 @@
                 </div> -->
     
                 <div class="inputHolder" style="width: 100%">
-                    <p>Reason</p>
+                    <p>{{ 'BOOKING.reason' | translate }}</p>
                     <textarea [(ngModel)]="byDate.comment" type="text" placeholder="Enter a comment"></textarea>
                 </div>
             </div>
 
-            <button class="send" (click)="send()" type="submit">Send</button>
+            <button class="send" (click)="send()" type="submit">{{ 'BOOKING.send' | translate }}</button>
 
         </div>
         
@@ -108,7 +108,7 @@
                     </div>
                 </div>
                 <div *ngIf="message == 'empty'">
-                    <h3>No Events</h3>
+                    <h3>{{ 'BOOKING.noEvents' | translate }}</h3>
                 </div>
             </div>
 
@@ -118,7 +118,7 @@
                     <div class="itemHolder" *ngFor="let item of rooms">
                         <div class="right">
                             <p class="subject">{{item.name}} | {{item.type}}</p>
-                            <p class="subject">Seats: {{item.seats}}</p>
+                            <p class="subject">{{ 'BOOKING.seats' | translate }}: {{item.seats}}</p>
                         </div>
                         <div class="check">
                             <section class="example-section">
@@ -128,7 +128,7 @@
                     </div>
                 </div>
                 <div *ngIf="message == 'empty'">
-                    <h3>No Available Rooms</h3>
+                    <h3>{{ 'BOOKING.noRooms' | translate }}</h3>
                 </div>
             </div>
         </div>

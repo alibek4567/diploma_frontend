@@ -4,23 +4,23 @@
     <mat-calendar *ngIf="cabinet" [(selected)]="selectedDate"></mat-calendar>
 
     <div class="legend">
-      <p>Legend:</p>
+      <p>{{ 'SEARCH.legend' | translate }}:</p>
       <div class="legendItem">
         <div class="circle" id="blue"></div>
-        <p>One Lesson</p>
+        <p>{{ 'SEARCH.oneLesson' | translate }}</p>
       </div>
       <div class="legendItem">
         <div class="circle" id="myGradient"></div>
-        <p>Several Lessons</p>
+        <p>{{ 'SEARCH.severalLessons' | translate }}</p>
       </div>
-      <p style="margin-top: 1rem">Booking:</p>
+      <p style="margin-top: 1rem">{{ 'SEARCH.booking' | translate }}:</p>
       <div class="legendItem">
         <div class="circle" id="green"></div>
-        <p>Approved</p>
+        <p>{{ 'SEARCH.approved' | translate }}</p>
       </div>
       <div class="legendItem">
         <div class="circle" id="yellow"></div>
-        <p>Pending</p>
+        <p>{{ 'SEARCH.pending' | translate }}</p>
       </div>
     </div>
   </div>
@@ -32,14 +32,14 @@
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
 
       <div *ngIf="!cabinet && searchStart" class="legend nonCabinetLegend">
-        <p>Legend:</p>
+        <p>{{ 'SEARCH.legend' | translate }}:</p>
         <div class="legendItem">
           <div class="circle" id="blue"></div>
-          <p>One Lesson</p>
+          <p>{{ 'SEARCH.oneLesson' | translate }}</p>
         </div>
         <div class="legendItem">
           <div class="circle" id="myGradient"></div>
-          <p>Several Lessons</p>
+          <p>{{ 'SEARCH.severalLessons' | translate }}</p>
         </div>
       </div>
 

@@ -1,7 +1,7 @@
 <div class="outer">
     <div class="content">
         <div class="topHolder">
-          <h2>Confirmed Bookings</h2>
+          <h2>{{ 'ADMIN-BOARD.confirmedBookings' | translate }}</h2>
             <input type="text" [(ngModel)]="request" placeholder="Search by Room" (ngModelChange)="filter()">
           </div>
         
@@ -9,28 +9,28 @@
               <table>
                 <tr>
                   <th>
-                    Cabinet 
+                    {{ 'ADMIN-BOARD.cabinet' | translate }} 
                   </th>
                   <th>
-                    Sender 
+                    {{ 'ADMIN-BOARD.sender' | translate }} 
                   </th>
                   <th>
-                    Sender Info 
+                    {{ 'ADMIN-BOARD.senderInfo' | translate }} 
                   </th>
                   <th>
-                    Reason
+                    {{ 'ADMIN-BOARD.reason' | translate }}
                   </th>
                   <th>
-                    Date
+                    {{ 'ADMIN-BOARD.date' | translate }}
                   </th>
                   <th>
-                    Start Time
+                    {{ 'ADMIN-BOARD.startTime' | translate }}
                   </th>
                   <th>
-                    End Time
+                    {{ 'ADMIN-BOARD.endTime' | translate }}
                   </th>
                   <th>
-                    Action
+                    {{ 'ADMIN-BOARD.actions' | translate }}
                   </th>
                 </tr>
                 <tr *ngFor="let item of searchedRequests">
@@ -57,7 +57,7 @@
                   </td>
                   <td>
                       <div class="center">
-                        <button id="reject" (click)="reject(item.id, item.reserver_info)">Delete</button>
+                        <button id="reject" (click)="reject(item.id, item.reserver_info)">{{ 'ADMIN-BOARD.delete' | translate }}</button>
                       </div>
                   </td>
                 </tr>

@@ -8,11 +8,18 @@
         "home-tab": "Басты бет",
         "search-tab": "Іздеу",
         "booking-tab": "Брондау",
-        "graph-map-tab": "Университет картасi"
+        "graph-map-tab": "Университет картасi",
+        "dev-board-tab": "Админ тақтасы",
+        "history-tab": "Брондау тізімі",
+        "confirm-tab": "Расталған брондаулар"
     },
 
     "HOME": {
-        "WELCOME": "Hello World!"
+        "bookings": "Брондаулар",
+        "room": "Room",
+        "date": "Date",
+        "reason": "Reason",
+        "status": "Status"
     },
 
     "SEARCH": {
@@ -29,11 +36,56 @@
             "fri": "ЖҰМ",
             "sat": "СЕН"
         },
-        "search": "іздеу"
+        "search": "іздеу",
+        "legend": "Legend",
+        "oneLesson": "One Lesson",
+        "severalLessons": "Several Lessons",
+        "booking": "booking",
+        "approved": "approved",
+        "pending": "pending"
     },
 
     "BOOKING": {
-        "WELCOME": "Hello World!"
+        "bookingForm": "Booking Form",
+        "selectBy": "Select by",
+        "date": "Date",
+        "room": "Room",
+        "cabinet": "Cabinet",
+        "chooseDate": "Choose a date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "reason": "Reason",
+        "send": "Send",
+        "noEvents": "No Events",
+        "seats": "Seats",
+        "noRooms": "No Available Rooms",
+        "enterComment": "Enter your comments"
+    },
+
+    "POP-UP": {
+        "subject": "Subject",
+        "title": "Title",
+        "type": "Type",
+        "location": "Location",
+        "time": "Time",
+        "tutor": "Tutor"
+    },
+
+    "ADMIN-BOARD": {
+        "adminBoard": "Adminboard",
+        "confirmedBookings": "Confirmed Bookings",
+        "bookingHistory": "Booking History",
+        "cabinet": "Cabinet",
+        "sender": "Sender",
+        "senderInfo": "Sender Info",
+        "reason": "Reason",
+        "date": "Date",
+        "startTime": "Start Time",
+        "endTime": "End Time",
+        "actions": "Actions",
+        "accept": "Accept",
+        "reject": "Reject",
+        "delete": "Delete"
     },
 
     "GRAPH-MAP": {
