@@ -46,7 +46,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set('https://graph.microsoft.com/beta/me', ['user.read', 'mail.read', 'contacts.read']);
+  protectedResourceMap.set('https://graph.microsoft.com/beta/me', ['user.read', 'mail.read', 'mail.send', 'contacts.read']);
 
   return {
     interactionType: InteractionType.Popup,
