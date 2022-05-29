@@ -49,6 +49,9 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     },error =>{
       console.log(error);
     })
+
+    // setTimeout(() => {
+    // }, 3000);
     
     const sendMail = {
       message: {
@@ -75,13 +78,16 @@ export class AdminConfirmedRequestsComponent implements OnInit {
         })
       };
 
+    console.log("Sending message")
     this.httpClient.post("https://graph.microsoft.com/beta/me/sendMail", sendMail, httpOptions).subscribe(res => {
       const message = JSON.stringify(res)
       console.log(message);
+
+      this.router.navigate(['/admin-confirmed'])
+      .then(() => {
+        window.location.reload();
+      });
     })
-    this.router.navigate(['/admin-confirmed'])
-    .then(() => {
-      window.location.reload();
-    });
+    
   }
 }

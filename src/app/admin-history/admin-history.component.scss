@@ -3,10 +3,12 @@
     display: flex;
     justify-content: center;
     align-items: center;
+    overflow: hidden;
     background-image: linear-gradient(315deg, #485461 0%, #28313b 74%);
 }
 
 .content{
+    overflow: hidden;
     width: 95%;
     height: 90%;
     background-color: white;
@@ -42,16 +44,17 @@
 
 .tableHolder{
     width: calc(100% - 2rem);
-     height: fit-content;
+    height: 100%;
      background-color: white;
      margin-top: 0.5rem;
+     margin-bottom: 0.5rem;
      padding: 1rem;
+     overflow-y: scroll;
     }
 
     table{
         width: 100%;
         border: 1px solid black;
-    
         tr{
             border: 1px solid black;
     
