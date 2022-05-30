@@ -11,6 +11,8 @@ import { AppComponent } from '../app.component';
 })
 export class AdminConfirmedRequestsComponent implements OnInit {
 
+  //All confirmed bookings from now to next 2 weeks
+
   request: string
 
   requests: any

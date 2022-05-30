@@ -11,7 +11,7 @@ import { MatFormFieldModule } from '@angular/material/form-field';
 import {MatSelectModule} from '@angular/material/select';
 import {MatDatepickerModule} from '@angular/material/datepicker';
 import {MatInputModule} from '@angular/material/input';
-import {MatNativeDateModule} from '@angular/material/core';
+import {DateAdapter, MatNativeDateModule} from '@angular/material/core';
 import {MatAutocompleteModule} from '@angular/material/autocomplete';
 import {MatTabsModule} from '@angular/material/tabs';
 import {MatButtonToggleModule} from '@angular/material/button-toggle';
@@ -36,6 +36,7 @@ import { AdminBoardComponent } from './admin-board/admin-board.component';
 import { AdminHistoryComponent } from './admin-history/admin-history.component';
 import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admin-confirmed-requests.component';
 import { HomePageComponent } from './home-page/home-page.component';
+import { CustomDateAdapter } from './booking/custom-adapter';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -105,6 +106,7 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatCardModule
   ],
   providers: [
+    { provide: DateAdapter, useClass: CustomDateAdapter },
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory

@@ -11,6 +11,8 @@ import { AppComponent } from '../app.component';
 })
 export class AdminBoardComponent implements OnInit {
 
+  //All booking in processing
+
   requests: any
   searchedRequests: any
   room: string

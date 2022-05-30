@@ -47,13 +47,14 @@
                     <p>{{ 'BOOKING.reason' | translate }}</p>
                     <textarea [(ngModel)]="byRoom.comment" type="text" placeholder=""></textarea>
                 </div>
+                
             </div>
 
             <div *ngIf="select=='Date'">
                 <div class="inputHolder" >
                     <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
-                        <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true">
+                        <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="myFilter">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </div>
@@ -62,25 +63,14 @@
                 <div class="dateHolder">
                     <div class="inputHolder" style="width: 45% !important;">
                         <p>{{ 'BOOKING.startTime' | translate }}</p>
-                        <input [(ngModel)]="byDate.startTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
+                        <input [(ngModel)]="byDate.startTime" (ngModelChange)="cabinetByDate()" type="time" placeholder="HH:MM">
                     </div>
     
                     <div class="inputHolder" style="width: 45% !important;">
                         <p>{{ 'BOOKING.endTime' | translate }}</p>
-                        <input [(ngModel)]="byDate.endTime" (change)="cabinetByDate()" type="time" placeholder="HH:MM">
+                        <input [(ngModel)]="byDate.endTime" (ngModelChange)="cabinetByDate()" type="time" placeholder="HH:MM">
                     </div>
                 </div>
-
-                <!-- <div class="spacer"></div>
-
-                <div class="inputHolder">
-                    <p>Cabinet</p>
-                    <mat-select disableOptionCentering placeholder="Select Room" [(ngModel)]="byDate.cabinet">
-                        <mat-option *ngFor="let room of rooms" [value]="room['id']+'-'+room['name']">
-                            {{room['name']}}
-                        </mat-option>
-                    </mat-select>
-                </div> -->
     
                 <div class="inputHolder" style="width: 100%">
                     <p>{{ 'BOOKING.reason' | translate }}</p>
@@ -88,14 +78,21 @@
                 </div>
             </div>
 
-            <button class="send" (click)="send()" type="submit">{{ 'BOOKING.send' | translate }}</button>
+            <button class="send" (click)="send()" type="submit" [mdePopoverTriggerFor]="appPopover" mdePopoverTriggerOn="none" #popoverTrigger="mdePopoverTrigger">{{ 'BOOKING.send' | translate }}</button>
+            <mde-popover #appPopover="mdePopover" [mdePopoverOverlapTrigger]="false" [mdePopoverCloseOnClick]="false">
+                <mat-card style="max-width: 300px">
+                  <mat-card-content>
+                    {{message}}
+                  </mat-card-content>
+                </mat-card>
+              </mde-popover>
 
         </div>
         
         <div class="timetableHolder">
             <div *ngIf="select=='Room'">
                 <h2>{{formatDate(byRoom.date)}} <span *ngIf="byRoom.cabinet">| {{byRoom.cabinet}}</span></h2>
-                <div *ngIf="message == 'success'">
+                <div>
                     <div class="itemHolder" *ngFor="let item of events">
                         <div class="left">
                             <p>{{item.start_time}}</p>
@@ -107,14 +104,14 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="message == 'empty'">
-                    <h3>{{ 'BOOKING.noEvents' | translate }}</h3>
+                <div *ngIf="messageByRoom">
+                    <h2>{{messageByRoom}}</h2>
                 </div>
             </div>
 
             <div *ngIf="select=='Date'">
                 <h2>{{formatDate(byDate.date)}} <span *ngIf="byDate.cabinet">| {{byDate.cabinet}}</span></h2>
-                <div *ngIf="message == 'success'">
+                <div>
                     <div class="itemHolder" *ngFor="let item of rooms">
                         <div class="right">
                             <p class="subject">{{item.name}} | {{item.type}}</p>
@@ -127,8 +124,8 @@
                         </div>
                     </div>
                 </div>
-                <div *ngIf="message == 'empty'">
-                    <h3>{{ 'BOOKING.noRooms' | translate }}</h3>
+                <div *ngIf="messageByDate">
+                    <h2>{{messageByDate}}</h2>
                 </div>
             </div>
         </div>
