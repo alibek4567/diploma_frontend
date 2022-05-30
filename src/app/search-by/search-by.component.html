@@ -33,6 +33,7 @@
 
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
 
+      <!-- data legend -->
       <div *ngIf="!isCabinet && searchStart" class="legend nonCabinetLegend">
         <p>{{ 'SEARCH.legend' | translate }}:</p>
         <div class="legendItem">
@@ -48,6 +49,7 @@
       <div *ngIf="isCabinet && searchStart" class="date">
         <h1>{{ formatDate(selectedDate) }}</h1>
       </div>
+      <!-- search bar -->
       <div *ngIf="!loading"class="searchBar">
         <mat-select [(ngModel)]="searchMode" (selectionChange)="setSearchSuggestions()" disableOptionCentering>
           <mat-option value="by-group">
@@ -86,6 +88,7 @@
       </button> -->
     </div>
 
+    <!-- timetable-->
     <h2 class="searchField">{{ searchResult }}</h2>
     <div *ngIf="searchStart && searchSuccess" class="grid-container">
       <div class="grid-item">
