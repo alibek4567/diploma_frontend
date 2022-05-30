@@ -1,8 +1,9 @@
-import { HttpClient } from '@angular/common/http';
-import { Component, OnInit } from '@angular/core';
+import { HttpClient, HttpErrorResponse } from '@angular/common/http';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { MatDatepickerInputEvent } from '@angular/material/datepicker';
 import { Router } from '@angular/router';
-import { retry } from 'rxjs';
+import { MdePopover, MdePopoverTrigger } from '@material-extended/mde';
+import { catchError, NotFoundError, retry, throwError } from 'rxjs';
 import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
 
@@ -23,11 +24,13 @@ export interface Select {
 
 export class BookingComponent implements OnInit {
 
+  @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger
+  formArray = ['Room', 'Reserver', 'Reserver_Info', 'Day', 'Start Time', 'End Time', 'Reason', 'Room ID', 'Reserver ID', 'Date']
+
   // By Date = set Date + Time
   // By Room = set Date + Room
 
   events: any[] = []
-  timetables: any[] = []
   rooms: any
 
   searchedRooms: any
@@ -38,8 +41,10 @@ export class BookingComponent implements OnInit {
   room_id: string
   date: Date = new Date();
   select = "Date"
-  message: string
+  messageByRoom: string
+  messageByDate: string
   checked: number
+  message: string
 
   byRoom: Select = {
     cabinet: '',
@@ -82,50 +87,14 @@ export class BookingComponent implements OnInit {
             this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
           }
         }
-        this.message = "success"
-        console.log(this.events);
-      }
-      else{
-        this.message = "empty"
+        this.messageByRoom = ''
+        if(this.events.length == 0){
+          this.messageByRoom = 'The Cabinet is free'
+        }
       }
     }, error => {
-      this.message = "empty"
+      this.getServerErrorMessage(error)
     })
-  }
-
-  filter(){
-    this.searchedRooms = this.items.rooms.filter((data: any) => {
-      return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
-    })  
-  }
-
-  getData(){
-    this.events = []
-    console.log(this.events);
-    this.cabinetByRoom()
-    this.getTimetableByDate()
-  }
-
-  cabinetByDate(){
-    if(this.byDate.date && this.byDate.startTime && this.byDate.endTime && (this.byDate.endTime > this.byDate.startTime)){
-      let data = {
-        date: this.byDate.date, 
-        start_time: this.byDate.startTime , 
-        end_time: this.byDate.endTime
-      }
-      var response = this.api.sendPostRequest("/booking/datetime", data)
-      response.subscribe(data => {
-        const timeTables = JSON.parse(JSON.stringify(data))
-        this.rooms = timeTables.payload
-        this.message = 'success'
-        console.log(this.rooms);
-      }, error => {
-      })
-    }
-    else{
-      this.message = 'empty'
-      this.rooms = null
-    }
   }
 
   getTimetableByDate(){
@@ -137,11 +106,44 @@ export class BookingComponent implements OnInit {
           this.events.push({start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor})
           this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
         }
-        this.message = 'success'
+        this.messageByRoom = ''
+        if(this.events.length == 0){
+          this.messageByRoom = 'The Cabinet is free'
+        }
       }
-      console.log(this.events);
     }, error => {
     })
+  }
+
+cabinetByDate(){
+    let data = {
+      date: this.byDate.date, 
+      start_time: this.byDate.startTime , 
+      end_time: this.byDate.endTime
+    }
+    var response = this.api.sendPostRequest("/booking/datetime", data)
+    response.subscribe(data => {
+      const timeTables = JSON.parse(JSON.stringify(data))
+      this.rooms = timeTables.payload
+      this.messageByDate = ''
+      if(this.rooms.length == 0){
+        this.messageByDate == 'No Available Rooms'
+      }
+    }, error => {
+    }
+  )
+}
+
+  filter(){
+    this.searchedRooms = this.items.rooms.filter((data: any) => {
+      return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
+    })  
+  }
+
+  getData(){
+    this.events = []
+    this.cabinetByRoom()
+    this.getTimetableByDate()
   }
 
   setSelect(event: any) {
@@ -154,10 +156,17 @@ export class BookingComponent implements OnInit {
   }
 
   setCheck(name: string,id: string){
-    this.checked = parseInt(id)
-    this.byDate.cabinet = name
-    this.byDate.cabinet_id = id
-    console.log(this.byDate.cabinet, this.byDate.cabinet_id)
+    if(this.byDate.cabinet_id == id){
+    this.checked = 0
+    this.byDate.cabinet = ''
+    this.byDate.cabinet_id = ''
+    }
+    else{
+      this.checked = parseInt(id)
+      this.byDate.cabinet = name
+      this.byDate.cabinet_id = id
+      console.log(this.byDate.cabinet, this.byDate.cabinet_id)
+    }
   }
 
   sliceString(data: string){
@@ -184,6 +193,12 @@ export class BookingComponent implements OnInit {
     }
   }
 
+  myFilter = (d: Date | null): boolean => {
+    const day = (d || new Date()).getDay();
+    // Prevent Saturday and Sunday from being selected.
+    return day !== 0;
+  };
+
   showEvent(event: any){
     console.log(event);
   }
@@ -193,6 +208,23 @@ export class BookingComponent implements OnInit {
     this.byRoom.cabinet = event.option.value.split('-')[0]
     console.log(this.byRoom.cabinet_id, this.byRoom.cabinet);
   }
+
+  getServerErrorMessage(error: HttpErrorResponse): string {
+    switch (error.status) {
+        case 400: {
+            return 'Cabinet is reserved for the selected time, please reload page'
+        }
+        case 403: {
+            return `Access Denied: ${error.message}`;
+        }
+        case 500: {
+            return `Internal Server Error: ${error.message}`;
+        }
+        default: {
+            return `Unknown Server Error: ${error.message}`;
+        }
+    }
+}
 
   send(){
     let data = null
@@ -210,7 +242,7 @@ export class BookingComponent implements OnInit {
       room: data.cabinet, 
       reserver: sessionStorage.getItem("username"), 
       reserver_info: sessionStorage.getItem("department"), 
-      day: "d"+this.date.getDay(),
+      day: "d"+data.date.getDay(),
       start_time: data.startTime,
       end_time: data.endTime,
       reason: data.comment,
@@ -219,6 +251,36 @@ export class BookingComponent implements OnInit {
       date: data.date,
     }
 
+    let flag = true
+
+    const valuesArr = Object.values(values)
+    valuesArr.forEach((val, index) => {
+      if(val == null || val == ''){
+        this.message = this.formArray[index] + ' required'
+        flag = false
+      }
+    });
+
+    if(compareTime(data.startTime, '8:00') == -1){
+      this.message = "Time range is 08:00 - 19:00"
+      flag = false
+    }
+
+    if(compareTime(data.endTime, '19:00') == 1){
+      this.message = "Time range is 08:00 - 19:00"
+      flag = false
+    }
+
+    if(data.endTime < data.startTime){
+      this.message = "Time range is 08:00 - 19:00"
+      flag = false
+    }
+
+    if(flag != true){
+      this.trigger.openPopover();
+      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
+    }
+    
     var response = this.api.sendPostRequestWithAuth("/booking/create", values)
     response.subscribe(data => {
       this.router.navigate(['/booking'])
@@ -226,10 +288,28 @@ export class BookingComponent implements OnInit {
         window.location.reload();
       });
     }, error => {
-      console.log(error)
+      this.message = this.getServerErrorMessage(error)
+      this.trigger.openPopover();
+      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
     });
-    
   }
+}
 
+function compareTime(time1: string, time2: string): number {
+  // 1 = time1 > time2
+  // 0 = time1 == time2
+  // -1 = time1 < time2
+
+  var time1date = new Date("1970-01-01 " + time1)
+  var time2date = new Date("1970-01-01 " + time2)
+
+  if (time1date.getTime() > time2date.getTime()) {
+    return 1
+  } else if (time1date.getTime() < time2date.getTime()) {
+    return -1
+  }
+  return 0
+
+  // 24:00 and 00:00 = ?
 }
 
