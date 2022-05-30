@@ -1,12 +1,11 @@
-import { Component, OnInit, Renderer2, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiCallerService } from '../api-caller.service';
-import { MsalService } from '@azure/msal-angular';
-import { HttpClient } from '@angular/common/http';
 import { MatDialog } from '@angular/material/dialog'
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
 import { ItemsLoaderService } from '../items-loader.service';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
+import { MdePopoverTrigger } from '@material-extended/mde';
 
 @Component({
   selector: 'app-search-by',
@@ -17,12 +16,14 @@ import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 export class SearchByComponent implements OnInit {
 
   @ViewChild('autoCompleteInput', { read: MatAutocompleteTrigger }) autoComplete: MatAutocompleteTrigger;
+  @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger;
 
-  loading = true
+  // loader display
+  loading: boolean = true
 
   // dates
   selectedDate: Date = new Date();
-  weekDates = new Map<string, string>()
+  weekDates = new Map<string, Date>()
 
   // search parameters
   searchStart: boolean = false
@@ -30,11 +31,11 @@ export class SearchByComponent implements OnInit {
   searchValue: string = ''
   searchResult: string = ''
   searchSuccess: boolean = false
-  itemsArray: any[]
+  suggestionsArray: any[]
   searchedArray: any[]
 
   // search by cabinet
-  cabinet: boolean = false
+  isCabinet: boolean = false
 
   // time parameters of schedule
   scheduleStartTime: string = "24:00"
@@ -47,200 +48,182 @@ export class SearchByComponent implements OnInit {
   // schedule for cabinet consists also the bookings
   bookingOverall: Subject[]
   bookingSchedule = new Map<string, Map<string, Subject[]>>()
-
-  errorTimeTable: number = 0
-  errorBooking: number = 0
   
-  constructor(private api: ApiCallerService, public renderer: Renderer2, 
-    private msalService: MsalService, private httpClient: HttpClient, private dialogRef: MatDialog,
-    public items: ItemsLoaderService) {
+  constructor(private api: ApiCallerService, 
+    private dialogRef: MatDialog,
+    public searchSuggestions: ItemsLoaderService) {
 
+    // wait until search suggestions will be loaded
     let interval = setInterval(() => {
-      if(items.loadedGroups && items.loadedRooms && items.loadedTeachers){
-        clearInterval(interval)
+      if (searchSuggestions.loadedGroups && searchSuggestions.loadedRooms && searchSuggestions.loadedTeachers) {
         this.loading = false
-        this.searchedArray = items.groups 
+        this.setSearchSuggestions()
+        clearInterval(interval)
       }
     }, 10);
     
-    // current Week Date
-    let temp = getTodaysDate(+6).split(',')[1].trim()
-    let date = temp.split('.')
-    let dateInFormat = date[2] + '/' + date[1] + '/' + date[0]
-    let time = getTodaysDate(+6).split(',')[2].trim()
-    this.weekDates = getWeekDates(dateInFormat + ' ' + time)
+    // current week dates
+    this.selectedDate = getTodaysDate(+6)
+    this.weekDates = getWeekDates(this.selectedDate)
+    console.log(this.weekDates)
   }
 
   ngOnInit(): void { }
 
-  async setSearch() {
-    if (this.searchValue == '') {
-      console.log(this.searchValue)
-    } else {
-      this.timeArray = []
-      this.scheduleStartTime = "24:00" //"22:00"
-      this.scheduleEndTime = "00:00" //"8:00"
-      this.searchStart = true
-      this.searchResult = this.searchValue
-      switch(this.searchMode) { 
-        case 'by-group': { 
-          this.cabinet = false
-          this.itemsArray = this.items.groups
-          //console.log(this.itemsArray);
-          this.getSearchResult("/timetable/group/" + this.searchValue)
-          break; 
-        }
-        case 'by-teacher': { 
-          this.cabinet = false
-          this.itemsArray = this.items.teachers
-          // console.log(this.itemsArray);
-          let requestId = 0
-          for (let i of this.itemsArray) {
-            if (i.name == this.searchValue) {
-              requestId = i.id
-            }
-          }
-          this.getSearchResult("/timetable/tutor/" + requestId)
-          break; 
-        }
-        case 'by-cabinet': { 
-          this.errorTimeTable = 0
-          this.errorBooking = 0
-          this.cabinet = true
-          this.itemsArray = this.items.rooms
-          //console.log(this.itemsArray);
-          let requestId = 0
-          for (let i of this.itemsArray) {
-            if (i.name == this.searchValue) {
-              requestId = i.id
-            }
-          }
-          await this.getBookingData("/booking/room/" + requestId)
-          this.getSearchResult("/timetable/room/" + requestId)
-          break; 
-       } 
-        default: { 
-           console.log("no correct search Mode")
-        } 
-      } 
-    }
-  }  
-
-  setArray(){
+  // +
+  setSearchSuggestions() {
     switch(this.searchMode) { 
       case 'by-group': {
         this.searchValue = ''
         this.searchedArray = [] 
-        this.itemsArray = this.items.groups
-        console.log(this.itemsArray);
+        this.suggestionsArray = this.searchSuggestions.groups
         break; 
       }
       case 'by-teacher': { 
         this.searchValue = '' 
         this.searchedArray = [] 
-        this.itemsArray = this.items.teachers
-        console.log(this.itemsArray);
+        this.suggestionsArray = this.searchSuggestions.teachers
         break; 
       }
       case 'by-cabinet': { 
         this.searchValue = '' 
         this.searchedArray = [] 
-        this.itemsArray = this.items.rooms
-        console.log(this.itemsArray);
+        this.suggestionsArray = this.searchSuggestions.rooms
         break; 
      } 
       default: { 
-         console.log("No Array")
+         console.log("No search suggestions")
       } 
     } 
   }
 
-  filter(){
-    if(this.searchValue.length==0){
+  // +
+  filter() {
+    if (this.searchValue.length==0) {
       this.searchedArray = []
-    }
-    else{
-      this.searchedArray = this.itemsArray.filter((data: any) => {
+    } else {
+      this.searchedArray = this.suggestionsArray.filter((data: any) => {
         return data.name.toLowerCase().includes(this.searchValue.toLowerCase());
       })
     }
   }
 
-  // setValue(value: string){
-  //   this.searchValue = value
-  // }
+  async setSearch() {
+    if (this.searchValue == '') {
+      this.trigger.openPopover();
+      window.setTimeout(() => { this.trigger.closePopover() }, 1000);
+    } else {
+      this.loading = true
 
-  async getSearchResult(request: string) {
-    this.weekSchedule.clear()
-    //this.timeArray = []
+      this.trigger.closePopover()
+
+      this.weekSchedule.clear()
+      this.timeArray = []
+      this.scheduleStartTime = "24:00"
+      this.scheduleEndTime = "00:00"
+
+      this.searchStart = true
+      //this.searchResult = this.searchValue
+
+      switch(this.searchMode) { 
+        case 'by-group': { 
+          this.isCabinet = false
+          //this.suggestionsArray = this.searchSuggestions.groups
+
+          this.getTimetable("/timetable/group/" + this.searchValue)
+          break; 
+        }
+
+        case 'by-teacher': { 
+          this.isCabinet = false
+          //this.suggestionsArray = this.searchSuggestions.teachers
+          let requestId = 0
+          for (let i of this.suggestionsArray) {
+            if (i.name == this.searchValue) {
+              requestId = i.id
+            }
+          }
+          //this.getSearchResult("/timetable/tutor/" + requestId)
+          break; 
+        }
+
+        case 'by-cabinet': { 
+          this.isCabinet = true
+          //this.suggestionsArray = this.searchSuggestions.rooms
+          let requestId = 0
+          for (let i of this.suggestionsArray) {
+            if (i.name == this.searchValue) {
+              requestId = i.id
+            }
+          }
+          //await this.getBookingData("/booking/room/" + requestId)
+          //this.getSearchResult("/timetable/room/" + requestId)
+          break; 
+        } 
+
+        default: { 
+           console.log("no correct search Mode")
+        } 
+      } 
+      this.loading = false
+    }
+  }  
+
+  async getTimetable(request: string) {
+
+    let target = new Map<string, Map<string, Subject[]>>()
+    let responseError = 0
+
+    //this.weekSchedule.clear()
      
-    var response = this.api.sendGetRequest(request)
-    response.subscribe(data => {
+    var response = this.api.sendGetRequest(request).subscribe(data => {
+
+      //?
       this.searchSuccess = true
+
       const schedule = JSON.parse(JSON.stringify(data))
-      // Sorting
+      // process data
       for (let i = 1; i < 7; i++) {
         if (schedule.payload["d" + i] != null) {
-          for (let item of schedule.payload["d" + i]) {
-            // Time set
-            if (compareTime(item.start_time, this.scheduleStartTime) == -1) {
-              this.scheduleStartTime = item.start_time
-            }
-            if (compareTime(item.end_time, this.scheduleEndTime) == 1) {
-              this.scheduleEndTime = item.end_time
-            }
+          for (let element of schedule.payload["d" + i]) {
 
-            // Mapping
-            if (this.weekSchedule.get("d" + i) != undefined) {
-              if (this.weekSchedule.get("d" + i)?.get(item.start_time) != undefined) {
-                this.weekSchedule.get("d" + i)?.get(item.start_time)?.push(item)
+            // dynamic time setting
+            // if (compareTime(element.start_time, this.scheduleStartTime) == -1) {
+            //   this.scheduleStartTime = element.start_time
+            // }
+            // if (compareTime(element.end_time, this.scheduleEndTime) == 1) {
+            //   this.scheduleEndTime = element.end_time
+            // }
+            // mapping
+            if (target.get("d" + i) != undefined) {
+              if (target.get("d" + i)?.get(element.start_time) != undefined) {
+                target.get("d" + i)?.get(element.start_time)?.push(element)
               } else {
-                this.weekSchedule.get("d" + i)?.set(item.start_time, [item])
+                target.get("d" + i)?.set(element.start_time, [element])
               }
             } else {
-              this.weekSchedule.set("d" + i, new Map())
-              this.weekSchedule.get("d" + i)?.set(item.start_time, [item])
+              target.set("d" + i, new Map())
+              target.get("d" + i)?.set(element.start_time, [element])
             }
           }
         }
       }
+      console.log(target)
 
-      // Drawing Time blocks
-      //if (this.searchMode != 'by-cabinet') {
-        let myArray: string[] = []
-        let start = parseInt(this.scheduleStartTime.split(':')[0])
-        let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
-        for (let i = start; i < end; i++) {
-          myArray.push(i + ':00')
-          myArray.push(i + ':30')
-        }
-        this.timeArray = myArray
-      //}
-
-      // Drawing Subjects
-      waitForElm('.grid-container').then(async () => {
-        for (let i = 1; i < 7; i++) {
-          await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
-        }
-        for (let i = 1; i < 7; i++) {
-          await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
-        }
-      });
     }, error => { 
       this.searchSuccess = false
-      console.log(error) 
-      //this.searchResult = 'No lessons schedule'
-      this.timeArray = [ ]
-
-      if (error.status = 404 && !this.cabinet) {
-        this.searchResult = 'No Records'
-      }
-      if ((error.status = 400 || error.status == 401) && !this.cabinet) {
-        this.searchResult = 'Incorrect field name'
-      }
-
-      this.errorTimeTable = error.status
+      //console.log(error) 
+      responseError = error.status
     })
+
+    let data = {
+      'schedule': target,
+      'error': responseError
+    }
+
+    console.log(data)
+
+    return data
   }
 
   async setSubjects(day: string, daySchedule: any) {
@@ -292,136 +275,136 @@ export class SearchByComponent implements OnInit {
   } 
 }
 
-  async getBookingData(request: string) {
-    this.bookingSchedule.clear()
+  // async getBookingData(request: string) {
+  //   this.bookingSchedule.clear()
 
-    //let temp = getTodaysDate(+6).split(',')[1].trim()
-    let temp1 = this.selectedDate.toLocaleString().split(',')[0]
-    let temp2 = temp1.split('.')
-    let calculatedDate = temp2[2] + '-' + temp2[1] + '-' + temp2[0]
+  //   //let temp = getTodaysDate(+6).split(',')[1].trim()
+  //   let temp1 = this.selectedDate.toLocaleString().split(',')[0]
+  //   let temp2 = temp1.split('.')
+  //   let calculatedDate = temp2[2] + '-' + temp2[1] + '-' + temp2[0]
 
-    this.weekDates = getWeekDates(calculatedDate + ' 00:00:00')
+  //   //this.weekDates = getWeekDates(calculatedDate + ' 00:00:00')
 
-    let data = {
-      date: calculatedDate + 'T00:00:00Z', //"2022-06-19T00:00:00Z", 
-    }
-    var response = this.api.sendPostRequest(request, data)
-    response.subscribe(data => {
-      const schedule = JSON.parse(JSON.stringify(data))
-      this.searchSuccess = true
+  //   let data = {
+  //     date: calculatedDate + 'T00:00:00Z', //"2022-06-19T00:00:00Z", 
+  //   }
+  //   var response = this.api.sendPostRequest(request, data)
+  //   response.subscribe(data => {
+  //     const schedule = JSON.parse(JSON.stringify(data))
+  //     this.searchSuccess = true
 
-      this.bookingOverall = schedule.payload
+  //     this.bookingOverall = schedule.payload
 
-      for (let date of this.weekDates) {
-        //let i = 1
-        let timetableDay = date[0]
+  //     for (let date of this.weekDates) {
+  //       //let i = 1
+  //       let timetableDay = date[0]
 
-        let dateNeeded = date[1].split(',')[0]
-        let dateCustom = dateNeeded.split('.')
-        let dateFormat = dateCustom[2] + '-' + dateCustom[1] + '-' + dateCustom[0] //+ "T00:00:00+06:00"
-        //console.log(dateFormat)
-        for (let booking of this.bookingOverall) {
-          let date2 = booking.date.split('T')[0]
-          //console.log(i, date2, dateFormat, date2 == dateFormat)
-          if (date2 == dateFormat) {
+  //       let dateNeeded = date[1].split(',')[0]
+  //       let dateCustom = dateNeeded.split('.')
+  //       let dateFormat = dateCustom[2] + '-' + dateCustom[1] + '-' + dateCustom[0] //+ "T00:00:00+06:00"
+  //       //console.log(dateFormat)
+  //       for (let booking of this.bookingOverall) {
+  //         let date2 = booking.date.split('T')[0]
+  //         //console.log(i, date2, dateFormat, date2 == dateFormat)
+  //         if (date2 == dateFormat) {
 
-            // Time set
-            if (compareTime(booking.start_time, this.scheduleStartTime) == -1) {
-              this.scheduleStartTime = booking.start_time
-            }
-            if (compareTime(booking.end_time, this.scheduleEndTime) == 1) {
-              this.scheduleEndTime = booking.end_time
-            }
+  //           // Time set
+  //           if (compareTime(booking.start_time, this.scheduleStartTime) == -1) {
+  //             this.scheduleStartTime = booking.start_time
+  //           }
+  //           if (compareTime(booking.end_time, this.scheduleEndTime) == 1) {
+  //             this.scheduleEndTime = booking.end_time
+  //           }
 
-            if (this.bookingSchedule.get(timetableDay) != undefined) {
-              if (this.bookingSchedule.get(timetableDay)?.get(booking.start_time) != undefined) {
-                this.bookingSchedule.get(timetableDay)?.get(booking.start_time)?.push(booking)
-              } else {
-                this.bookingSchedule.get(timetableDay)?.set(booking.start_time, [booking])
-              }
-            } else {
-              this.bookingSchedule.set(timetableDay, new Map())
-              this.bookingSchedule.get(timetableDay)?.set(booking.start_time, [booking])
-            }
-          }
-        }
-      }
-      //console.log("Week:", this.weekDates)
-      //console.log(this.bookingSchedule)
-      //console.log(this.scheduleStartTime, this.scheduleEndTime)
+  //           if (this.bookingSchedule.get(timetableDay) != undefined) {
+  //             if (this.bookingSchedule.get(timetableDay)?.get(booking.start_time) != undefined) {
+  //               this.bookingSchedule.get(timetableDay)?.get(booking.start_time)?.push(booking)
+  //             } else {
+  //               this.bookingSchedule.get(timetableDay)?.set(booking.start_time, [booking])
+  //             }
+  //           } else {
+  //             this.bookingSchedule.set(timetableDay, new Map())
+  //             this.bookingSchedule.get(timetableDay)?.set(booking.start_time, [booking])
+  //           }
+  //         }
+  //       }
+  //     }
+  //     //console.log("Week:", this.weekDates)
+  //     //console.log(this.bookingSchedule)
+  //     //console.log(this.scheduleStartTime, this.scheduleEndTime)
 
-      let myArray: string[] = []
-      let start = parseInt(this.scheduleStartTime.split(':')[0])
-      let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
-      for (let i = start; i < end; i++) {
-        myArray.push(i + ':00')
-        myArray.push(i + ':30')
-      }
-      this.timeArray = myArray
+  //     let myArray: string[] = []
+  //     let start = parseInt(this.scheduleStartTime.split(':')[0])
+  //     let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
+  //     for (let i = start; i < end; i++) {
+  //       myArray.push(i + ':00')
+  //       myArray.push(i + ':30')
+  //     }
+  //     this.timeArray = myArray
 
-      waitForElm('.grid-container').then(async () => {
-        //console.log('success?')
-        for (let i = 1; i < 7; i++) {
-          await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
-          //console.log("d" + i, this.bookingSchedule.get("d" + i))
-        }
+  //     waitForElm('.grid-container').then(async () => {
+  //       //console.log('success?')
+  //       for (let i = 1; i < 7; i++) {
+  //         await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
+  //         //console.log("d" + i, this.bookingSchedule.get("d" + i))
+  //       }
 
-        for (let i = 1; i < 7; i++) {
-          await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
-          //console.log("d" + i, this.bookingSchedule.get("d" + i))
-        }
-      });
+  //       for (let i = 1; i < 7; i++) {
+  //         await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
+  //         //console.log("d" + i, this.bookingSchedule.get("d" + i))
+  //       }
+  //     });
 
-    }, error => {
-      console.log(error)
-      console.log(this.weekSchedule)
-      if (this.weekSchedule == null) {
-        this.timeArray = []
-      }
-      this.errorBooking = error.status
-    })
-  }
+  //   }, error => {
+  //     console.log(error)
+  //     console.log(this.weekSchedule)
+  //     if (this.weekSchedule == null) {
+  //       this.timeArray = []
+  //     }
+  //     this.errorBooking = error.status
+  //   })
+  // }
 
-  async setBooking(day: string, daySchedule: any) {
-    if (daySchedule != null) {
-      daySchedule.forEach(async (subjects: Subject[]) => {
+  // async setBooking(day: string, daySchedule: any) {
+  //   if (daySchedule != null) {
+  //     daySchedule.forEach(async (subjects: Subject[]) => {
   
-      var subjectStartTime = subjects[0].start_time.split(':');
-      var hours = parseInt(subjectStartTime[0])
-      var minutes = parseInt(subjectStartTime[1])
+  //     var subjectStartTime = subjects[0].start_time.split(':');
+  //     var hours = parseInt(subjectStartTime[0])
+  //     var minutes = parseInt(subjectStartTime[1])
   
-      var confirmed = subjects[0].confirmed
+  //     var confirmed = subjects[0].confirmed
   
-      let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
+  //     let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
   
-      await waitForElm('#' + id).then(() => {
-        const el = (<HTMLElement>document.getElementById(id));
+  //     await waitForElm('#' + id).then(() => {
+  //       const el = (<HTMLElement>document.getElementById(id));
   
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+  //       let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
   
-        el.style.height = (duration * 5 / 60) + "rem"
+  //       el.style.height = (duration * 5 / 60) + "rem"
   
-        // Displacement = (Borders) + (Full Hours) + (Minutes)
-        let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
-        el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
-        el.style.visibility = "visible"
+  //       // Displacement = (Borders) + (Full Hours) + (Minutes)
+  //       let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
+  //       el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
+  //       el.style.visibility = "visible"
   
-        if (confirmed) {
-          el.style.background = "#15BE4C"
-          //el.style.color = "#EABC04"
-        } else {
-          el.style.background = "#EABC04"
-          //el.style.color = "#15BE4C"
-        }
+  //       if (confirmed) {
+  //         el.style.background = "#15BE4C"
+  //         //el.style.color = "#EABC04"
+  //       } else {
+  //         el.style.background = "#EABC04"
+  //         //el.style.color = "#15BE4C"
+  //       }
   
-        const el_title = (<HTMLElement>document.getElementById(id + "_title"));
-        const el_room = (<HTMLElement>document.getElementById(id + "_room"));
-        el_title.textContent = subjects[0].reason
-        el_room.textContent = subjects[0].room
-      })
-    })
-  } 
-  }
+  //       const el_title = (<HTMLElement>document.getElementById(id + "_title"));
+  //       const el_room = (<HTMLElement>document.getElementById(id + "_room"));
+  //       el_title.textContent = subjects[0].reason
+  //       el_room.textContent = subjects[0].room
+  //     })
+  //   })
+  // } 
+  // }
 
   setSubjectId(subject: string): string {
     let time = subject.split(':');
@@ -442,15 +425,16 @@ export class SearchByComponent implements OnInit {
     return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
   }
 
-  // HTML interface functions
-  formatDayAndWeek(date: string | undefined): string {
+  // HTML interface functions // +
+  displayHumanDate(date: Date | undefined): string {
     if (date == undefined) {
       return ''
     }
-    return date.split(',')[0].trim()
+    return date.toLocaleString().split(',')[0].trim()
   }
 }
 
+// +
 function waitForElm(selector: string) {
   return new Promise(resolve => {
       if (document.querySelector(selector)) {
@@ -471,34 +455,37 @@ function waitForElm(selector: string) {
   });
 }
 
-function getTodaysDate(offset: number): string {
-  var date = new Date();
-  var utc = date.getTime() + (date.getTimezoneOffset() * 60000);
-  var nd = new Date(utc + (3600000 * offset));
-  return nd.getDay() + ", " + nd.toLocaleString();
+// +
+function getTodaysDate(offset: number): Date {
+  let today = new Date();
+  let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
+  let dateByOffset = new Date(utc + (3600000 * offset))
 
-  // let today = new Date();
-  // let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
-  // let localeFormatDate = new Date(utc + (3600000 * offset)).toLocaleString();
-
-  // let dateArray = localeFormatDate.split(',')
-  // let dayArray = dateArray[0].split('.')
-
-  // let uniFormatDate = dayArray[2] + '-' + dayArray[1] + '-' + dayArray[0] 
-  // + 'T' + dateArray[1].trim() 
-  // + 'D' + localeFormatDate.getDay()
-  
-  // return uniFormatDate
+  return dateByOffset
 }
 
-function getWeekDates(date: string): Map<string, string> {
-  let currentDay = (date == '') ? new Date(): new Date(date)
-  let monday = (currentDay.getDate()+2) - currentDay.getDay()
+// +
+function getWeekDates(date: Date): Map<string, Date> {
+  let currentDay = date.getDay()
+  let dayDifference = currentDay
+  let weekDates = new Map<string, Date>()
 
-  let weekDates = new Map<string, string>()
   for (let i = 0; i < 7; i ++) {
-    weekDates.set('d' + (i + 1), new Date(currentDay.setDate(monday + i - 1)).toLocaleString()) // toUTCString()
+    let temp = new Date(date)
+    if (i == currentDay) {
+      weekDates.set('d' + i, temp)
+      //console.log('d' + i, 'me', temp)
+    } else if (i < currentDay) {
+      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
+      //console.log('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
+      dayDifference--
+    } else {
+      dayDifference++
+      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
+      //console.log('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
+    }
   }
+
   return weekDates
 }
 

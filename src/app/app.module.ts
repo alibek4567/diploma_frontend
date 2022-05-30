@@ -24,7 +24,9 @@ import { InteractionType, IPublicClientApplication, PublicClientApplication } fr
 import { TranslateModule, TranslateLoader } from '@ngx-translate/core';
 import { TranslateHttpLoader } from '@ngx-translate/http-loader';
 import { MatDialogModule } from '@angular/material/dialog';
-import {MatProgressSpinnerModule} from '@angular/material/progress-spinner';
+import { MatProgressSpinnerModule } from '@angular/material/progress-spinner';
+import { MdePopoverModule } from '@material-extended/mde';
+import { MatCardModule } from '@angular/material/card';
 
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
@@ -98,7 +100,9 @@ export function HttpLoaderFactory(http: HttpClient) {
           useFactory: HttpLoaderFactory,
           deps: [HttpClient]
       }
-    })
+    }),
+    MdePopoverModule,
+    MatCardModule
   ],
   providers: [
     {

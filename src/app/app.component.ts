@@ -107,6 +107,7 @@ export class AppComponent implements OnInit{
       this.apiResponse = JSON.stringify(res)
       this.profileInfo = res
       this.department = this.profileInfo.positions[0].detail.company.department
+      console.log(this.department)
       sessionStorage.setItem("department", this.department)
     })
   }
