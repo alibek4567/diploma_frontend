@@ -3,7 +3,7 @@
   <!-- content of search by cabinet -->
   <div *ngIf="isCabinet && searchStart" class="calendarHolder">
     <!-- calendar picker -->
-    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate"></mat-calendar>
+    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate" (selectedChange)="setSearch()"></mat-calendar>
     <!-- data legend -->
     <div class="legend">
       <p>{{ 'SEARCH.legend' | translate }}:</p>
@@ -29,7 +29,7 @@
 
   <!-- main content -->
   <div class="content">
-    <img *ngIf="!loading && !searchStart" id="headText" src="../../assets/imgs/png/logo-white.png">
+    <img *ngIf="!searchStart" id="headText" src="../../assets/imgs/png/logo-white.png">
 
     <div class="actionHolder" [ngStyle]="{'justify-content': searchStart ? 'start' : 'center'}">
 
@@ -47,10 +47,10 @@
       </div>
 
       <div *ngIf="isCabinet && searchStart" class="date">
-        <h1>{{ formatDate(selectedDate) }}</h1>
+        <h1>{{ displaySelectedDate(selectedDate) }}</h1>
       </div>
       <!-- search bar -->
-      <div *ngIf="!loading"class="searchBar">
+      <div class="searchBar">
         <mat-select [(ngModel)]="searchMode" (selectionChange)="setSearchSuggestions()" disableOptionCentering>
           <mat-option value="by-group">
             {{ 'SEARCH.search-option.by-group' | translate }}
@@ -100,7 +100,7 @@
 
       <!-- D1 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d1')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.mon' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d1')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>
@@ -118,7 +118,7 @@
 
       <!-- D2 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d2')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.tue' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d2')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>
@@ -136,7 +136,7 @@
 
       <!-- D3 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d3')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.wed' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d3')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>
@@ -154,7 +154,7 @@
 
       <!-- D4 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d4')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.thu' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d4')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>
@@ -172,7 +172,7 @@
 
       <!-- D5 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d5')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.fri' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d5')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>
@@ -190,7 +190,7 @@
 
       <!-- D6 -->
       <div class="grid-item">
-        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br><span *ngIf="searchMode == 'by-cabinet' && isCabinet">{{ displayHumanDate(weekDates.get('d6')) }}</span></p></div>
+        <div class="day"><p>{{ 'SEARCH.week-day.sat' | translate }}<br><span *ngIf="isCabinet">{{ displayHumanDate(weekDates.get('d6')) }}</span></p></div>
         <div class="column">
           <div class="empty" [ngClass]="(time.split(':')[1] === '00')? 'bold':'regular'" *ngFor="let time of timeArray"></div>
         </div>

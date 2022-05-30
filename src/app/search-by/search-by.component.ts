@@ -46,16 +46,17 @@ export class SearchByComponent implements OnInit {
   weekSchedule = new Map<string, Map<string, Subject[]>>()
 
   // schedule for cabinet consists also the bookings
-  bookingOverall: Subject[]
   bookingSchedule = new Map<string, Map<string, Subject[]>>()
+
+
   
   constructor(private api: ApiCallerService, 
     private dialogRef: MatDialog,
-    public searchSuggestions: ItemsLoaderService) {
+    public itemsLoader: ItemsLoaderService) {
 
     // wait until search suggestions will be loaded
     let interval = setInterval(() => {
-      if (searchSuggestions.loadedGroups && searchSuggestions.loadedRooms && searchSuggestions.loadedTeachers) {
+      if (itemsLoader.loadedGroups && itemsLoader.loadedRooms && itemsLoader.loadedTeachers) {
         this.loading = false
         this.setSearchSuggestions()
         clearInterval(interval)
@@ -70,25 +71,24 @@ export class SearchByComponent implements OnInit {
 
   ngOnInit(): void { }
 
-  // +
   setSearchSuggestions() {
     switch(this.searchMode) { 
       case 'by-group': {
         this.searchValue = ''
         this.searchedArray = [] 
-        this.suggestionsArray = this.searchSuggestions.groups
+        this.suggestionsArray = this.itemsLoader.groups
         break; 
       }
       case 'by-teacher': { 
         this.searchValue = '' 
         this.searchedArray = [] 
-        this.suggestionsArray = this.searchSuggestions.teachers
+        this.suggestionsArray = this.itemsLoader.teachers
         break; 
       }
       case 'by-cabinet': { 
         this.searchValue = '' 
         this.searchedArray = [] 
-        this.suggestionsArray = this.searchSuggestions.rooms
+        this.suggestionsArray = this.itemsLoader.rooms
         break; 
      } 
       default: { 
@@ -97,7 +97,6 @@ export class SearchByComponent implements OnInit {
     } 
   }
 
-  // +
   filter() {
     if (this.searchValue.length==0) {
       this.searchedArray = []
@@ -156,8 +155,8 @@ export class SearchByComponent implements OnInit {
            console.log("no correct search mode")
         }
       }
-      //window.setTimeout(() => { this.loading = false }, 1000);
-      this.loading = false
+      window.setTimeout(() => { this.loading = false }, 500);
+      //this.loading = false
     }
   }  
 
@@ -340,7 +339,6 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  // +
   drawTimeBlocks() {
     let myArray: string[] = []
     let start = parseInt(this.scheduleStartTime.split(':')[0])
@@ -352,7 +350,6 @@ export class SearchByComponent implements OnInit {
     this.timeArray = myArray
   }
 
-  // +
   drawScheduleBlocks() {
     waitForElm('.grid-container').then(async () => {
       for (let i = 1; i < 7; i++) {
@@ -369,7 +366,6 @@ export class SearchByComponent implements OnInit {
   }
 
   // HTML interface functions 
-  // +
   displayHumanDate(date: Date | undefined): string {
     if (date == undefined) {
       return ''
@@ -377,13 +373,11 @@ export class SearchByComponent implements OnInit {
     return date.toLocaleString().split(',')[0].trim()
   }
 
-  // +
   setSubjectId(subject: string): string {
     let time = subject.split(':');
     return "t" + time[0] + time[1]
   }
 
-  // +
   openSubject(subject: Subject[]) {
     this.dialogRef.open(SubjectPopUpComponent, {
       data: {
@@ -393,13 +387,16 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  formatDate(data: Date) {
-    let formDate = data.toString()
-    return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
+  displaySelectedDate(date: Date): string {
+    let language: string = sessionStorage.getItem('language') || 'en'
+
+    let month = this.itemsLoader.months.get(language)?.get(date.getMonth())
+    let day = this.itemsLoader.days.get(language)?.get(date.getDay())
+
+    return month + ' ' + date.getDate() + ' | ' + day
   }
 }
 
-// +
 function waitForElm(selector: string) {
   return new Promise(resolve => {
       if (document.querySelector(selector)) {
@@ -420,7 +417,6 @@ function waitForElm(selector: string) {
   });
 }
 
-// +
 function getTodaysDate(offset: number): Date {
   let today = new Date();
   let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
@@ -429,7 +425,6 @@ function getTodaysDate(offset: number): Date {
   return dateByOffset
 }
 
-// +
 function getWeekDates(date: Date): Map<string, Date> {
   let currentDay = date.getDay()
   let dayDifference = currentDay
@@ -454,16 +449,13 @@ function getWeekDates(date: Date): Map<string, Date> {
   return weekDates
 }
 
-// +
 function toGolangDateFormat(date: Date): string {
   // example: "2022-06-19T00:00:00Z" - golang format
-
   let rowDate = date.toLocaleDateString().split('.')
   let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
   return formatDate
 }
 
-// +
 function compareTime(time1: string, time2: string): number {
   // 1 = time1 > time2
   // 0 = time1 == time2
