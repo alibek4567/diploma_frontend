@@ -1,11 +1,11 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
 import { ApiCallerService } from '../api-caller.service';
 import { MatDialog } from '@angular/material/dialog'
-import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
-import { Subject } from '../subject'
-import { ItemsLoaderService } from '../items-loader.service';
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
+import { ItemsLoaderService } from '../items-loader.service';
+import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
+import { Subject } from '../subject'
 
 @Component({
   selector: 'app-search-by',
@@ -111,13 +111,11 @@ export class SearchByComponent implements OnInit {
   async setSearch() {
     if (this.searchValue == '') {
       this.trigger.openPopover();
-      window.setTimeout(() => { this.trigger.closePopover() }, 1000);
+      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
     } else {
-      this.loading = true
-
       this.trigger.closePopover()
-
-      this.weekSchedule.clear()
+      this.loading = true
+      
       this.timeArray = []
       this.scheduleStartTime = "24:00"
       this.scheduleEndTime = "00:00"
@@ -128,56 +126,45 @@ export class SearchByComponent implements OnInit {
       switch(this.searchMode) { 
         case 'by-group': { 
           this.isCabinet = false
-          //this.suggestionsArray = this.searchSuggestions.groups
-
           this.getTimetable("/timetable/group/" + this.searchValue)
           break; 
         }
-
         case 'by-teacher': { 
           this.isCabinet = false
-          //this.suggestionsArray = this.searchSuggestions.teachers
           let requestId = 0
-          for (let i of this.suggestionsArray) {
-            if (i.name == this.searchValue) {
-              requestId = i.id
+          for (let s of this.suggestionsArray) {
+            if (s.name == this.searchValue) {
+              requestId = s.id
             }
           }
-          //this.getSearchResult("/timetable/tutor/" + requestId)
+          this.getTimetable("/timetable/tutor/" + requestId)
           break; 
         }
-
         case 'by-cabinet': { 
           this.isCabinet = true
-          //this.suggestionsArray = this.searchSuggestions.rooms
           let requestId = 0
-          for (let i of this.suggestionsArray) {
-            if (i.name == this.searchValue) {
-              requestId = i.id
+          for (let s of this.suggestionsArray) {
+            if (s.name == this.searchValue) {
+              requestId = s.id
             }
           }
           //await this.getBookingData("/booking/room/" + requestId)
-          //this.getSearchResult("/timetable/room/" + requestId)
+          this.getTimetable("/timetable/room/" + requestId)
           break; 
         } 
-
         default: { 
-           console.log("no correct search Mode")
-        } 
-      } 
+           console.log("no correct search mode")
+        }
+      }
       this.loading = false
     }
   }  
 
   async getTimetable(request: string) {
-
-    let target = new Map<string, Map<string, Subject[]>>()
-    let responseError = 0
-
-    //this.weekSchedule.clear()
+    this.weekSchedule.clear()
      
-    var response = this.api.sendGetRequest(request).subscribe(data => {
-
+    var response = this.api.sendGetRequest(request)
+    response.subscribe(data => {
       //?
       this.searchSuccess = true
 
@@ -186,44 +173,53 @@ export class SearchByComponent implements OnInit {
       for (let i = 1; i < 7; i++) {
         if (schedule.payload["d" + i] != null) {
           for (let element of schedule.payload["d" + i]) {
-
             // dynamic time setting
-            // if (compareTime(element.start_time, this.scheduleStartTime) == -1) {
-            //   this.scheduleStartTime = element.start_time
-            // }
-            // if (compareTime(element.end_time, this.scheduleEndTime) == 1) {
-            //   this.scheduleEndTime = element.end_time
-            // }
+            if (compareTime(element.start_time, this.scheduleStartTime) == -1) {
+              this.scheduleStartTime = element.start_time
+            }
+            if (compareTime(element.end_time, this.scheduleEndTime) == 1) {
+              this.scheduleEndTime = element.end_time
+            }
             // mapping
-            if (target.get("d" + i) != undefined) {
-              if (target.get("d" + i)?.get(element.start_time) != undefined) {
-                target.get("d" + i)?.get(element.start_time)?.push(element)
+            if (this.weekSchedule.get("d" + i) != undefined) {
+              if (this.weekSchedule.get("d" + i)?.get(element.start_time) != undefined) {
+                this.weekSchedule.get("d" + i)?.get(element.start_time)?.push(element)
               } else {
-                target.get("d" + i)?.set(element.start_time, [element])
+                this.weekSchedule.get("d" + i)?.set(element.start_time, [element])
               }
             } else {
-              target.set("d" + i, new Map())
-              target.get("d" + i)?.set(element.start_time, [element])
+              this.weekSchedule.set("d" + i, new Map())
+              this.weekSchedule.get("d" + i)?.set(element.start_time, [element])
             }
           }
         }
       }
-      console.log(target)
+
+      // Drawing Time blocks
+      let myArray: string[] = []
+      let start = parseInt(this.scheduleStartTime.split(':')[0])
+      let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
+      for (let i = start; i < end; i++) {
+        myArray.push(i + ':00')
+        myArray.push(i + ':30')
+      }
+      this.timeArray = myArray
+
+      // Drawing Subjects
+      waitForElm('.grid-container').then(async () => {
+        for (let i = 1; i < 7; i++) {
+          await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
+        }
+        // for (let i = 1; i < 7; i++) {
+        //   await this.setBooking("d" + i, this.bookingSchedule.get("d" + i))
+        // }
+      });
 
     }, error => { 
       this.searchSuccess = false
       //console.log(error) 
-      responseError = error.status
+      //responseError = error.status
     })
-
-    let data = {
-      'schedule': target,
-      'error': responseError
-    }
-
-    console.log(data)
-
-    return data
   }
 
   async setSubjects(day: string, daySchedule: any) {
