@@ -28,18 +28,19 @@ export class AppComponent implements OnInit{
   id: any
   department: any
   profileInfo: any
-  name = sessionStorage.getItem('username')
+  name = localStorage.getItem('username')
   language: string | null
   isAdmin = false
+  today = new Date()
 
   constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
     private msalService: MsalService,
     public httpClient: HttpClient,
     public router: Router) {    
-
+        
     if(this.isLoggedIn()){
-      console.log(sessionStorage.getItem('id'));
-      const response = api.sendGetRequestWithAuth('/isAdmin/'+sessionStorage.getItem('id'))
+      console.log(localStorage.getItem('id'));
+      const response = api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
       response.subscribe(data =>{
         const r = JSON.parse(JSON.stringify(data))
         console.log(r.payload);
@@ -51,25 +52,25 @@ export class AppComponent implements OnInit{
     }  
     translate.setDefaultLang("en")
 
-    //translate.use(sessionStorage.getItem('language') || 'en');
+    //translate.use(localStorage.getItem('language') || 'en');
 
     // Re check it
-    this.language = sessionStorage.getItem('language')
+    this.language = localStorage.getItem('language')
     if (this.language == null) {
       this.language = 'en'
-      sessionStorage.setItem('language', this.language)
+      localStorage.setItem('language', this.language)
     }
     translate.use(this.language)
 
     this.setTitle("AITU Schedule")
 
-    this.language = sessionStorage.getItem("language")
+    this.language = localStorage.getItem("language")
     if (this.language == null) {
       this.language = "en"
-      sessionStorage.setItem("language", this.language)
+      localStorage.setItem("language", this.language)
     }
 
-    this.username = sessionStorage.getItem('username')
+    this.username = localStorage.getItem('username')
   }
 
   ngOnInit(): void {
@@ -79,15 +80,15 @@ export class AppComponent implements OnInit{
           this.msalService.instance.setActiveAccount(res.account)
           this.getUser()
           this.callProfile()
-          sessionStorage.setItem("username", this.username)
+          localStorage.setItem("username", this.username)
           console.log(this.msalService.instance.getActiveAccount());
-          sessionStorage.setItem("email", this.email)
-          sessionStorage.setItem("id", this.id)
+          localStorage.setItem("email", this.email)
+          localStorage.setItem("id", this.id)
           var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: "Astana IT University"})
           response.subscribe(data => {
             const r = JSON.parse(JSON.stringify(data))
             // this.api.jwt = r.payload       
-            sessionStorage.setItem('token', r.payload)
+            localStorage.setItem('token', r.payload)
           }, error => {
             console.log(error)
           });
@@ -108,7 +109,7 @@ export class AppComponent implements OnInit{
       this.profileInfo = res
       this.department = this.profileInfo.positions[0].detail.company.department
       console.log(this.department)
-      sessionStorage.setItem("department", this.department)
+      localStorage.setItem("department", this.department)
     })
   }
 
@@ -125,11 +126,11 @@ export class AppComponent implements OnInit{
 
   logout() {
     this.msalService.logout()
-    sessionStorage.clear()
+    localStorage.clear()
   }
 
   public setLanguage(event: any) {
-    sessionStorage.setItem("language", event.value)
+    localStorage.setItem("language", event.value)
     window.location.reload()
   }
 
@@ -137,3 +138,16 @@ export class AppComponent implements OnInit{
     this.titleService.setTitle(newTitle)
   }
 }
+
+function setWithExpiry(key: string, value: any) {
+	const now = new Date()
+
+	// `item` is an object which contains the original value
+	// as well as the time when it's supposed to expire
+	const item = {
+		value: value,
+		expiry: now.getDate() + 7,
+	}
+	localStorage.setItem(key, JSON.stringify(item))
+}
+

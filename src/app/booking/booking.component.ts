@@ -212,7 +212,12 @@ cabinetByDate(){
   getServerErrorMessage(error: HttpErrorResponse): string {
     switch (error.status) {
         case 400: {
-            return 'Cabinet is reserved for the selected time, please reload page'
+          if(this.byDate.cabinet == ''){
+            return 'Room is required'
+          }
+          else{
+            return 'Cabinet is reserved for the selected time, try reload page'
+          }
         }
         case 403: {
             return `Access Denied: ${error.message}`;
@@ -240,23 +245,25 @@ cabinetByDate(){
 
     let values = {
       room: data.cabinet, 
-      reserver: sessionStorage.getItem("username"), 
-      reserver_info: sessionStorage.getItem("department"), 
+      reserver: localStorage.getItem("username"), 
+      reserver_info: localStorage.getItem("department"), 
       day: "d"+data.date.getDay(),
       start_time: data.startTime,
       end_time: data.endTime,
       reason: data.comment,
       room_id: parseInt(data.cabinet_id),
-      reserver_id: sessionStorage.getItem("id"),
+      reserver_id: localStorage.getItem("id"),
       date: data.date,
     }
+
+    console.log(values)
 
     let flag = true
 
     const valuesArr = Object.values(values)
     valuesArr.forEach((val, index) => {
       if(val == null || val == ''){
-        this.message = this.formArray[index] + ' required'
+        this.message = this.formArray[index] + ' is required'
         flag = false
       }
     });

@@ -415,7 +415,7 @@ export class SearchByComponent implements OnInit {
 
   // display selected formatted date
   displaySelectedDate(date: Date): string {
-    let language: string = sessionStorage.getItem('language') || 'en'
+    let language: string = localStorage.getItem('language') || 'en'
 
     let month = this.itemsLoader.months.get(language)?.get(date.getMonth())
     let day = this.itemsLoader.days.get(language)?.get(date.getDay())
@@ -427,7 +427,7 @@ export class SearchByComponent implements OnInit {
   getSearchResult(): string {
     if (this.searchMode != 'by-cabinet') {
       if (this.errorStatusTimetable != 0) {
-        let lang = sessionStorage?.getItem('language') || 'en'
+        let lang = localStorage?.getItem('language') || 'en'
         let message = this.errorMessages.get(lang)?.get(this.errorStatusTimetable) || ''
         return message
       }
@@ -444,7 +444,7 @@ export class SearchByComponent implements OnInit {
 
         errorStatus = 404
 
-        let lang = sessionStorage?.getItem('language') || 'en'
+        let lang = localStorage?.getItem('language') || 'en'
         let message = this.errorMessages.get(lang)?.get(errorStatus) || ''
         return message
       }

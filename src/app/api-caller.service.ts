@@ -22,13 +22,13 @@ export class ApiCallerService {
   }
 
   sendGetRequestWithAuth(url: string) {
-    console.log(sessionStorage.getItem('token'));
+    console.log(localStorage.getItem('token'));
     
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
+        'Gao-Jwt-Token': localStorage.getItem('token') || ''
         })
       };
     return this.http.get(this.addr+url, httpOptions)
@@ -50,7 +50,7 @@ export class ApiCallerService {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
+        'Gao-Jwt-Token': localStorage.getItem('token') || ''
         })
       };
     return this.http.post(this.addr+url, data, httpOptions)
@@ -61,7 +61,7 @@ export class ApiCallerService {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',
         'Accept': 'application/json',
-        'Gao-Jwt-Token': sessionStorage.getItem('token') || ''
+        'Gao-Jwt-Token': localStorage.getItem('token') || ''
         })
       };
     return this.http.patch(this.addr+url, httpOptions)

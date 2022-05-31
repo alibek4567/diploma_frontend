@@ -29,22 +29,22 @@ export class HomePageComponent implements OnInit {
   scheduleEndTime: string = "00:00"
   timeArray: string[] = []
 
-  id: string | null = sessionStorage.getItem('id')
+  id: string | null = localStorage.getItem('id')
   bookings: any[]
   message = ''
   loading = true
 
   constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent) {
 
-    console.log(sessionStorage.getItem('department'));
+    console.log(localStorage.getItem('department'));
   
     if(!isNumber(this.department?.substring(this.department.length - 4))){
-      let temp1 = sessionStorage.getItem('department')?.replace('-', '')
+      let temp1 = localStorage.getItem('department')?.replace('-', '')
       if (temp1 != undefined)
       this.searchValue = temp1
       this.searchMode = 'by-group'
     } else {
-      let temp2 = sessionStorage.getItem('username')
+      let temp2 = localStorage.getItem('username')
       if (temp2 != null) {
         this.searchValue = temp2
         this.searchMode = 'by-teacher'
