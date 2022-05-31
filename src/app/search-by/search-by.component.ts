@@ -1,8 +1,9 @@
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { ApiCallerService } from '../api-caller.service';
 import { MatDialog } from '@angular/material/dialog'
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
+
+import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
@@ -30,7 +31,6 @@ export class SearchByComponent implements OnInit {
   searchMode: string = 'by-group'
   searchValue: string = ''
   searchResult: string = ''
-  searchSuccess: boolean = false
   suggestionsArray: any[]
   searchedArray: any[]
 
@@ -48,7 +48,36 @@ export class SearchByComponent implements OnInit {
   // schedule for cabinet consists also the bookings
   bookingSchedule = new Map<string, Map<string, Subject[]>>()
 
+  // Error Handling
+  errorStatusTimetable: number = 0
+  errorStatusBooking: number = 0
 
+  errorMessages = new Map<string, Map<number, string>>([
+    [
+      'en', 
+      new Map<number, string>([
+        [400, 'Request error, check the request correctness'],
+        [404, 'No records in the server'],
+        [500, 'Server error, try to request later ...'],
+      ])
+    ],
+    [
+      'kz', 
+      new Map<number, string>([
+        [400, 'Сұраныстағы қате, сұраудың дұрыстығын тексеріңіз'],
+        [404, 'Серверде жазбалар жоқ'],
+        [500, 'Сервер қатесі, әрекетті кейінірек қайталаңыз ...'],
+      ])
+    ],
+    [
+      'ru', 
+      new Map<number, string>([
+        [400, 'Ошибка в запроса, проверьте правильность запроса'],
+        [404, 'Нет записей на сервере'],
+        [500, 'Ошибка сервера, попробуйте запросить позже...'],
+      ])
+    ]
+  ])
   
   constructor(private api: ApiCallerService, 
     private dialogRef: MatDialog,
@@ -66,11 +95,11 @@ export class SearchByComponent implements OnInit {
     // current week dates
     this.selectedDate = getTodaysDate(+6)
     this.weekDates = getWeekDates(this.selectedDate)
-    // console.log(this.weekDates)
   }
 
   ngOnInit(): void { }
 
+  // set suggestions for search
   setSearchSuggestions() {
     switch(this.searchMode) { 
       case 'by-group': {
@@ -90,13 +119,11 @@ export class SearchByComponent implements OnInit {
         this.searchedArray = [] 
         this.suggestionsArray = this.itemsLoader.rooms
         break; 
-     } 
-      default: { 
-         console.log("No search suggestions")
       } 
     } 
   }
 
+  // search filter
   filter() {
     if (this.searchValue.length==0) {
       this.searchedArray = []
@@ -107,6 +134,7 @@ export class SearchByComponent implements OnInit {
     }
   }
 
+  // start search process
   setSearch() {
     if (this.searchValue == '') {
       this.trigger.openPopover();
@@ -120,7 +148,10 @@ export class SearchByComponent implements OnInit {
       this.scheduleEndTime = "00:00"
 
       this.searchStart = true
-      //this.searchResult = this.searchValue
+      this.searchResult = this.searchValue
+
+      this.errorStatusTimetable = 0
+      this.errorStatusBooking = 0
 
       switch(this.searchMode) { 
         case 'by-group': { 
@@ -151,23 +182,17 @@ export class SearchByComponent implements OnInit {
           this.getTimetableData("/timetable/room/" + requestId)
           break; 
         } 
-        default: { 
-           console.log("no correct search mode")
-        }
       }
       window.setTimeout(() => { this.loading = false }, 500);
       //this.loading = false
     }
   }  
 
+  // return timetable data by requesting to server
   async getTimetableData(request: string) {
     this.weekSchedule.clear()
-     
     var response = this.api.sendGetRequest(request)
     response.subscribe(data => {
-      //?
-      this.searchSuccess = true
-
       const schedule = JSON.parse(JSON.stringify(data))
       // process data
       for (let i = 1; i < 7; i++) {
@@ -201,12 +226,11 @@ export class SearchByComponent implements OnInit {
       // drawing schedule elements
       this.drawScheduleBlocks()
     }, error => { 
-      this.searchSuccess = false
-      //console.log(error) 
-      //responseError = error.status
+      this.errorStatusTimetable = error.status
     })
   }
 
+  // set subjects blocks for arrays to display
   async setSubjects(day: string, daySchedule: any) {
     daySchedule.forEach(async (subjects: Subject[]) => {
 
@@ -246,9 +270,9 @@ export class SearchByComponent implements OnInit {
     })
   }
 
+  // return booking data by requesting to server
   async getBookingData(request: string) {
     this.bookingSchedule.clear()
-
     this.weekDates = getWeekDates(this.selectedDate)
 
     let data = {
@@ -256,9 +280,6 @@ export class SearchByComponent implements OnInit {
     }
     var response = this.api.sendPostRequest(request, data)
     response.subscribe(data => {
-      // ?
-      this.searchSuccess = true
-
       const schedule = JSON.parse(JSON.stringify(data))
       // process data
       for (let date of this.weekDates) {
@@ -297,12 +318,11 @@ export class SearchByComponent implements OnInit {
       // drawing schedule elements
       this.drawScheduleBlocks()
     }, error => {
-      console.log(error)
-      // console.log(this.weekSchedule)
-      // this.errorBooking = error.status
+      this.errorStatusBooking= error.status
     })
   }
 
+  // set bookings blocks for arrays to display
   async setBooking(day: string, daySchedule: any) {
       daySchedule.forEach(async (subjects: Subject[]) => {
   
@@ -339,6 +359,7 @@ export class SearchByComponent implements OnInit {
     })
   }
 
+  // draw time blocks
   drawTimeBlocks() {
     let myArray: string[] = []
     let start = parseInt(this.scheduleStartTime.split(':')[0])
@@ -350,6 +371,7 @@ export class SearchByComponent implements OnInit {
     this.timeArray = myArray
   }
 
+  // draw schedule blocks
   drawScheduleBlocks() {
     waitForElm('.grid-container').then(async () => {
       for (let i = 1; i < 7; i++) {
@@ -366,18 +388,22 @@ export class SearchByComponent implements OnInit {
   }
 
   // HTML interface functions 
+  // display human date
   displayHumanDate(date: Date | undefined): string {
     if (date == undefined) {
       return ''
     }
-    return date.toLocaleString().split(',')[0].trim()
+    let tempDate = date.toLocaleString().split(',')[0].trim().split('.')
+    return tempDate[0] + '.' + tempDate[1]
   }
 
+  // setting unique id for schedule blocks
   setSubjectId(subject: string): string {
     let time = subject.split(':');
     return "t" + time[0] + time[1]
   }
 
+  // pass subject/booking to open in modal window
   openSubject(subject: Subject[]) {
     this.dialogRef.open(SubjectPopUpComponent, {
       data: {
@@ -387,6 +413,7 @@ export class SearchByComponent implements OnInit {
     })
   }
 
+  // display selected formatted date
   displaySelectedDate(date: Date): string {
     let language: string = sessionStorage.getItem('language') || 'en'
 
@@ -394,6 +421,36 @@ export class SearchByComponent implements OnInit {
     let day = this.itemsLoader.days.get(language)?.get(date.getDay())
 
     return month + ' ' + date.getDate() + ' | ' + day
+  }
+
+  // display search result / errors
+  getSearchResult(): string {
+    if (this.searchMode != 'by-cabinet') {
+      if (this.errorStatusTimetable != 0) {
+        let lang = sessionStorage?.getItem('language') || 'en'
+        let message = this.errorMessages.get(lang)?.get(this.errorStatusTimetable) || ''
+        return message
+      }
+    } else if (this.searchMode == 'by-cabinet' && this.isCabinet) {
+      if (this.weekSchedule.size == 0 && this.bookingSchedule.size == 0) {
+        let errorStatus = 0
+        if (this.errorStatusTimetable != 0 && this.errorStatusBooking != 0) {
+          if (this.errorStatusTimetable == 400 || this.errorStatusBooking == 400) {
+            errorStatus = 400
+          } else if (this.errorStatusTimetable == 500 || this.errorStatusBooking == 500) {
+            errorStatus = 500
+          }
+        }
+
+        errorStatus = 404
+
+        let lang = sessionStorage?.getItem('language') || 'en'
+        let message = this.errorMessages.get(lang)?.get(errorStatus) || ''
+        return message
+      }
+    }
+
+    return this.searchResult
   }
 }
 
@@ -434,15 +491,12 @@ function getWeekDates(date: Date): Map<string, Date> {
     let temp = new Date(date)
     if (i == currentDay) {
       weekDates.set('d' + i, temp)
-      //console.log('d' + i, 'me', temp)
     } else if (i < currentDay) {
       weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
-      //console.log('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
       dayDifference--
     } else {
       dayDifference++
       weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
-      //console.log('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
     }
   }
 

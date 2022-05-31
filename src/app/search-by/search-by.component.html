@@ -89,8 +89,8 @@
     </div>
 
     <!-- timetable-->
-    <h2 class="searchField">{{ searchResult }}</h2>
-    <div *ngIf="searchStart && searchSuccess" class="grid-container">
+    <h2 class="searchField">{{ getSearchResult() }}</h2>
+    <div *ngIf="searchStart && ((weekSchedule.size != 0) || ((bookingSchedule.size != 0) && (isCabinet)))" class="grid-container">
       <div class="grid-item">
         <div class="day"></div>
         <div class="column">
