@@ -10,6 +10,11 @@ import { Subject } from '../subject'
 import { AppComponent } from '../app.component';
 
 
+import { jsPDF } from 'jspdf';
+import autoTable, { RowInput } from 'jspdf-autotable';
+
+import '../../assets/fonts/OpenSans-Regular-normal'
+
 @Component({
   selector: 'app-search-by',
   templateUrl: './search-by.component.html',
@@ -461,6 +466,84 @@ export class SearchByComponent implements OnInit {
     }
 
     return this.searchResult
+  }
+
+  getPdf() {
+    let language: string = localStorage.getItem('language') || 'en'
+    
+    const doc = new jsPDF('portrait', 'pt', 'a4')
+
+    if (this.weekSchedule.size != 0) {
+      let rows: { "content": string, "rowSpan": number }[][] = []
+
+      this.weekSchedule.forEach((schedule, day) => {
+        let dayNumber = parseInt(day[1])
+        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+
+        schedule.forEach((subjects, time) => {
+          let title = ''
+          let room = ''
+          let type = ''
+          let tutor = ''
+          let end_time = ''
+          for (let i = 0; i < subjects.length; i++) {
+            if (i + 1 != subjects.length) {
+              title += subjects[i].subject + ' / '
+              room += subjects[i].room + ' / '
+              type = subjects[i].lesson_type + ' / '
+              tutor += subjects[i].tutor + ' / '
+              end_time = subjects[i].end_time
+            } else {
+              title += subjects[i].subject
+              room += subjects[i].room
+              type = subjects[i].lesson_type
+              tutor += subjects[i].tutor
+              end_time = subjects[i].end_time
+            }
+          }
+          rows.push([
+            { "content": theDay, "rowSpan": 1 }, 
+            { "content": time + '-' + end_time, "rowSpan": 1 }, 
+            { "content": title, "rowSpan": 1 }, 
+            { "content": room, "rowSpan": 1 }, 
+            { "content": type, "rowSpan": 1 }, 
+            { "content": tutor, "rowSpan": 1 }])
+        })
+      })
+
+      let counter = 0
+      let index = 0
+      let day = rows[0][0].content
+
+      for (var i = 0; i < rows.length; i++) {
+        if (day == rows[i][0].content) {
+          counter++
+          if (i != index) {
+            rows[i].shift()
+          }
+        } else {
+          day = rows[i][0].content
+          rows[index][0].rowSpan = counter
+          counter = 1
+          index = i
+        }
+        if (i + 1 == rows.length) {
+          rows[index][0].rowSpan = counter
+        }
+      }
+
+      let header: RowInput = this.itemsLoader.scheduleTableFields.get(language) || []
+
+      autoTable(doc, {
+        head: [ header ],
+        body: rows,
+        theme: 'grid',
+        headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+        styles: { font: "OpenSans-Regular", fontSize: 8 },
+      })
+  
+      doc.save(this.searchResult + '.pdf')
+    }
   }
 }
 

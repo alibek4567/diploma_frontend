@@ -38,7 +38,7 @@ import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admi
 import { HomePageComponent } from './home-page/home-page.component';
 import { CustomDateAdapter } from './booking/custom-adapter';
 import { environment } from 'src/environments/environment';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
+//import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -106,7 +106,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     MdePopoverModule,
-    MatCardModule
+    MatCardModule,
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
