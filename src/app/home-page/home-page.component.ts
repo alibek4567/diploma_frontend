@@ -31,9 +31,11 @@ export class HomePageComponent implements OnInit {
   timeArray: string[] = []
 
   id: string | null = localStorage.getItem('id')
-  bookings: any[]
-  message = ''
+  bookings: any[] = []
+  messageForBooking = "No Events"
+  messageForSchedule = "No Schedule"
   loading = true
+  today = new Date
 
   constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router) {
     if(!app.isLoggedIn()){
@@ -64,18 +66,17 @@ export class HomePageComponent implements OnInit {
     var response = this.api.sendGetRequest("/booking/reserver/"+this.id)
     response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
-      if(data.payload != null){
-        this.bookings = data.payload
-        this.message = "success"
-        console.log(this.bookings);
-      }
-      else{
-        this.message = "empty"
+      if(data.payload != undefined){
+        const temp = data.payload
+        for(let item of temp){
+          if(dateCompare(item.date.split('T')[0], toGolangDateFormat(this.today).split('T')[0]) == 1 ||
+            dateCompare(item.date.split('T')[0], toGolangDateFormat(this.today).split('T')[0]) == 0){
+            this.bookings.push(item)
+          }
+        }
       }
     }, error => {
-      this.message = error
     })
-
   }
 
   ngOnInit(): void {
@@ -251,6 +252,26 @@ function waitForElm(selector: string) {
           subtree: true
       });
   });
+}
+
+function toGolangDateFormat(date: Date): string {
+  // example: "2022-06-19T00:00:00Z" - golang format
+  let rowDate = date.toLocaleDateString().split('.')
+  let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
+  return formatDate
+}
+
+function dateCompare(d1: string, d2: string): number{
+  const date1 = new Date(d1);
+  const date2 = new Date(d2);
+
+  if(date1 > date2){
+      return 1
+  } else if(date1 < date2){
+      return -1
+  } else{
+      return 0
+  }
 }
 
 function compareTime(time1: string, time2: string): number {

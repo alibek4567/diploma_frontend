@@ -218,13 +218,13 @@ cabinetByDate(){
           }
         }
         case 403: {
-            return `Access Denied: ${error.message}`;
+            return `Access Denied`;
         }
         case 500: {
-            return `Internal Server Error: ${error.message}`;
+            return `Internal Server Error`;
         }
         default: {
-            return `Unknown Server Error: ${error.message}`;
+            return `Unknown Server Error`;
         }
     }
 }
