@@ -171,7 +171,7 @@
 
 .export {
   margin-left: 2rem;
-  height: fit-content;
+  height: 3rem;
   border-radius: 10px;
   display: flex;
   align-items: center;
@@ -179,10 +179,6 @@
   border: none;
   background-color: #457CCE;
   color: white;
-
-  p {
-    font-size: 1rem;
-  }
 }
   
 h2 {
@@ -332,10 +328,12 @@ h2 {
   position: fixed;
   left: 50%;
   top: 50%;
+}
 
-  
+.matCard {
+  max-width: 300px
 }
 
 :host ::ng-deep .mat-progress-spinner circle, .mat-spinner circle {   
-  stroke: orange;
+  stroke: rgb(165, 52, 214);
 }

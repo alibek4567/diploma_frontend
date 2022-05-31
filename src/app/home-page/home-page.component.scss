@@ -149,8 +149,7 @@
   }
   
   .export {
-    margin-left: 2rem;
-    height: fit-content;
+    height: 3rem;
     border-radius: 10px;
     display: flex;
     align-items: center;
@@ -158,10 +157,7 @@
     border: none;
     background-color: #457CCE;
     color: white;
-  
-    p {
-      font-size: 1rem;
-    }
+    margin-bottom: 2rem;
   }
     
   h2 {

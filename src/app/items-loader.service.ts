@@ -99,7 +99,7 @@ export class ItemsLoaderService {
     ]
   ])
 
-  scheduleTableFields = new Map<string, string[]>([
+  timeTableFields = new Map<string, string[]>([
     [
       'en', 
       ['Week days', 'Time', 'Discipline', 'Cabinet', 'Type', 'Tutor']
@@ -111,6 +111,21 @@ export class ItemsLoaderService {
     [
       'ru', 
       ['Дни недели', 'Время', 'Дисциплина', 'Кабинет', 'Тип', 'Препод.']
+    ]
+  ])
+
+  bookingTableFields = new Map<string, string[]>([
+    [
+      'en', 
+      ['Week days', 'Time', 'Reason', 'Cabinet', 'Confirmed', 'Owner']
+    ],
+    [
+      'kz', 
+      ['Апта күндері', 'Уақыт', 'Себеп', 'Кабинет', 'Расталған', 'Иесі']
+    ],
+    [
+      'ru', 
+      ['Дни недели', 'Время', 'Причина', 'Кабинет', 'Подтвержден', 'Владелец']
     ]
   ])
 

@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
@@ -8,7 +8,6 @@ import { ItemsLoaderService } from '../items-loader.service';
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
 import { AppComponent } from '../app.component';
-
 
 import { jsPDF } from 'jspdf';
 import autoTable, { RowInput } from 'jspdf-autotable';
@@ -25,7 +24,7 @@ import '../../assets/fonts/OpenSans-Regular-normal'
 export class SearchByComponent implements OnInit {
 
   @ViewChild('autoCompleteInput', { read: MatAutocompleteTrigger }) autoComplete: MatAutocompleteTrigger;
-  @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger;
+  @ViewChildren(MdePopoverTrigger) trigger: QueryList<MdePopoverTrigger>;
 
   // loader display
   loading: boolean = true
@@ -150,13 +149,16 @@ export class SearchByComponent implements OnInit {
   }
 
   // start search process
-  setSearch() {
+  setSearch(id: number) {
     if (this.searchValue == '') {
-      this.trigger.openPopover();
-      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
+      this.trigger.toArray()[id].openPopover();
+      window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
     } else {
-      this.trigger.closePopover()
+      this.trigger.toArray()[id].closePopover()
       this.loading = true
+
+      this.weekSchedule.clear()
+      this.bookingSchedule.clear()
       
       this.timeArray = []
       this.scheduleStartTime = "24:00"
@@ -468,15 +470,37 @@ export class SearchByComponent implements OnInit {
     return this.searchResult
   }
 
-  getPdf() {
-    let language: string = localStorage.getItem('language') || 'en'
+  getPdf(id: number) {
+    if (this.weekSchedule.size != 0 || this.bookingSchedule.size != 0) {
+      let language: string = localStorage.getItem('language') || 'en'
     
-    const doc = new jsPDF('portrait', 'pt', 'a4')
+      const doc = new jsPDF('portrait', 'pt', 'a4')
 
-    if (this.weekSchedule.size != 0) {
-      let rows: { "content": string, "rowSpan": number }[][] = []
+      doc.setFont('OpenSans-Regular', 'normal')
+      doc.setFontSize(10)
 
-      this.weekSchedule.forEach((schedule, day) => {
+      let isSchedule = this.weekSchedule.size != 0
+      let isBooking = this.bookingSchedule.size != 0
+
+      let headerTxt = ''
+
+      if (isSchedule) {
+        headerTxt = 'Schedule: ' + this.searchResult
+
+        if (isBooking) {
+          headerTxt += ' with Booking'
+        }
+      } else if(isBooking) {
+        headerTxt = 'Booking: ' + this.searchResult
+      }
+     
+      doc.text(headerTxt, 50, 50);
+
+      let rowsTimetable: { "content": string, "rowSpan": number }[][] = []
+      let rowsBookings: { "content": string, "rowSpan": number }[][] = []
+
+      if (isSchedule) {
+        this.weekSchedule.forEach((schedule, day) => {
         let dayNumber = parseInt(day[1])
         let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
 
@@ -501,7 +525,7 @@ export class SearchByComponent implements OnInit {
               end_time = subjects[i].end_time
             }
           }
-          rows.push([
+          rowsTimetable.push([
             { "content": theDay, "rowSpan": 1 }, 
             { "content": time + '-' + end_time, "rowSpan": 1 }, 
             { "content": title, "rowSpan": 1 }, 
@@ -509,40 +533,99 @@ export class SearchByComponent implements OnInit {
             { "content": type, "rowSpan": 1 }, 
             { "content": tutor, "rowSpan": 1 }])
         })
-      })
+        })
 
-      let counter = 0
-      let index = 0
-      let day = rows[0][0].content
-
-      for (var i = 0; i < rows.length; i++) {
-        if (day == rows[i][0].content) {
+        let counter = 0
+        let index = 0
+        let day = rowsTimetable[0][0].content
+        for (var i = 0; i < rowsTimetable.length; i++) {
+        if (day == rowsTimetable[i][0].content) {
           counter++
           if (i != index) {
-            rows[i].shift()
+            rowsTimetable[i].shift()
           }
         } else {
-          day = rows[i][0].content
-          rows[index][0].rowSpan = counter
+          day = rowsTimetable[i][0].content
+          rowsTimetable[index][0].rowSpan = counter
           counter = 1
           index = i
         }
-        if (i + 1 == rows.length) {
-          rows[index][0].rowSpan = counter
+        if (i + 1 == rowsTimetable.length) {
+          rowsTimetable[index][0].rowSpan = counter
         }
+        }
+
+        let header: RowInput = this.itemsLoader.timeTableFields.get(language) || []
+
+        autoTable(doc, {
+          head: [ header ],
+          body: rowsTimetable,
+          theme: 'grid',
+          headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+          styles: { font: "OpenSans-Regular", fontSize: 8 },
+          margin: {top: 60, bottom: 60},
+          horizontalPageBreak: true
+        })
       }
 
-      let header: RowInput = this.itemsLoader.scheduleTableFields.get(language) || []
+      if (isBooking) {
+      this.bookingSchedule.forEach((schedule, day) => {
+        let dayNumber = parseInt(day[1])
+        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
 
-      autoTable(doc, {
-        head: [ header ],
-        body: rows,
-        theme: 'grid',
-        headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
-        styles: { font: "OpenSans-Regular", fontSize: 8 },
-      })
+        let date = this.weekDates.get(day)
+
+        schedule.forEach((bookings, time) => {
+
+          let status = bookings[0].confirmed?'+':'-'
+
+          rowsBookings.push([
+            { "content": theDay + '\n' + this.displayHumanDate(date), "rowSpan": 1 }, 
+            { "content": time + '-' + bookings[0].end_time, "rowSpan": 1 }, 
+            { "content": bookings[0].reason, "rowSpan": 1 }, 
+            { "content": bookings[0].room, "rowSpan": 1 }, 
+            { "content": status, "rowSpan": 1 }, 
+            { "content": bookings[0].reserver, "rowSpan": 1 }])
+          })
+        })
+
+        let counter = 0
+        let index = 0
+        let day = rowsBookings[0][0].content
+        for (var i = 0; i < rowsBookings.length; i++) {
+        if (day == rowsBookings[i][0].content) {
+          counter++
+          if (i != index) {
+            rowsBookings[i].shift()
+          }
+        } else {
+          day = rowsBookings[i][0].content
+          rowsBookings[index][0].rowSpan = counter
+          counter = 1
+          index = i
+        }
+        if (i + 1 == rowsBookings.length) {
+          rowsBookings[index][0].rowSpan = counter
+        }
+        }
+
+        let header: RowInput = this.itemsLoader.bookingTableFields.get(language) || []
+
+        autoTable(doc, {
+          head: [ header ],
+          body: rowsBookings,
+          theme: 'grid',
+          headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+          styles: { font: "OpenSans-Regular", fontSize: 8 },
+          margin: {top: 60, bottom: 60},
+          horizontalPageBreak: true
+        })
+      }
   
       doc.save(this.searchResult + '.pdf')
+    } else {
+      this.trigger.toArray()[id].openPopover();
+      window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
     }
   }
 }
