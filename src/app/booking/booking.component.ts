@@ -5,6 +5,7 @@ import { Router } from '@angular/router';
 import { MdePopover, MdePopoverTrigger } from '@material-extended/mde';
 import { catchError, NotFoundError, retry, throwError } from 'rxjs';
 import { ApiCallerService } from '../api-caller.service';
+import { AppComponent } from '../app.component';
 import { ItemsLoaderService } from '../items-loader.service';
 
 export interface Select {
@@ -64,7 +65,10 @@ export class BookingComponent implements OnInit {
     cabinet_id: ''
   }
 
-  constructor(private api: ApiCallerService, private router: Router, public items: ItemsLoaderService) {
+  constructor(private api: ApiCallerService, private router: Router, public items: ItemsLoaderService, public app: AppComponent) {
+    if(!app.isLoggedIn()){
+      router.navigateByUrl('')
+    }
     this.searchedRooms = this.items.rooms
   }
 
@@ -192,12 +196,6 @@ cabinetByDate(){
       console.log(this.byRoom);
     }
   }
-
-  myFilter = (d: Date | null): boolean => {
-    const day = (d || new Date()).getDay();
-    // Prevent Saturday and Sunday from being selected.
-    return day !== 0;
-  };
 
   showEvent(event: any){
     console.log(event);

@@ -1,4 +1,4 @@
-import { Component, OnInit, ViewChild } from '@angular/core';
+import { Component, Inject, OnInit, ViewChild } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
@@ -7,11 +7,14 @@ import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
+import { AppComponent } from '../app.component';
+
 
 @Component({
   selector: 'app-search-by',
   templateUrl: './search-by.component.html',
-  styleUrls: ['./search-by.component.scss']
+  styleUrls: ['./search-by.component.scss'],
+  
 })
 
 export class SearchByComponent implements OnInit {
@@ -81,7 +84,8 @@ export class SearchByComponent implements OnInit {
   
   constructor(private api: ApiCallerService, 
     private dialogRef: MatDialog,
-    public itemsLoader: ItemsLoaderService) {
+    public itemsLoader: ItemsLoaderService,
+    public app: AppComponent) {
 
     // wait until search suggestions will be loaded
     let interval = setInterval(() => {
@@ -122,6 +126,12 @@ export class SearchByComponent implements OnInit {
       } 
     } 
   }
+
+  myFilter = (d: any): boolean => {
+    const day = (d || new Date()).getDay();
+    // Prevent Saturday and Sunday from being selected.
+    return day !== 0;
+  };
 
   // search filter
   filter() {

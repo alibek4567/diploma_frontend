@@ -25,7 +25,7 @@
                 <div class="inputHolder" >
                     <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
-                        <input (dateChange)="getData()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true">
+                        <input (dateChange)="getData()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="app.myFilter">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </div>
@@ -54,7 +54,7 @@
                 <div class="inputHolder" >
                     <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
-                        <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="myFilter">
+                        <input (dateChange)="cabinetByDate()" [min]="today" [max]="maxDate" [(ngModel)]="byDate.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="app.myFilter">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </div>

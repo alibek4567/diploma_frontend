@@ -3,7 +3,13 @@
 // The list of file replacements can be found in `angular.json`.
 
 export const environment = {
-  production: false
+  production: false,
+  azureID: '8afd985b-5cad-4d4a-8b6b-d41e17e64991',
+  url: 'http://localhost:4200',
+  botEmail: 'booking@astanait.edu.kz',
+  botPass: 'R!`&qb2VXZC&9v@f',
+  botID: '1d89bbd4-f193-4457-b39a-0140fcf1ed01',
+  botTenantID: "158f15f3-83e0-4906-824c-69bdc50d9d61"
 };
 
 /*

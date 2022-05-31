@@ -3,7 +3,7 @@
   <!-- content of search by cabinet -->
   <div *ngIf="isCabinet && searchStart" class="calendarHolder">
     <!-- calendar picker -->
-    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate" (selectedChange)="setSearch()"></mat-calendar>
+    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate" (selectedChange)="setSearch()" [dateFilter]="myFilter"></mat-calendar>
     <!-- data legend -->
     <div class="legend">
       <p>{{ 'SEARCH.legend' | translate }}:</p>

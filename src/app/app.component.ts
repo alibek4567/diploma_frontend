@@ -1,10 +1,11 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, Inject, OnInit } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { ApiCallerService } from './api-caller.service';
 import { HttpClient } from '@angular/common/http';
 import { Router } from '@angular/router';
+import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 
 @Component({
   selector: 'app-root',
@@ -36,14 +37,18 @@ export class AppComponent implements OnInit{
   constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
     private msalService: MsalService,
     public httpClient: HttpClient,
-    public router: Router) {    
+    public router: Router,
+    @Inject(MAT_DATE_LOCALE) private _locale: string,
+    private _adapter: DateAdapter<any>) {    
+
+    this._locale = this.setCalendar(localStorage.getItem('language') || 'en') 
+    this._adapter.setLocale(this._locale) 
         
     if(this.isLoggedIn()){
       console.log(localStorage.getItem('id'));
       const response = api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
       response.subscribe(data =>{
         const r = JSON.parse(JSON.stringify(data))
-        console.log(r.payload);
         if(r.payload != null){
           this.isAdmin = true
         }
@@ -81,7 +86,6 @@ export class AppComponent implements OnInit{
           this.getUser()
           this.callProfile()
           localStorage.setItem("username", this.username)
-          console.log(this.msalService.instance.getActiveAccount());
           localStorage.setItem("email", this.email)
           localStorage.setItem("id", this.id)
           var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: "Astana IT University"})
@@ -90,7 +94,6 @@ export class AppComponent implements OnInit{
             // this.api.jwt = r.payload       
             localStorage.setItem('token', r.payload)
           }, error => {
-            console.log(error)
           });
         }
       }
@@ -108,7 +111,6 @@ export class AppComponent implements OnInit{
       this.apiResponse = JSON.stringify(res)
       this.profileInfo = res
       this.department = this.profileInfo.positions[0].detail.company.department
-      console.log(this.department)
       localStorage.setItem("department", this.department)
     })
   }
@@ -124,6 +126,18 @@ export class AppComponent implements OnInit{
     // })
   }
 
+  setCalendar(language: string){
+    switch(language){
+      case 'ru':
+      return 'ru-RU';
+      case 'en':
+      return 'en-US';
+      case 'kz':
+      return 'ru-RU';
+    }
+    return 'en-US'
+  }
+
   logout() {
     this.msalService.logout()
     localStorage.clear()
@@ -133,6 +147,12 @@ export class AppComponent implements OnInit{
     localStorage.setItem("language", event.value)
     window.location.reload()
   }
+
+  myFilter = (d: Date | null): boolean => {
+    const day = (d || new Date()).getDay();
+    // Prevent Saturday and Sunday from being selected.
+    return day !== 0;
+  };
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle)
@@ -150,4 +170,5 @@ function setWithExpiry(key: string, value: any) {
 	}
 	localStorage.setItem(key, JSON.stringify(item))
 }
+
 

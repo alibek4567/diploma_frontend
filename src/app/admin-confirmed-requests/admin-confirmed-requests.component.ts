@@ -1,6 +1,7 @@
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Component, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { environment } from 'src/environments/environment';
 import { ApiCallerService } from '../api-caller.service';
 import { AppComponent } from '../app.component';
 
@@ -46,11 +47,11 @@ export class AdminConfirmedRequestsComponent implements OnInit {
   }
 
   reject(data: any, email: string){
-    const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    const message = response.subscribe(data =>{
-    },error =>{
-      console.log(error);
-    })
+    // const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
+    // const message = response.subscribe(data =>{
+    // },error =>{
+    //   console.log(error);
+    // })
 
     // setTimeout(() => {
     // }, 3000);
@@ -69,6 +70,11 @@ export class AdminConfirmedRequestsComponent implements OnInit {
             }
           }
         ],
+        from: {
+          emailAddress: {
+            address: "booking@astanait.edu.kz"
+          }
+        }
       },
       saveToSentItems: 'true'
     };
@@ -93,3 +99,4 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     
   }
 }
+

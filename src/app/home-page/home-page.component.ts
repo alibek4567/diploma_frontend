@@ -4,6 +4,7 @@ import { MatDialog } from '@angular/material/dialog';
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { ApiCallerService } from '../api-caller.service';
 import { AppComponent } from '../app.component';
+import { Router } from '@angular/router';
 
 @Component({
   selector: 'app-home-page',
@@ -34,7 +35,10 @@ export class HomePageComponent implements OnInit {
   message = ''
   loading = true
 
-  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent) {
+  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router) {
+    if(!app.isLoggedIn()){
+      router.navigateByUrl('')
+    }
 
     console.log(localStorage.getItem('department'));
   
