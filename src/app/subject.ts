@@ -24,6 +24,7 @@ export class Subject implements ScheduleElement {
     created_time: string
     reason: string
     confirmed: boolean
+    reserver: string
   }
 
   // export class Booking implements ScheduleElement {

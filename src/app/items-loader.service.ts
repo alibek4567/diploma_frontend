@@ -99,6 +99,36 @@ export class ItemsLoaderService {
     ]
   ])
 
+  timeTableFields = new Map<string, string[]>([
+    [
+      'en', 
+      ['Week days', 'Time', 'Discipline', 'Cabinet', 'Type', 'Tutor']
+    ],
+    [
+      'kz', 
+      ['Апта күндері', 'Уақыт', 'Дисциплина', 'Кабинет', 'Тип', 'Оқытушы']
+    ],
+    [
+      'ru', 
+      ['Дни недели', 'Время', 'Дисциплина', 'Кабинет', 'Тип', 'Препод.']
+    ]
+  ])
+
+  bookingTableFields = new Map<string, string[]>([
+    [
+      'en', 
+      ['Week days', 'Time', 'Reason', 'Cabinet', 'Confirmed', 'Owner']
+    ],
+    [
+      'kz', 
+      ['Апта күндері', 'Уақыт', 'Себеп', 'Кабинет', 'Расталған', 'Иесі']
+    ],
+    [
+      'ru', 
+      ['Дни недели', 'Время', 'Причина', 'Кабинет', 'Подтвержден', 'Владелец']
+    ]
+  ])
+
   rooms: []
   groups: []
   teachers: []
@@ -110,7 +140,6 @@ export class ItemsLoaderService {
     var response = this.api.sendGetRequest("/room")
     response.subscribe(data => {
       this.rooms = JSON.parse(JSON.stringify(data)).payload
-      console.log(this.rooms);
       this.loadedRooms = true
     }, error => {
       console.log(error)
@@ -119,7 +148,6 @@ export class ItemsLoaderService {
     var response = this.api.sendGetRequest("/group")
     response.subscribe(data => {
       this.groups = JSON.parse(JSON.stringify(data)).payload
-      console.log(this.groups);
       this.loadedGroups = true
     }, error => {
       console.log(error)
@@ -128,10 +156,11 @@ export class ItemsLoaderService {
     var response = this.api.sendGetRequest("/teacher")
     response.subscribe(data => {
       this.teachers = JSON.parse(JSON.stringify(data)).payload
-      console.log(this.teachers);
       this.loadedTeachers = true
     }, error => {
       console.log(error)
     })
-   }
+  }
 }
+
+

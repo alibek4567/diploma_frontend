@@ -17,6 +17,18 @@
   
     <div class="content">  
       <h2 class="searchField">{{searchValue}}</h2>
+      <button *ngIf="searchStart" class="export" mat-icon-button (click)="getPdf(0)"
+      [mdePopoverTriggerFor]="appPopoverExport" mdePopoverTriggerOn="none">
+      <mat-icon>get_app</mat-icon> 
+    </button>
+    <mde-popover #appPopoverExport="mdePopover" [mdePopoverOverlapTrigger]="false">
+      <mat-card class="matCard">
+        <mat-card-content>
+          No data to export
+        </mat-card-content>
+      </mat-card>
+    </mde-popover>
+
       <h2 *ngIf="weekSchedule.size == 0" class="searchField">{{messageForSchedule}}</h2>
       <div *ngIf="weekSchedule.size != 0" class="grid-container">
         <div class="grid-item">

@@ -3,7 +3,7 @@
   <!-- content of search by cabinet -->
   <div *ngIf="isCabinet && searchStart" class="calendarHolder">
     <!-- calendar picker -->
-    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate" (selectedChange)="setSearch()" [dateFilter]="myFilter"></mat-calendar>
+    <mat-calendar *ngIf="isCabinet" [(selected)]="selectedDate" (selectedChange)="setSearch(0)" [dateFilter]="myFilter"></mat-calendar>
     <!-- data legend -->
     <div class="legend">
       <p>{{ 'SEARCH.legend' | translate }}:</p>
@@ -64,28 +64,34 @@
         </mat-select>
         <input type="text" matInput [(ngModel)]="searchValue" placeholder="{{ 'SEARCH.search' | translate }} &hellip;" 
           (ngModelChange)="filter()" #autoCompleteInput [matAutocomplete]="auto">
-
-        <mde-popover #appPopover="mdePopover" [mdePopoverOverlapTrigger]="false" [mdePopoverCloseOnClick]="false">
-          <mat-card style="max-width: 300px">
-            <mat-card-content>
-              Search value is required
-            </mat-card-content>
-          </mat-card>
-        </mde-popover>
-
         <mat-autocomplete #auto="matAutocomplete">
           <mat-option *ngFor="let item of searchedArray" [value]="item['name']">
               {{item['name']}}
           </mat-option>
         </mat-autocomplete>
-        <button type="submit" mat-icon-button (click)="setSearch()" 
-          [mdePopoverTriggerFor]="appPopover" mdePopoverTriggerOn="none" #popoverTrigger="mdePopoverTrigger">
+        <button type="submit" mat-icon-button (click)="setSearch(0)" 
+          [mdePopoverTriggerFor]="appPopoverSearch" mdePopoverTriggerOn="none">
           <mat-icon>search</mat-icon>
         </button>
+        <mde-popover #appPopoverSearch="mdePopover" [mdePopoverOverlapTrigger]="false">
+          <mat-card class="matCard">
+            <mat-card-content>
+              Search value is required
+            </mat-card-content>
+          </mat-card>
+        </mde-popover>
       </div>
-      <!-- <button *ngIf="searchStart" class="export" mat-icon-button>
-        <p>Export JPEG</p>
-      </button> -->
+      <button *ngIf="searchStart" class="export" mat-icon-button (click)="getPdf(1)"
+        [mdePopoverTriggerFor]="appPopoverExport" mdePopoverTriggerOn="none">
+        <mat-icon>get_app</mat-icon> 
+      </button>
+      <mde-popover #appPopoverExport="mdePopover" [mdePopoverOverlapTrigger]="false">
+        <mat-card class="matCard">
+          <mat-card-content>
+            No data to export
+          </mat-card-content>
+        </mat-card>
+      </mde-popover>
     </div>
 
     <!-- timetable-->

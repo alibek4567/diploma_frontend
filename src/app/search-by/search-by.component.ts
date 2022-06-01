@@ -1,4 +1,4 @@
-import { Component, Inject, OnInit, ViewChild } from '@angular/core';
+import { Component, OnInit, ViewChild, ViewChildren, QueryList } from '@angular/core';
 import { MatDialog } from '@angular/material/dialog'
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
@@ -9,6 +9,10 @@ import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.componen
 import { Subject } from '../subject'
 import { AppComponent } from '../app.component';
 
+import { jsPDF } from 'jspdf';
+import autoTable, { RowInput } from 'jspdf-autotable';
+
+import '../../assets/fonts/OpenSans-Regular-normal'
 
 @Component({
   selector: 'app-search-by',
@@ -20,7 +24,7 @@ import { AppComponent } from '../app.component';
 export class SearchByComponent implements OnInit {
 
   @ViewChild('autoCompleteInput', { read: MatAutocompleteTrigger }) autoComplete: MatAutocompleteTrigger;
-  @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger;
+  @ViewChildren(MdePopoverTrigger) trigger: QueryList<MdePopoverTrigger>;
 
   // loader display
   loading: boolean = true
@@ -97,8 +101,8 @@ export class SearchByComponent implements OnInit {
     }, 10);
     
     // current week dates
-    this.selectedDate = getTodaysDate(+6)
-    this.weekDates = getWeekDates(this.selectedDate)
+    this.selectedDate = this.app.getTodaysDate(+6)
+    this.weekDates = this.app.getWeekDates(this.selectedDate)
   }
 
   ngOnInit(): void { }
@@ -145,13 +149,16 @@ export class SearchByComponent implements OnInit {
   }
 
   // start search process
-  setSearch() {
+  setSearch(id: number) {
     if (this.searchValue == '') {
-      this.trigger.openPopover();
-      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
+      this.trigger.toArray()[id].openPopover();
+      window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
     } else {
-      this.trigger.closePopover()
+      this.trigger.toArray()[id].closePopover()
       this.loading = true
+
+      this.weekSchedule.clear()
+      this.bookingSchedule.clear()
       
       this.timeArray = []
       this.scheduleStartTime = "24:00"
@@ -209,10 +216,10 @@ export class SearchByComponent implements OnInit {
         if (schedule.payload["d" + i] != null) {
           for (let element of schedule.payload["d" + i]) {
             // dynamic time setting
-            if (compareTime(element.start_time, this.scheduleStartTime) == -1) {
+            if (this.app.compareTime(element.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = element.start_time
             }
-            if (compareTime(element.end_time, this.scheduleEndTime) == 1) {
+            if (this.app.compareTime(element.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = element.end_time
             }
             // mapping
@@ -249,10 +256,10 @@ export class SearchByComponent implements OnInit {
       var minutes = parseInt(subjectStartTime[1])
       let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
 
-      await waitForElm('#' + id).then(() => {
+      await this.app.waitForElm('#' + id).then(() => {
         const el = (<HTMLElement>document.getElementById(id));
 
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+        let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
         el.style.height = (duration * 5 / 60) + "rem"
 
         let startHour = parseInt(this.scheduleStartTime.split(':')[0])
@@ -283,10 +290,10 @@ export class SearchByComponent implements OnInit {
   // return booking data by requesting to server
   async getBookingData(request: string) {
     this.bookingSchedule.clear()
-    this.weekDates = getWeekDates(this.selectedDate)
+    this.weekDates = this.app.getWeekDates(this.selectedDate)
 
     let data = {
-      date: toGolangDateFormat(this.selectedDate) 
+      date: this.app.toGolangDateFormat(this.selectedDate) 
     }
     var response = this.api.sendPostRequest(request, data)
     response.subscribe(data => {
@@ -294,17 +301,17 @@ export class SearchByComponent implements OnInit {
       // process data
       for (let date of this.weekDates) {
         let timetableDay = date[0]
-        let tempDate = toGolangDateFormat(date[1]).split('T')[0]
+        let tempDate = this.app.toGolangDateFormat(date[1]).split('T')[0]
 
         for (let booking of schedule.payload) {
           let date2 = booking.date.split('T')[0]
 
           if (date2 == tempDate) {
             // dynamic time setting
-            if (compareTime(booking.start_time, this.scheduleStartTime) == -1) {
+            if (this.app.compareTime(booking.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = booking.start_time
             }
-            if (compareTime(booking.end_time, this.scheduleEndTime) == 1) {
+            if (this.app.compareTime(booking.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = booking.end_time
             }
             // mapping
@@ -343,10 +350,10 @@ export class SearchByComponent implements OnInit {
 
       var confirmed = subjects[0].confirmed
   
-      await waitForElm('#' + id).then(() => {
+      await this.app.waitForElm('#' + id).then(() => {
         const el = (<HTMLElement>document.getElementById(id));
   
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+        let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
         el.style.height = (duration * 5 / 60) + "rem"
   
         let startHour = parseInt(this.scheduleStartTime.split(':')[0])
@@ -383,7 +390,7 @@ export class SearchByComponent implements OnInit {
 
   // draw schedule blocks
   drawScheduleBlocks() {
-    waitForElm('.grid-container').then(async () => {
+    this.app.waitForElm('.grid-container').then(async () => {
       for (let i = 1; i < 7; i++) {
         if (this.weekSchedule.get("d" + i) != null) {
           await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
@@ -462,82 +469,148 @@ export class SearchByComponent implements OnInit {
 
     return this.searchResult
   }
-}
 
-function waitForElm(selector: string) {
-  return new Promise(resolve => {
-      if (document.querySelector(selector)) {
-          return resolve(document.querySelector(selector));
+  // Render and return pdf file with schedule tables.
+  getPdf(id: number) {
+    if (this.weekSchedule.size != 0 || this.bookingSchedule.size != 0) {
+      let language: string = localStorage.getItem('language') || 'en'
+    
+      const doc = new jsPDF('portrait', 'pt', 'a4')
+
+      doc.setFont('OpenSans-Regular', 'normal')
+      doc.setFontSize(10)
+
+      let isSchedule = this.weekSchedule.size != 0
+      let isBooking = this.bookingSchedule.size != 0
+
+      let headerTxt = ''
+
+      let rowsTimetable: { "content": string }[][] = []
+      let rowsBookings: { "content": string }[][] = []
+
+      if (isSchedule) {
+        headerTxt = 'Schedule: ' + this.searchResult
+        doc.text(headerTxt, 50, 50);
+
+        this.weekSchedule.forEach((schedule, day) => {
+          let dayNumber = parseInt(day[1])
+          let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+
+          schedule.forEach((subjects, time) => {
+            let title = ''
+            let room = ''
+            let type = ''
+            let tutor = ''
+            let end_time = ''
+            for (let i = 0; i < subjects.length; i++) {
+              if (i + 1 != subjects.length) {
+                title += subjects[i].subject + ' / \n'
+                room += subjects[i].room + ' / \n'
+                type = subjects[i].lesson_type + ' / \n'
+                tutor += subjects[i].tutor + ' / \n'
+                end_time = subjects[i].end_time
+              } else {
+                title += subjects[i].subject
+                room += subjects[i].room
+                type = subjects[i].lesson_type
+                tutor += subjects[i].tutor
+                end_time = subjects[i].end_time
+              }
+            }
+            rowsTimetable.push([
+              { "content": theDay }, 
+              { "content": time + '-' + end_time }, 
+              { "content": title }, 
+              { "content": room }, 
+              { "content": type }, 
+              { "content": tutor }
+            ])
+          })
+        })
+
+        let index = 0
+        let day = rowsTimetable[0][0].content
+        for (var i = 0; i < rowsTimetable.length; i++) {
+          if (day == rowsTimetable[i][0].content) {
+            if (i != index) {
+              rowsTimetable[i][0].content = ''
+            }
+          } else {
+            day = rowsTimetable[i][0].content
+            index = i
+          }
+        } 
+
+        let header: RowInput = this.itemsLoader.timeTableFields.get(language) || []
+
+        autoTable(doc, {
+          head: [ header ],
+          columnStyles: { 0: { halign: 'center'}, 1: { halign: 'center'} },
+          body: rowsTimetable,
+          theme: 'grid',
+          headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+          styles: { font: "OpenSans-Regular", fontSize: 8 },
+          margin: {top: 60, bottom: 60},
+        })
       }
 
-      const observer = new MutationObserver(mutations => {
-          if (document.querySelector(selector)) {
-              resolve(document.querySelector(selector));
-              observer.disconnect();
+      if (isBooking) {
+      if (isSchedule) {
+        doc.addPage()
+      } 
+      headerTxt = 'Booking: ' + this.searchResult
+      doc.text(headerTxt, 50, 50);
+
+      this.bookingSchedule.forEach((schedule, day) => {
+        let dayNumber = parseInt(day[1])
+        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+
+        let date = this.weekDates.get(day)
+
+        schedule.forEach((bookings, time) => {
+
+          let status = bookings[0].confirmed?'+':'-'
+
+          rowsBookings.push([
+            { "content": theDay + '\n' + this.displayHumanDate(date) }, 
+            { "content": time + '-' + bookings[0].end_time }, 
+            { "content": bookings[0].reason }, 
+            { "content": bookings[0].room }, 
+            { "content": status  }, 
+            { "content": bookings[0].reserver }])
+          })
+        })
+
+        let index = 0
+        let day = rowsBookings[0][0].content
+        for (var i = 0; i < rowsBookings.length; i++) {
+          if (day == rowsBookings[i][0].content) {
+            if (i != index) {
+              rowsBookings[i][0].content = ''
+            }
+          } else {
+            day = rowsBookings[i][0].content
+            index = i
           }
-      });
+        }
 
-      observer.observe(document.body, {
-          childList: true,
-          subtree: true
-      });
-  });
-}
+        let header: RowInput = this.itemsLoader.bookingTableFields.get(language) || []
 
-function getTodaysDate(offset: number): Date {
-  let today = new Date();
-  let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
-  let dateByOffset = new Date(utc + (3600000 * offset))
-
-  return dateByOffset
-}
-
-function getWeekDates(date: Date): Map<string, Date> {
-  let currentDay = date.getDay()
-  let dayDifference = currentDay
-  let weekDates = new Map<string, Date>()
-
-  for (let i = 0; i < 7; i ++) {
-    let temp = new Date(date)
-    if (i == currentDay) {
-      weekDates.set('d' + i, temp)
-    } else if (i < currentDay) {
-      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
-      dayDifference--
+        autoTable(doc, {
+          head: [ header ],
+          columnStyles: { 0: { halign: 'center'}, 1: { halign: 'center'} },
+          body: rowsBookings,
+          theme: 'grid',
+          headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+          styles: { font: "OpenSans-Regular", fontSize: 8 },
+          margin: {top: 60, bottom: 60},
+        })
+      }
+  
+      doc.save(this.searchResult + '.pdf')
     } else {
-      dayDifference++
-      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
+      this.trigger.toArray()[id].openPopover();
+      window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
     }
   }
-
-  return weekDates
-}
-
-function toGolangDateFormat(date: Date): string {
-  // example: "2022-06-19T00:00:00Z" - golang format
-  let rowDate = date.toLocaleDateString().split('.')
-  let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
-  return formatDate
-}
-
-function compareTime(time1: string, time2: string): number {
-  // 1 = time1 > time2
-  // 0 = time1 == time2
-  // -1 = time1 < time2
-
-  var time1date = new Date("1970-01-01 " + time1)
-  var time2date = new Date("1970-01-01 " + time2)
-
-  if (time1date.getTime() > time2date.getTime()) {
-    return 1
-  } else if (time1date.getTime() < time2date.getTime()) {
-    return -1
-  }
-  return 0
-}
-
-function stringTimeInMinutes(time: string): number {
-  let hours = parseInt(time.split(':')[0])
-  let minutes = parseInt(time.split(':')[1])
-  return (hours * 60) + minutes
 }

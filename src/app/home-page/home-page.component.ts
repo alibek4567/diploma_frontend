@@ -1,10 +1,17 @@
-import { Component, OnInit } from '@angular/core';
+import { Component, OnInit, ViewChildren, QueryList } from '@angular/core';
 import { Subject } from '../subject';
 import { MatDialog } from '@angular/material/dialog';
 import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { ApiCallerService } from '../api-caller.service';
 import { AppComponent } from '../app.component';
 import { Router } from '@angular/router';
+import { MdePopoverTrigger } from '@material-extended/mde';
+import { ItemsLoaderService } from '../items-loader.service';
+
+import { jsPDF } from 'jspdf';
+import autoTable, { RowInput } from 'jspdf-autotable';
+
+import '../../assets/fonts/OpenSans-Regular-normal'
 
 @Component({
   selector: 'app-home-page',
@@ -12,6 +19,8 @@ import { Router } from '@angular/router';
   styleUrls: ['./home-page.component.scss']
 })
 export class HomePageComponent implements OnInit {
+
+  @ViewChildren(MdePopoverTrigger) trigger: QueryList<MdePopoverTrigger>;
 
   weekSchedule = new Map<string, Map<string, Subject[]>>()
 
@@ -37,7 +46,7 @@ export class HomePageComponent implements OnInit {
   loading = true
   today = new Date
 
-  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router) {
+  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router, public itemsLoader: ItemsLoaderService,) {
     if(!app.isLoggedIn()){
       router.navigateByUrl('')
     }
@@ -232,7 +241,99 @@ export class HomePageComponent implements OnInit {
     })
   }
 
-}  
+  getPdf(id: number) {
+    if (this.weekSchedule.size != 0 || this.bookings.length != 0) {
+      let language: string = localStorage.getItem('language') || 'en'
+    
+      const doc = new jsPDF('portrait', 'pt', 'a4')
+
+      doc.setFont('OpenSans-Regular', 'normal')
+      doc.setFontSize(10)
+
+      let isSchedule = this.weekSchedule.size != 0
+
+      let headerTxt = 'Schedule: ' + this.searchResult
+     
+      doc.text(headerTxt, 50, 50);
+
+      let rowsTimetable: { "content": string, "rowSpan": number }[][] = []
+
+      if (isSchedule) {
+        this.weekSchedule.forEach((schedule, day) => {
+        let dayNumber = parseInt(day[1])
+        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+
+        schedule.forEach((subjects, time) => {
+          let title = ''
+          let room = ''
+          let type = ''
+          let tutor = ''
+          let end_time = ''
+          for (let i = 0; i < subjects.length; i++) {
+            if (i + 1 != subjects.length) {
+              title += subjects[i].subject + ' / '
+              room += subjects[i].room + ' / '
+              type = subjects[i].lesson_type + ' / '
+              tutor += subjects[i].tutor + ' / '
+              end_time = subjects[i].end_time
+            } else {
+              title += subjects[i].subject
+              room += subjects[i].room
+              type = subjects[i].lesson_type
+              tutor += subjects[i].tutor
+              end_time = subjects[i].end_time
+            }
+          }
+          rowsTimetable.push([
+            { "content": theDay, "rowSpan": 1 }, 
+            { "content": time + '-' + end_time, "rowSpan": 1 }, 
+            { "content": title, "rowSpan": 1 }, 
+            { "content": room, "rowSpan": 1 }, 
+            { "content": type, "rowSpan": 1 }, 
+            { "content": tutor, "rowSpan": 1 }])
+        })
+        })
+
+        let counter = 0
+        let index = 0
+        let day = rowsTimetable[0][0].content
+        for (var i = 0; i < rowsTimetable.length; i++) {
+        if (day == rowsTimetable[i][0].content) {
+          counter++
+          if (i != index) {
+            rowsTimetable[i].shift()
+          }
+        } else {
+          day = rowsTimetable[i][0].content
+          rowsTimetable[index][0].rowSpan = counter
+          counter = 1
+          index = i
+        }
+        if (i + 1 == rowsTimetable.length) {
+          rowsTimetable[index][0].rowSpan = counter
+        }
+        }
+
+        let header: RowInput = this.itemsLoader.timeTableFields.get(language) || []
+
+        autoTable(doc, {
+          head: [ header ],
+          body: rowsTimetable,
+          theme: 'grid',
+          headStyles: {halign: 'center', valign: 'middle', fillColor: [0,0,55]},
+          styles: { font: "OpenSans-Regular", fontSize: 8 },
+          margin: {top: 60, bottom: 60},
+          horizontalPageBreak: true
+        })
+      }
+  
+      doc.save(this.searchResult + '.pdf')
+    } else {
+      this.trigger.toArray()[id].openPopover();
+      window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
+    }
+  }
+}
 
 function waitForElm(selector: string) {
   return new Promise(resolve => {

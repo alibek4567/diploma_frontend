@@ -104,7 +104,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       }
     }),
     MdePopoverModule,
-    MatCardModule
+    MatCardModule,
   ],
   providers: [
     { provide: DateAdapter, useClass: CustomDateAdapter },
