@@ -9,7 +9,6 @@ export const environment = {
   botEmail: 'booking@astanait.edu.kz',
   botPass: 'R!`&qb2VXZC&9v@f',
   botID: '1d89bbd4-f193-4457-b39a-0140fcf1ed01',
-  botTenantID: "158f15f3-83e0-4906-824c-69bdc50d9d61"
 };
 
 /*

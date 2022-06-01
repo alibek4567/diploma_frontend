@@ -45,28 +45,51 @@ export class AdminBoardComponent implements OnInit {
     console.log(this.room);
   }
 
-  accept(data: any){
-    const response = this.api.sendPostRequestWithAuth('/booking/confirm/'+data, '')
-    const message = response.subscribe(data =>{
+  accept(booking: any){
+    const subject = "Booking Status: Accepted"
+    const content = "Dear " + booking.reserver + ", your booking has been accepted \n" +
+                    "Cabinet: "+booking.room +'\n' + 
+                    "Booking Reason: "+booking.reason +'\n' +
+                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Time: "+booking.start_time + '-' + booking.end_time
+
+    const response = this.api.sendPostRequestWithAuth('/booking/confirm/'+booking.id, '')
+    const r = response.subscribe(data =>{
+    this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
+      const message = JSON.stringify(res)
+      console.log(message);
+
+      this.router.navigate(['/admin-board'])
+      .then(() => {
+        window.location.reload();
+      });
+    })
     },error =>{
       console.log(error);
     })
-    this.router.navigate(['/admin-board'])
-    .then(() => {
-      window.location.reload();
-    });
   }
 
-  reject(data: any){
-    const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    const message = response.subscribe(data =>{
+  reject(booking: any){
+    const subject = "Booking Status: Rejected"
+    const content = "Dear " + booking.reserver + ",\nyour booking has been rejected \n" +
+                    "Cabinet: "+booking.room +'\n' + 
+                    "Booking Reason: "+booking.reason +'\n' +
+                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Time: "+booking.start_time + '-' + booking.end_time
+
+    const response = this.api.sendPostRequestWithAuth('/booking/reject/'+booking.id, '')
+    const r = response.subscribe(data =>{
+    this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
+      const message = JSON.stringify(res)
+      console.log(message);
+
+      this.router.navigate(['/admin-board'])
+      .then(() => {
+        window.location.reload();
+      });
+    })
     },error =>{
       console.log(error);
     })
-    this.router.navigate(['/admin-board'])
-    .then(() => {
-      window.location.reload();
-    });
   }
-
 }

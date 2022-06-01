@@ -1,9 +1,9 @@
-import { Component, Inject, OnInit } from '@angular/core';
+import { Component, ElementRef, Inject, OnInit } from '@angular/core';
 import { MsalService } from '@azure/msal-angular';
 import { TranslateService } from '@ngx-translate/core';
 import { Title } from '@angular/platform-browser';
 import { ApiCallerService } from './api-caller.service';
-import { HttpClient } from '@angular/common/http';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 
@@ -15,7 +15,6 @@ import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 export class AppComponent implements OnInit{
   title = 'schedule-system';
   opened = false;
-  username: any
 
   languages = new Map<string, string>([
     ["kz", "Қазақша"],
@@ -25,11 +24,11 @@ export class AppComponent implements OnInit{
 
   //Authorization data
   apiResponse: string
+  username: any
   email: any
   id: any
   department: any
   profileInfo: any
-  name = localStorage.getItem('username')
   language: string | null
   isAdmin = false
   today = new Date()
@@ -44,17 +43,7 @@ export class AppComponent implements OnInit{
     this._locale = this.setCalendar(localStorage.getItem('language') || 'en') 
     this._adapter.setLocale(this._locale) 
         
-    if(this.isLoggedIn()){
-      console.log(localStorage.getItem('id'));
-      const response = api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
-      response.subscribe(data =>{
-        const r = JSON.parse(JSON.stringify(data))
-        if(r.payload != null){
-          this.isAdmin = true
-        }
-      }, error => {
-      })
-    }  
+    this.checkAdmin()  
     translate.setDefaultLang("en")
 
     //translate.use(localStorage.getItem('language') || 'en');
@@ -93,11 +82,27 @@ export class AppComponent implements OnInit{
             const r = JSON.parse(JSON.stringify(data))
             // this.api.jwt = r.payload       
             localStorage.setItem('token', r.payload)
+
+            this.checkAdmin()
           }, error => {
           });
         }
       }
     )
+  }
+
+  checkAdmin() {
+    if(this.isLoggedIn()){
+      console.log(localStorage.getItem('id'));
+      const response = this.api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
+      response.subscribe(data =>{
+        const r = JSON.parse(JSON.stringify(data))
+        if(r.payload != null){
+          this.isAdmin = true
+        }
+      }, error => {
+      })
+    }  
   }
 
   getUser() {
@@ -156,6 +161,36 @@ export class AppComponent implements OnInit{
 
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle)
+  }
+
+  sendEmail(subject: string, content: string, email: string) {
+    const sendMail = {
+      message: {
+        subject: subject,
+        body: {
+          contentType: 'Text',
+          content: content
+        },
+        toRecipients: [
+          {
+            emailAddress: {
+              address: email
+            }
+          }
+        ],
+      },
+      saveToSentItems: 'true'
+    };
+  
+    const httpOptions = {
+      headers: new HttpHeaders({
+        'Content-Type':  'application/json',
+        'Accept': 'application/json',
+        })
+      };
+  
+    console.log("Sending message")
+    return this.httpClient.post("https://graph.microsoft.com/beta/me/sendMail", sendMail, httpOptions)
   }
 }
 

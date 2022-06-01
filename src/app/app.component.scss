@@ -50,6 +50,10 @@ mat-toolbar {
       height: 100%;
       display: flex;
       flex-direction: column;
+
+      // .admin {
+      //   display: none !important;
+      // }
     
       .item {
         min-width: 100%;

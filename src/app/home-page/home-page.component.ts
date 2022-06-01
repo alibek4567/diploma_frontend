@@ -44,13 +44,13 @@ export class HomePageComponent implements OnInit {
 
     console.log(localStorage.getItem('department'));
   
-    if(!isNumber(this.department?.substring(this.department.length - 4))){
+    if(isNumber(this.department?.substring(this.department.length - 4))){
       let temp1 = localStorage.getItem('department')?.replace('-', '')
       if (temp1 != undefined)
       this.searchValue = temp1
       this.searchMode = 'by-group'
     } else {
-      let temp2 = localStorage.getItem('username')
+      let temp2 = localStorage.getItem('email')
       if (temp2 != null) {
         this.searchValue = temp2
         this.searchMode = 'by-teacher'
@@ -99,7 +99,7 @@ export class HomePageComponent implements OnInit {
         }
         case 'by-teacher': { 
           this.cabinet = false
-          this.getSearchResult("/timetable/tutor/" + this.searchValue)
+          this.getSearchResult("/timetable/tutor/email/" + this.searchValue)
           break; 
         }
         default: { 
@@ -299,5 +299,6 @@ function stringTimeInMinutes(time: string): number {
 }
 
 function isNumber(char: any) {
-  return /^\d$/.test(char);
+  //return /^\d$/.test(char);
+  return !Number.isNaN(Number(char))
 }

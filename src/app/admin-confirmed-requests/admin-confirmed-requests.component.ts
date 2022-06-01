@@ -46,48 +46,17 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     console.log(this.request);
   }
 
-  reject(data: any, email: string){
-    // const response = this.api.sendPostRequestWithAuth('/booking/reject/'+data, '')
-    // const message = response.subscribe(data =>{
-    // },error =>{
-    //   console.log(error);
-    // })
+  reject(booking: any){
+    const subject = "Booking Status: Rejected"
+    const content = "Dear " + booking.reserver + ",\nyour booking has been rejected \n" +
+                    "Cabinet: "+booking.room +'\n' + 
+                    "Booking Reason: "+booking.reason +'\n' +
+                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Time: "+booking.start_time + '-' + booking.end_time
 
-    // setTimeout(() => {
-    // }, 3000);
-    
-    const sendMail = {
-      message: {
-        subject: 'Booking status',
-        body: {
-          contentType: 'Text',
-          content: 'Your booking was rejected'
-        },
-        toRecipients: [
-          {
-            emailAddress: {
-              address: email
-            }
-          }
-        ],
-        from: {
-          emailAddress: {
-            address: "booking@astanait.edu.kz"
-          }
-        }
-      },
-      saveToSentItems: 'true'
-    };
-
-    const httpOptions = {
-      headers: new HttpHeaders({
-        'Content-Type':  'application/json',
-        'Accept': 'application/json',
-        })
-      };
-
-    console.log("Sending message")
-    this.httpClient.post("https://graph.microsoft.com/beta/me/sendMail", sendMail, httpOptions).subscribe(res => {
+    const response = this.api.sendPostRequestWithAuth('/booking/reject/'+booking.id, '')
+    const r = response.subscribe(data =>{
+    this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
       const message = JSON.stringify(res)
       console.log(message);
 
@@ -96,7 +65,9 @@ export class AdminConfirmedRequestsComponent implements OnInit {
         window.location.reload();
       });
     })
-    
+    },error =>{
+      console.log(error);
+    })
   }
 }
 

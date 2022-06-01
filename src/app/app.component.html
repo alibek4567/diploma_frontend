@@ -42,17 +42,17 @@
             <p>{{ 'SIDE-MENU.graph-map-tab' | translate }}</p>
           </div> -->
 
-          <div class="item" *ngIf="username && isAdmin" routerLink="admin-board" routerDirection="root">
+          <div class="item" *ngIf="isAdmin" routerLink="admin-board" routerDirection="root">
             <mat-icon>developer_board</mat-icon>
             <p>{{ 'SIDE-MENU.dev-board-tab' | translate }}</p>
           </div>
 
-          <div class="item" *ngIf="username && isAdmin" routerLink="admin-history" routerDirection="root">
+          <div class="item" *ngIf="isAdmin" routerLink="admin-history" routerDirection="root">
             <mat-icon>history</mat-icon>
             <p>{{ 'SIDE-MENU.history-tab' | translate }}</p>
           </div>
 
-          <div class="item" *ngIf="username && isAdmin" routerLink="admin-confirmed" routerDirection="root">
+          <div class="item" *ngIf="isAdmin" routerLink="admin-confirmed" routerDirection="root">
             <mat-icon>check_box</mat-icon>
             <p>{{ 'SIDE-MENU.confirm-tab' | translate }}</p>
           </div>

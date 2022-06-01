@@ -38,7 +38,6 @@ import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admi
 import { HomePageComponent } from './home-page/home-page.component';
 import { CustomDateAdapter } from './booking/custom-adapter';
 import { environment } from 'src/environments/environment';
-import { MAT_MOMENT_DATE_ADAPTER_OPTIONS, MAT_MOMENT_DATE_FORMATS, MomentDateAdapter } from '@angular/material-moment-adapter';
 
 export function MSALInstanceFactory(): IPublicClientApplication {
   return new PublicClientApplication({
@@ -52,7 +51,6 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
   protectedResourceMap.set('https://graph.microsoft.com/beta/me', ['user.read', 'mail.read', 'mail.send', 'contacts.read', 'mail.send.shared']);
-  // protectedResourceMap.set('https://graph.microsoft.com/beta/users/1d89bbd4-f193-4457-b39a-0140fcf1ed01', ['user.read', 'mail.read', 'mail.send', 'contacts.read'])
 
   return {
     interactionType: InteractionType.Popup,
