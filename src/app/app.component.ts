@@ -45,7 +45,7 @@ export class AppComponent implements OnInit{
     this._adapter.setLocale(this._locale) 
         
     if(this.isLoggedIn()){
-      console.log(localStorage.getItem('id'));
+      // console.log(localStorage.getItem('id'));
       const response = api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
       response.subscribe(data =>{
         const r = JSON.parse(JSON.stringify(data))
@@ -121,9 +121,6 @@ export class AppComponent implements OnInit{
 
   login() {
     this.msalService.loginRedirect();
-    // this.msalService.loginPopup().subscribe( (response: AuthenticationResult) => {
-    //   this.msalService.instance.setActiveAccount(response.account)
-    // })
   }
 
   setCalendar(language: string){
@@ -157,18 +154,98 @@ export class AppComponent implements OnInit{
   public setTitle(newTitle: string) {
     this.titleService.setTitle(newTitle)
   }
+
+  // Common Functions
+  waitForElm(selector: string) {
+    return new Promise(resolve => {
+      if (document.querySelector(selector)) {
+        return resolve(document.querySelector(selector));
+      }
+      const observer = new MutationObserver(mutations => {
+        if (document.querySelector(selector)) {
+          resolve(document.querySelector(selector));
+          observer.disconnect();
+        }
+      });
+    
+      observer.observe(document.body, {
+        childList: true,
+        subtree: true
+      });
+    });
+  }
+    
+  getTodaysDate(offset: number): Date {
+    let today = new Date();
+    let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
+    let dateByOffset = new Date(utc + (3600000 * offset))
+    
+    return dateByOffset
+  }
+    
+  getWeekDates(date: Date): Map<string, Date> {
+    let currentDay = date.getDay()
+    let dayDifference = currentDay
+    let weekDates = new Map<string, Date>()
+    
+    for (let i = 0; i < 7; i ++) {
+      let temp = new Date(date)
+      if (i == currentDay) {
+        weekDates.set('d' + i, temp)
+      } else if (i < currentDay) {
+        weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
+        dayDifference--
+      } else {
+        dayDifference++
+        weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
+      }
+    }
+    
+    return weekDates
+  }
+    
+  toGolangDateFormat(date: Date): string {
+    // example: "2022-06-19T00:00:00Z" - golang format
+    let rowDate = date.toLocaleDateString().split('.')
+    let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
+    return formatDate
+  }
+    
+  compareTime(time1: string, time2: string): number {
+    // 1 = time1 > time2
+    // 0 = time1 == time2
+    // -1 = time1 < time2
+    
+    var time1date = new Date("1970-01-01 " + time1)
+    var time2date = new Date("1970-01-01 " + time2)
+    
+    if (time1date.getTime() > time2date.getTime()) {
+      return 1
+    } else if (time1date.getTime() < time2date.getTime()) {
+      return -1
+    }
+    return 0
+  }
+    
+  stringTimeInMinutes(time: string): number {
+    let hours = parseInt(time.split(':')[0])
+    let minutes = parseInt(time.split(':')[1])
+    return (hours * 60) + minutes
+  }
 }
 
-function setWithExpiry(key: string, value: any) {
-	const now = new Date()
+// function setWithExpiry(key: string, value: any) {
+// 	const now = new Date()
 
-	// `item` is an object which contains the original value
-	// as well as the time when it's supposed to expire
-	const item = {
-		value: value,
-		expiry: now.getDate() + 7,
-	}
-	localStorage.setItem(key, JSON.stringify(item))
-}
+// 	// `item` is an object which contains the original value
+// 	// as well as the time when it's supposed to expire
+// 	const item = {
+// 		value: value,
+// 		expiry: now.getDate() + 7,
+// 	}
+// 	localStorage.setItem(key, JSON.stringify(item))
+// }
+
+
 
 

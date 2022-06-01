@@ -101,8 +101,8 @@ export class SearchByComponent implements OnInit {
     }, 10);
     
     // current week dates
-    this.selectedDate = getTodaysDate(+6)
-    this.weekDates = getWeekDates(this.selectedDate)
+    this.selectedDate = this.app.getTodaysDate(+6)
+    this.weekDates = this.app.getWeekDates(this.selectedDate)
   }
 
   ngOnInit(): void { }
@@ -216,10 +216,10 @@ export class SearchByComponent implements OnInit {
         if (schedule.payload["d" + i] != null) {
           for (let element of schedule.payload["d" + i]) {
             // dynamic time setting
-            if (compareTime(element.start_time, this.scheduleStartTime) == -1) {
+            if (this.app.compareTime(element.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = element.start_time
             }
-            if (compareTime(element.end_time, this.scheduleEndTime) == 1) {
+            if (this.app.compareTime(element.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = element.end_time
             }
             // mapping
@@ -256,10 +256,10 @@ export class SearchByComponent implements OnInit {
       var minutes = parseInt(subjectStartTime[1])
       let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
 
-      await waitForElm('#' + id).then(() => {
+      await this.app.waitForElm('#' + id).then(() => {
         const el = (<HTMLElement>document.getElementById(id));
 
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+        let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
         el.style.height = (duration * 5 / 60) + "rem"
 
         let startHour = parseInt(this.scheduleStartTime.split(':')[0])
@@ -290,10 +290,10 @@ export class SearchByComponent implements OnInit {
   // return booking data by requesting to server
   async getBookingData(request: string) {
     this.bookingSchedule.clear()
-    this.weekDates = getWeekDates(this.selectedDate)
+    this.weekDates = this.app.getWeekDates(this.selectedDate)
 
     let data = {
-      date: toGolangDateFormat(this.selectedDate) 
+      date: this.app.toGolangDateFormat(this.selectedDate) 
     }
     var response = this.api.sendPostRequest(request, data)
     response.subscribe(data => {
@@ -301,17 +301,17 @@ export class SearchByComponent implements OnInit {
       // process data
       for (let date of this.weekDates) {
         let timetableDay = date[0]
-        let tempDate = toGolangDateFormat(date[1]).split('T')[0]
+        let tempDate = this.app.toGolangDateFormat(date[1]).split('T')[0]
 
         for (let booking of schedule.payload) {
           let date2 = booking.date.split('T')[0]
 
           if (date2 == tempDate) {
             // dynamic time setting
-            if (compareTime(booking.start_time, this.scheduleStartTime) == -1) {
+            if (this.app.compareTime(booking.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = booking.start_time
             }
-            if (compareTime(booking.end_time, this.scheduleEndTime) == 1) {
+            if (this.app.compareTime(booking.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = booking.end_time
             }
             // mapping
@@ -350,10 +350,10 @@ export class SearchByComponent implements OnInit {
 
       var confirmed = subjects[0].confirmed
   
-      await waitForElm('#' + id).then(() => {
+      await this.app.waitForElm('#' + id).then(() => {
         const el = (<HTMLElement>document.getElementById(id));
   
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+        let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
         el.style.height = (duration * 5 / 60) + "rem"
   
         let startHour = parseInt(this.scheduleStartTime.split(':')[0])
@@ -390,7 +390,7 @@ export class SearchByComponent implements OnInit {
 
   // draw schedule blocks
   drawScheduleBlocks() {
-    waitForElm('.grid-container').then(async () => {
+    this.app.waitForElm('.grid-container').then(async () => {
       for (let i = 1; i < 7; i++) {
         if (this.weekSchedule.get("d" + i) != null) {
           await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
@@ -628,82 +628,4 @@ export class SearchByComponent implements OnInit {
       window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);
     }
   }
-}
-
-function waitForElm(selector: string) {
-  return new Promise(resolve => {
-      if (document.querySelector(selector)) {
-          return resolve(document.querySelector(selector));
-      }
-
-      const observer = new MutationObserver(mutations => {
-          if (document.querySelector(selector)) {
-              resolve(document.querySelector(selector));
-              observer.disconnect();
-          }
-      });
-
-      observer.observe(document.body, {
-          childList: true,
-          subtree: true
-      });
-  });
-}
-
-function getTodaysDate(offset: number): Date {
-  let today = new Date();
-  let utc = today.getTime() + (today.getTimezoneOffset() * 60000);
-  let dateByOffset = new Date(utc + (3600000 * offset))
-
-  return dateByOffset
-}
-
-function getWeekDates(date: Date): Map<string, Date> {
-  let currentDay = date.getDay()
-  let dayDifference = currentDay
-  let weekDates = new Map<string, Date>()
-
-  for (let i = 0; i < 7; i ++) {
-    let temp = new Date(date)
-    if (i == currentDay) {
-      weekDates.set('d' + i, temp)
-    } else if (i < currentDay) {
-      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() - dayDifference)))
-      dayDifference--
-    } else {
-      dayDifference++
-      weekDates.set('d' + i, new Date(temp.setDate(temp.getDate() + dayDifference)))
-    }
-  }
-
-  return weekDates
-}
-
-function toGolangDateFormat(date: Date): string {
-  // example: "2022-06-19T00:00:00Z" - golang format
-  let rowDate = date.toLocaleDateString().split('.')
-  let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
-  return formatDate
-}
-
-function compareTime(time1: string, time2: string): number {
-  // 1 = time1 > time2
-  // 0 = time1 == time2
-  // -1 = time1 < time2
-
-  var time1date = new Date("1970-01-01 " + time1)
-  var time2date = new Date("1970-01-01 " + time2)
-
-  if (time1date.getTime() > time2date.getTime()) {
-    return 1
-  } else if (time1date.getTime() < time2date.getTime()) {
-    return -1
-  }
-  return 0
-}
-
-function stringTimeInMinutes(time: string): number {
-  let hours = parseInt(time.split(':')[0])
-  let minutes = parseInt(time.split(':')[1])
-  return (hours * 60) + minutes
 }
