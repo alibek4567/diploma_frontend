@@ -1,11 +1,13 @@
-import { Component, ElementRef, Inject, OnInit } from '@angular/core';
-import { MsalService } from '@azure/msal-angular';
-import { TranslateService } from '@ngx-translate/core';
-import { Title } from '@angular/platform-browser';
-import { ApiCallerService } from './api-caller.service';
-import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Component, Inject, OnInit } from '@angular/core';
 import { Router } from '@angular/router';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Title } from '@angular/platform-browser';
+
+import { TranslateService } from '@ngx-translate/core';
+import { MsalService } from '@azure/msal-angular';
 import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+
+import { ApiCallerService } from './api-caller.service';
 import { ItemsLoaderService } from './items-loader.service';
 
 @Component({
@@ -13,8 +15,9 @@ import { ItemsLoaderService } from './items-loader.service';
   templateUrl: './app.component.html',
   styleUrls: ['./app.component.scss']
 })
+
 export class AppComponent implements OnInit{
-  title = 'schedule-system';
+  // standard settings
   opened = false;
 
   languages = new Map<string, string>([
@@ -25,49 +28,43 @@ export class AppComponent implements OnInit{
 
   //Authorization data
   apiResponse: string
-  username: any
-  email: any
   id: any
-  department: any
+  email: any
+  username: any
   profileInfo: any
+  department: any
   language: string | null
   isAdmin = false
-  today = new Date()
 
-  constructor(translate: TranslateService, private titleService: Title, private api: ApiCallerService, 
-    private msalService: MsalService,
-    public httpClient: HttpClient,
-    public router: Router,
-    @Inject(MAT_DATE_LOCALE) private _locale: string,
-    private _adapter: DateAdapter<any>,
-    public items: ItemsLoaderService) {    
+  constructor(private titleService: Title, public router: Router, public httpClient: HttpClient, translate: TranslateService, 
+    private msalService: MsalService, @Inject(MAT_DATE_LOCALE) private _locale: string, private _adapter: DateAdapter<any>,
+    private api: ApiCallerService, public items: ItemsLoaderService) {    
+      
+      translate.setDefaultLang("en")
+      this.language = localStorage.getItem('language')
+      if (this.language == null) {
+        this.language = 'en'
+        localStorage.setItem('language', this.language)
+      }
+      translate.use(this.language)
+    
+      this.setTitle("AITU Schedule")
+      
+      this.checkAdmin()  
+      
+      this._locale = this.setCalendar(localStorage.getItem('language') || 'en') 
+      this._adapter.setLocale(this._locale) 
 
-    this._locale = this.setCalendar(localStorage.getItem('language') || 'en') 
-    this._adapter.setLocale(this._locale) 
-        
-    this.checkAdmin()  
+      this.username = localStorage.getItem('username')
+  }
 
-    translate.setDefaultLang("en")
+  setTitle(newTitle: string) {
+    this.titleService.setTitle(newTitle)
+  }
 
-    //translate.use(localStorage.getItem('language') || 'en');
-
-    // Re check it
-    this.language = localStorage.getItem('language')
-    if (this.language == null) {
-      this.language = 'en'
-      localStorage.setItem('language', this.language)
-    }
-    translate.use(this.language)
-
-    this.setTitle("AITU Schedule")
-
-    this.language = localStorage.getItem("language")
-    if (this.language == null) {
-      this.language = "en"
-      localStorage.setItem("language", this.language)
-    }
-
-    this.username = localStorage.getItem('username')
+  setLanguage(event: any) {
+    localStorage.setItem("language", event.value)
+    window.location.reload()
   }
 
   ngOnInit(): void {
@@ -87,6 +84,7 @@ export class AppComponent implements OnInit{
             localStorage.setItem('token', r.payload)
             this.checkAdmin()
           }, error => {
+            //console.log(error)
           });
         }
       }
@@ -94,15 +92,15 @@ export class AppComponent implements OnInit{
   }
 
   checkAdmin() {
-    if(this.isLoggedIn()){
-      console.log(localStorage.getItem('id'));
-      const response = this.api.sendGetRequestWithAuth('/isAdmin/'+localStorage.getItem('id'))
+    if (this.isLoggedIn()) {
+      const response = this.api.sendGetRequestWithAuth('/isAdmin/' + localStorage.getItem('id'))
       response.subscribe(data =>{
         const r = JSON.parse(JSON.stringify(data))
         if(r.payload != null){
           this.isAdmin = true
         }
       }, error => {
+        //console.log(error)
       })
     }  
   }
@@ -123,14 +121,23 @@ export class AppComponent implements OnInit{
   }
 
   isLoggedIn() {
-    return this.msalService.instance.getActiveAccount() != null
+    let flag = this.msalService.instance.getActiveAccount() != null
+    if (!flag) {
+      localStorage.clear()
+    }
+    return flag
   }
 
   login() {
     this.msalService.loginRedirect();
   }
 
-  setCalendar(language: string){
+  logout() {
+    this.msalService.logout()
+    localStorage.clear()
+  }
+
+  setCalendar(language: string) {
     switch(language){
       case 'ru':
       return 'ru-RU';
@@ -142,25 +149,11 @@ export class AppComponent implements OnInit{
     return 'en-US'
   }
 
-  logout() {
-    this.msalService.logout()
-    localStorage.clear()
-  }
-
-  public setLanguage(event: any) {
-    localStorage.setItem("language", event.value)
-    window.location.reload()
-  }
-
   myFilter = (d: Date | null): boolean => {
     const day = (d || new Date()).getDay();
     // Prevent Saturday and Sunday from being selected.
     return day !== 0;
   };
-
-  public setTitle(newTitle: string) {
-    this.titleService.setTitle(newTitle)
-  }
 
   sendEmail(subject: string, content: string, email: string) {
     const sendMail = {
@@ -188,7 +181,6 @@ export class AppComponent implements OnInit{
         })
       };
   
-    console.log("Sending message")
     return this.httpClient.post("https://graph.microsoft.com/beta/me/sendMail", sendMail, httpOptions) 
   }
   
@@ -269,16 +261,12 @@ export class AppComponent implements OnInit{
     return tempDate[2]+ '.' + tempDate[1] + '.' + tempDate[0]
   }
     
+  // string time converts in minutes (number) format
   stringTimeInMinutes(time: string): number {
     let hours = parseInt(time.split(':')[0])
     let minutes = parseInt(time.split(':')[1])
     return (hours * 60) + minutes
   }
-
-  // formatDate(data: Date){
-  //   let formDate = data.toString()
-  //   return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
-  // }
 
   // display selected formatted date
   displaySelectedDate(date: Date): string {
@@ -290,19 +278,6 @@ export class AppComponent implements OnInit{
     return month + ' ' + date.getDate() + ' | ' + day
   }
 }
-
-// function setWithExpiry(key: string, value: any) {
-// 	const now = new Date()
-
-// 	// `item` is an object which contains the original value
-// 	// as well as the time when it's supposed to expire
-// 	const item = {
-// 		value: value,
-// 		expiry: now.getDate() + 7,
-// 	}
-// 	localStorage.setItem(key, JSON.stringify(item))
-// }
-
 
 
 

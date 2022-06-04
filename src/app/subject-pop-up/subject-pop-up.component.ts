@@ -12,10 +12,8 @@ export class SubjectPopUpComponent implements OnInit {
   subjects: Subject[]
 
   constructor(@Inject(MAT_DIALOG_DATA) public data: any) { 
-
     this.subjects = data.object
   }
 
   ngOnInit(): void { }
-
 }

@@ -3,15 +3,14 @@ import { MatDialog } from '@angular/material/dialog'
 import { MatAutocompleteTrigger } from '@angular/material/autocomplete';
 import { MdePopoverTrigger } from '@material-extended/mde';
 
+import { AppComponent } from '../app.component';
 import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
-import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 import { Subject } from '../subject'
-import { AppComponent } from '../app.component';
+import { SubjectPopUpComponent } from '../subject-pop-up/subject-pop-up.component';
 
 import { jsPDF } from 'jspdf';
 import autoTable, { RowInput } from 'jspdf-autotable';
-
 import '../../assets/fonts/OpenSans-Regular-normal'
 
 @Component({

@@ -1,20 +1,18 @@
-import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
-import { dateInputsHaveChanged } from '@angular/material/datepicker/datepicker-input-base';
+import { HttpErrorResponse } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MdePopoverTrigger } from '@material-extended/mde';
-import { of } from 'rxjs';
-import { ApiCallerService } from '../api-caller.service';
 import { AppComponent } from '../app.component';
+import { ApiCallerService } from '../api-caller.service';
 import { ItemsLoaderService } from '../items-loader.service';
 
 export interface Select {
   date: Date,
+  cabinet_id: string
   cabinet: string,
   startTime: string,
   endTime: string,
   comment: string,
-  cabinet_id: string
 }
 
 @Component({
@@ -26,24 +24,30 @@ export interface Select {
 export class BookingComponent implements OnInit {
 
   @ViewChild(MdePopoverTrigger, { static: false }) trigger: MdePopoverTrigger
+
+  // common parameters for both modes
   select = "Date"
-  today = new Date()
-  maxDate = new Date( new Date().setDate(this.today.getDate() + 14) )
+
+  // ?
+  temp = new Date(new Date().setDate(new Date().getDate() + 1))
+
+  today = (new Date().getDay() != 0)? new Date():this.temp
+  maxDate = new Date(new Date().setDate(this.today.getDate() + 14) )
   sendMessage: string
 
-  // By Date = set Date + Time
+  // by date = set date + time
   checked: number
   messageByDate: string
   byDate: Select = {
+    date: new Date,
+    cabinet_id: '',
     cabinet: '',
     startTime: '',
     endTime: '',
     comment: '',
-    date: new Date,
-    cabinet_id: ''
   }
 
-  // By Room = set Date + Room
+  // by room = set date + room
   events: any[] = []
   rooms: any
   cabinetFlag = false
@@ -59,38 +63,40 @@ export class BookingComponent implements OnInit {
   }
 
   constructor(private api: ApiCallerService, private router: Router, public items: ItemsLoaderService, public app: AppComponent) {
-    if(!app.isLoggedIn()){
+    if (!app.isLoggedIn()) {
       router.navigateByUrl('')
     }
     this.searchedRooms = this.items.rooms
+
+    console.log(this.today, this.today.getDay())
+    console.log(new Date().getDay() == 0)
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
   
-  //set select mode
+  // set select mode
   setSelectMode(event: any) {
     this.select = event.value
   }
 
   getServerErrorMessage(error: HttpErrorResponse): string {
     switch (error.status) {
-        case 400: {
-            return (this.select == "Room")?'Time is reserved, try reload page/change time range':'Cabinet is reserved for the selected time, try reload page/select another cabinet'
-        }
-        case 403: {
-            return `Access Denied`;
-        }
-        case 500: {
-            return `Internal Server Error`;
-        }
-        default: {
-            return `Unknown Server Error`;
-        }
+      case 400: {
+        return (this.select == "Room")?'Time is reserved, try reload page/change time range':'Cabinet is reserved for the selected time, try reload page/select another cabinet'
+      }
+      case 403: {
+        return `Access Denied`;
+      }
+      case 500: {
+        return `Internal Server Error`;
+      }
+      default: {
+        return `Unknown Server Error`;
       }
     }
+  }
 
-    send(){
+  send() {
     const data = this.select == "Room" ? this.byRoom : this.byDate
     this.sendMessage = ''
 
@@ -112,24 +118,21 @@ export class BookingComponent implements OnInit {
     const valuesArr = Object.values(values)
     const keysArr = Object.keys(values)
     valuesArr.forEach((val, index) => {
-      if(val == null || val == ''){
+      if (val == null || val == '') {
         this.sendMessage = keysArr[index] + ' is required'
-        console.log(index);
         flag = false
       }
     });
 
-    if(this.app.compareTime(data.startTime, '8:00') == -1){
+    if (this.app.compareTime(data.startTime, '8:00') == -1) {
       this.sendMessage = "Time range is 08:00 - 19:00"
       flag = false
     }
-
-    if(this.app.compareTime(data.endTime, '19:00') == 1){
+    if (this.app.compareTime(data.endTime, '19:00') == 1) {
       this.sendMessage = "Time range is 08:00 - 19:00"
       flag = false
     }
-
-    if(data.endTime < data.startTime){
+    if (data.endTime < data.startTime) {
       this.sendMessage = "Time range is 08:00 - 19:00"
       flag = false
     }
@@ -152,11 +155,11 @@ export class BookingComponent implements OnInit {
 
     if(this.cabinetFlag && flag){
       var response = this.api.sendPostRequestWithAuth("/booking/create", values)
-      response.subscribe(data => {
+      response.subscribe(() => {
         this.router.navigate(['/booking'])
-        .then(() => {
-          window.location.reload();
-        });
+          .then(() => {
+            window.location.reload();
+          });
       }, error => {
         this.sendMessage = this.getServerErrorMessage(error)
         this.trigger.openPopover();
@@ -168,10 +171,10 @@ export class BookingComponent implements OnInit {
     }
   }
 
-  //Date mode functions
+  // date mode functions
 
-  //get all cabinets by selecting date
-  cabinetByDate(){
+  // get all cabinets by selecting date
+  cabinetByDate() {
     let data = {
       date: this.byDate.date, 
       start_time: this.byDate.startTime , 
@@ -180,66 +183,54 @@ export class BookingComponent implements OnInit {
 
     let flag = true
 
-    if(data.start_time == ''){
-      return
+    if (data.start_time == '') return
+    if (data.end_time == '') return
+
+    if (this.app.compareTime(data.start_time, '08:00') == -1) {
+      flag = false
     }
-
-    if(data.end_time == ''){
-      return
+    if (this.app.compareTime(data.end_time, '19:00') == 1 ) {
+      flag = false
     }
-
-    console.log(data.start_time, data.end_time)
-
-    if(this.app.compareTime(data.start_time, '08:00') == -1){
+    if (this.app.compareTime(data.start_time, data.end_time) == 1) {
       flag = false
     }
 
-    if(this.app.compareTime(data.end_time, '19:00') == 1 ){
-      flag = false
-    }
-
-    if(this.app.compareTime(data.start_time, data.end_time) == 1){
-      flag = false
-    }
-
-    if(flag == true){
+    if (flag == true) {
       var response = this.api.sendPostRequest("/booking/datetime", data)
-        response.subscribe(data => {
+      response.subscribe(data => {
         const timeTables = JSON.parse(JSON.stringify(data))
         this.rooms = timeTables.payload
         this.messageByDate = ''
-        if(this.rooms.length == 0){
+        if (this.rooms.length == 0) {
           this.messageByDate == 'No Available Rooms'
         }
       }, error => {
         console.log(error);
       })
-    }
-    else{
+    } else {
       this.rooms = []
       this.messageByDate = "Wrong inputs, check entered data"
     }
   }
 
-  //set selected cabinet by date mode
-  setCheckedCabinet(name: string,id: string){
-    if(this.byDate.cabinet_id == id){
-    this.checked = 0
-    this.byDate.cabinet = ''
-    this.byDate.cabinet_id = ''
-    }
-    else{
+  // set selected cabinet by date mode
+  setCheckedCabinet (name: string,id: string) {
+    if (this.byDate.cabinet_id == id) {
+      this.checked = 0
+      this.byDate.cabinet = ''
+      this.byDate.cabinet_id = ''
+    } else {
       this.checked = parseInt(id)
       this.byDate.cabinet = name
       this.byDate.cabinet_id = id
-      console.log(this.byDate.cabinet, this.byDate.cabinet_id)
     }
   }
 
-  //Cabinet mode functions
+  // cabinet mode functions
 
-  //get data about events for room
-  getDataForRoomEvents(){
+  // get data about events for room
+  getDataForRoomEvents() {
     this.events = []
     // this.cabinetByRoom()
     this.getTimetableByDate()
@@ -257,12 +248,14 @@ export class BookingComponent implements OnInit {
       var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
       response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
-      if(data.payload != null){
-        for(let item of data.payload){
+      if (data.payload != null) {
+        for (let item of data.payload) {
           let roomDate = item.date
-          if(roomDate.split('T')[0] == this.app.toGolangDateFormat(this.byRoom.date).split('T')[0]){
+          if (roomDate.split('T')[0] == this.app.toGolangDateFormat(this.byRoom.date).split('T')[0]) {
             this.events.push(item)
-            this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
+            this.events.sort(function(a, b) {
+              if (a.start_time > b.start_time) {return 1} else {return -1} 
+            })
           }
         }
         if(this.events.length == 0){
@@ -270,7 +263,7 @@ export class BookingComponent implements OnInit {
         }
       }
     }, error => {
-      this.getServerErrorMessage(error)
+      console.log(error)
     })
     }
     else{
@@ -280,26 +273,29 @@ export class BookingComponent implements OnInit {
     }
   }
 
-  getTimetableByDate(){
+  getTimetableByDate() {
     const response = this.api.sendGetRequest("/timetable/room/" + this.byRoom.cabinet_id)
     response.subscribe(data => {
       const schedule = JSON.parse(JSON.stringify(data))
-      if(schedule.payload['d'+this.byRoom.date.getDay()] != undefined){
-        for(let item of schedule.payload['d'+this.byRoom.date.getDay()]){
-          this.events.push({start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor})
-          this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
+      if(schedule.payload['d' + this.byRoom.date.getDay()] != undefined) {
+        for (let item of schedule.payload['d' + this.byRoom.date.getDay()]) {
+          this.events.push({ start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor })
+          this.events.sort(function(a, b) {
+            if (a.start_time > b.start_time) {return 1} else {return -1}
+          })
         }
         this.messageByRoom = ''
-        if(this.events.length == 0){
+        if (this.events.length == 0) {
           this.messageByRoom = 'The Cabinet is free'
         }
       }
     }, error => {
+      console.log(error)
     })
   }
 
   //filter list of rooms by room name
-  filter(){
+  filter() {
     this.searchedRooms = this.items.rooms.filter((data: any) => {
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
     })  
@@ -310,10 +306,9 @@ export class BookingComponent implements OnInit {
   }
 
   //set room_id and room_name by room mode
-  setValues(event: any){
+  setValues(event: any) {
     this.byRoom.cabinet_id = event.option.value.split('-')[1]
     this.byRoom.cabinet = event.option.value.split('-')[0]
-    console.log(this.byRoom.cabinet_id, this.byRoom.cabinet);
   }
 }
 

@@ -47,6 +47,8 @@ export class HomePageComponent implements OnInit {
   today = new Date
 
   constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router, public itemsLoader: ItemsLoaderService,) {
+    console.log(app.isLoggedIn())
+    
     if(!app.isLoggedIn()){
       router.navigateByUrl('')
     }
@@ -54,7 +56,7 @@ export class HomePageComponent implements OnInit {
     console.log(localStorage.getItem('department'));
   
     if(isNumber(this.department?.substring(this.department.length - 4))){
-      let temp1 = localStorage.getItem('department')?.replace('-', '')
+      let temp1 = localStorage.getItem('department') //?.replace('-', '')
       if (temp1 != undefined)
       this.searchValue = temp1
       this.searchMode = 'by-group'
@@ -68,7 +70,7 @@ export class HomePageComponent implements OnInit {
     
     console.log(this.searchValue);
 
-    waitForElm('.searchField').then(async () => {
+    this.app.waitForElm('.searchField').then(async () => {
       this.setSearch()
     });
 
@@ -78,8 +80,8 @@ export class HomePageComponent implements OnInit {
       if(data.payload != undefined){
         const temp = data.payload
         for(let item of temp){
-          if(dateCompare(item.date.split('T')[0], toGolangDateFormat(this.today).split('T')[0]) == 1 ||
-            dateCompare(item.date.split('T')[0], toGolangDateFormat(this.today).split('T')[0]) == 0){
+          if(dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat(this.today).split('T')[0]) == 1 ||
+            dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat(this.today).split('T')[0]) == 0){
             this.bookings.push(item)
           }
         }
@@ -131,10 +133,10 @@ export class HomePageComponent implements OnInit {
         if (schedule.payload["d" + i] != null) {
           for (let item of schedule.payload["d" + i]) {
             // Time set
-            if (compareTime(item.start_time, this.scheduleStartTime) == -1) {
+            if (this.app.compareTime(item.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = item.start_time
             }
-            if (compareTime(item.end_time, this.scheduleEndTime) == 1) {
+            if (this.app.compareTime(item.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = item.end_time
             }
 
@@ -166,7 +168,7 @@ export class HomePageComponent implements OnInit {
       //}
 
       // Drawing Subjects
-      waitForElm('.grid-container').then(async () => {
+      this.app.waitForElm('.grid-container').then(async () => {
         for (let i = 1; i < 7; i++) {
           await this.setSubjects("d" + i, this.weekSchedule.get("d" + i))
         }
@@ -191,11 +193,11 @@ export class HomePageComponent implements OnInit {
 
       let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
 
-      await waitForElm('#' + id).then(() => {
+      await this.app.waitForElm('#' + id).then(() => {
         //console.log('success?')
         const el = (<HTMLElement>document.getElementById(id));
 
-        let duration = stringTimeInMinutes(subjects[0].end_time) - stringTimeInMinutes(subjects[0].start_time)
+        let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
 
         el.style.height = (duration * 5 / 60) + "rem"
 
@@ -335,32 +337,32 @@ export class HomePageComponent implements OnInit {
   }
 }
 
-function waitForElm(selector: string) {
-  return new Promise(resolve => {
-      if (document.querySelector(selector)) {
-          return resolve(document.querySelector(selector));
-      }
+// function waitForElm(selector: string) {
+//   return new Promise(resolve => {
+//       if (document.querySelector(selector)) {
+//           return resolve(document.querySelector(selector));
+//       }
 
-      const observer = new MutationObserver(mutations => {
-          if (document.querySelector(selector)) {
-              resolve(document.querySelector(selector));
-              observer.disconnect();
-          }
-      });
+//       const observer = new MutationObserver(mutations => {
+//           if (document.querySelector(selector)) {
+//               resolve(document.querySelector(selector));
+//               observer.disconnect();
+//           }
+//       });
 
-      observer.observe(document.body, {
-          childList: true,
-          subtree: true
-      });
-  });
-}
+//       observer.observe(document.body, {
+//           childList: true,
+//           subtree: true
+//       });
+//   });
+// }
 
-function toGolangDateFormat(date: Date): string {
-  // example: "2022-06-19T00:00:00Z" - golang format
-  let rowDate = date.toLocaleDateString().split('.')
-  let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
-  return formatDate
-}
+// function toGolangDateFormat(date: Date): string {
+//   // example: "2022-06-19T00:00:00Z" - golang format
+//   let rowDate = date.toLocaleDateString().split('.')
+//   let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
+//   return formatDate
+// }
 
 function dateCompare(d1: string, d2: string): number{
   const date1 = new Date(d1);
@@ -375,29 +377,29 @@ function dateCompare(d1: string, d2: string): number{
   }
 }
 
-function compareTime(time1: string, time2: string): number {
-  // 1 = time1 > time2
-  // 0 = time1 == time2
-  // -1 = time1 < time2
+// function compareTime(time1: string, time2: string): number {
+//   // 1 = time1 > time2
+//   // 0 = time1 == time2
+//   // -1 = time1 < time2
 
-  var time1date = new Date("1970-01-01 " + time1)
-  var time2date = new Date("1970-01-01 " + time2)
+//   var time1date = new Date("1970-01-01 " + time1)
+//   var time2date = new Date("1970-01-01 " + time2)
 
-  if (time1date.getTime() > time2date.getTime()) {
-    return 1
-  } else if (time1date.getTime() < time2date.getTime()) {
-    return -1
-  }
-  return 0
+//   if (time1date.getTime() > time2date.getTime()) {
+//     return 1
+//   } else if (time1date.getTime() < time2date.getTime()) {
+//     return -1
+//   }
+//   return 0
 
-  // 24:00 and 00:00 = ?
-}
+//   // 24:00 and 00:00 = ?
+// }
 
-function stringTimeInMinutes(time: string): number {
-  let hours = parseInt(time.split(':')[0])
-  let minutes = parseInt(time.split(':')[1])
-  return (hours * 60) + minutes
-}
+// function stringTimeInMinutes(time: string): number {
+//   let hours = parseInt(time.split(':')[0])
+//   let minutes = parseInt(time.split(':')[1])
+//   return (hours * 60) + minutes
+// }
 
 function isNumber(char: any) {
   //return /^\d$/.test(char);
