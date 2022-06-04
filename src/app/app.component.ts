@@ -6,6 +6,7 @@ import { ApiCallerService } from './api-caller.service';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Router } from '@angular/router';
 import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
+import { ItemsLoaderService } from './items-loader.service';
 
 @Component({
   selector: 'app-root',
@@ -38,7 +39,8 @@ export class AppComponent implements OnInit{
     public httpClient: HttpClient,
     public router: Router,
     @Inject(MAT_DATE_LOCALE) private _locale: string,
-    private _adapter: DateAdapter<any>) {    
+    private _adapter: DateAdapter<any>,
+    public items: ItemsLoaderService) {    
 
     this._locale = this.setCalendar(localStorage.getItem('language') || 'en') 
     this._adapter.setLocale(this._locale) 
@@ -265,6 +267,21 @@ export class AppComponent implements OnInit{
     let hours = parseInt(time.split(':')[0])
     let minutes = parseInt(time.split(':')[1])
     return (hours * 60) + minutes
+  }
+
+  // formatDate(data: Date){
+  //   let formDate = data.toString()
+  //   return formDate.slice(3, 10) + ' | ' + formDate.slice(0, 3)
+  // }
+
+  // display selected formatted date
+  displaySelectedDate(date: Date): string {
+    let language: string = localStorage.getItem('language') || 'en'
+
+    let month = this.items.months.get(language)?.get(date.getMonth())
+    let day = this.items.days.get(language)?.get(date.getDay())
+
+    return month + ' ' + date.getDate() + ' | ' + day
   }
 }
 

@@ -36,7 +36,7 @@ import { AdminBoardComponent } from './admin-board/admin-board.component';
 import { AdminHistoryComponent } from './admin-history/admin-history.component';
 import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admin-confirmed-requests.component';
 import { HomePageComponent } from './home-page/home-page.component';
-import { CustomDateAdapter } from './booking/custom-adapter';
+import { CustomDateAdapter } from './custom-adapter';
 import { environment } from 'src/environments/environment';
 
 export function MSALInstanceFactory(): IPublicClientApplication {

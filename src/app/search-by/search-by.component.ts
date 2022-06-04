@@ -430,16 +430,6 @@ export class SearchByComponent implements OnInit {
     })
   }
 
-  // display selected formatted date
-  displaySelectedDate(date: Date): string {
-    let language: string = localStorage.getItem('language') || 'en'
-
-    let month = this.itemsLoader.months.get(language)?.get(date.getMonth())
-    let day = this.itemsLoader.days.get(language)?.get(date.getDay())
-
-    return month + ' ' + date.getDate() + ' | ' + day
-  }
-
   // display search result / errors
   getSearchResult(): string {
     if (this.searchMode != 'by-cabinet') {

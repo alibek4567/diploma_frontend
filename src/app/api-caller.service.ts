@@ -8,7 +8,7 @@ export class ApiCallerService {
 
   constructor(public http: HttpClient) { }
 
-  addr = "http://localhost:4003"
+  addr = "http://localhost:4003/tt"
 
   sendGetRequest(url: string) {
     const httpOptions = {

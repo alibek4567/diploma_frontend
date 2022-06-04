@@ -5,7 +5,7 @@
 
             <div class="selectHolder" >
                 <p>{{ 'BOOKING.selectBy' | translate }}</p>
-                <mat-button-toggle-group name="fontStyle" value="Date" (change)="setSelect($event)" aria-label="Font Style">
+                <mat-button-toggle-group name="fontStyle" value="Date" (change)="setSelectMode($event)" aria-label="Font Style">
                     <mat-button-toggle value="Date">{{ 'BOOKING.date' | translate }}</mat-button-toggle>
                     <mat-button-toggle value="Room">{{ 'BOOKING.room' | translate }}</mat-button-toggle>
                   </mat-button-toggle-group>
@@ -15,7 +15,7 @@
                 <div class="inputHolder">
                     <p>{{ 'BOOKING.cabinet' | translate }}</p>
                     <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" type="text" placeholder="C1.113" [matAutocomplete]="auto">
-                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValues($event); getData()">
+                    <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValues($event); getDataForRoomEvents()">
                         <mat-option *ngFor="let room of searchedRooms" [value]="room['name']+'-'+room['id']">
                             {{room['name']}}
                         </mat-option>
@@ -25,7 +25,7 @@
                 <div class="inputHolder" >
                     <p>{{ 'BOOKING.chooseDate' | translate }}</p>
                     <div>
-                        <input (dateChange)="getData()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="app.myFilter">
+                        <input (dateChange)="getDataForRoomEvents()" [min]="today" [max]="maxDate" [(ngModel)]="byRoom.date" matInput [matDatepicker]="picker" readonly="true" [matDatepickerFilter]="app.myFilter">
                         <mat-datepicker-toggle matSuffix [for]="picker"></mat-datepicker-toggle>
                         <mat-datepicker #picker></mat-datepicker>
                     </div>
@@ -82,7 +82,7 @@
             <mde-popover #appPopover="mdePopover" [mdePopoverOverlapTrigger]="false" [mdePopoverCloseOnClick]="false">
                 <mat-card style="max-width: 300px">
                   <mat-card-content>
-                    {{message}}
+                    {{sendMessage}}
                   </mat-card-content>
                 </mat-card>
               </mde-popover>
@@ -91,7 +91,7 @@
         
         <div class="timetableHolder">
             <div *ngIf="select=='Room'">
-                <h2>{{formatDate(byRoom.date)}} <span *ngIf="byRoom.cabinet">| {{byRoom.cabinet}}</span></h2>
+                <h2>{{app.displaySelectedDate(byRoom.date)}} <span *ngIf="byRoom.cabinet">| {{byRoom.cabinet}}</span></h2>
                 <div>
                     <div class="itemHolder" *ngFor="let item of events">
                         <div class="left">
@@ -110,7 +110,7 @@
             </div>
 
             <div *ngIf="select=='Date'">
-                <h2>{{formatDate(byDate.date)}} <span *ngIf="byDate.cabinet">| {{byDate.cabinet}}</span></h2>
+                <h2>{{app.displaySelectedDate(byDate.date)}} <span *ngIf="byDate.cabinet">| {{byDate.cabinet}}</span></h2>
                 <div>
                     <div class="itemHolder" *ngFor="let item of rooms">
                         <div class="right">
@@ -119,7 +119,7 @@
                         </div>
                         <div class="check">
                             <section class="example-section">
-                                <mat-checkbox [checked]="checked === item.id" (change)="setCheck(item.name,item.id)"></mat-checkbox>
+                                <mat-checkbox [checked]="checked === item.id" (change)="setCheckedCabinet(item.name,item.id)"></mat-checkbox>
                               </section>
                         </div>
                     </div>
