@@ -1,7 +1,9 @@
 import { HttpErrorResponse } from '@angular/common/http';
 import { Component, OnInit, ViewChild } from '@angular/core';
+import { dateInputsHaveChanged } from '@angular/material/datepicker/datepicker-input-base';
 import { Router } from '@angular/router';
 import { MdePopoverTrigger } from '@material-extended/mde';
+import { of } from 'rxjs';
 import { ApiCallerService } from '../api-caller.service';
 import { AppComponent } from '../app.component';
 import { ItemsLoaderService } from '../items-loader.service';
@@ -44,6 +46,7 @@ export class BookingComponent implements OnInit {
   // By Room = set Date + Room
   events: any[] = []
   rooms: any
+  cabinetFlag = false
   searchedRooms: any
   messageByRoom: string
   byRoom: Select = {
@@ -131,10 +134,23 @@ export class BookingComponent implements OnInit {
       flag = false
     }
 
-    if(flag != true){
-      this.trigger.openPopover();
-      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
-    }else{
+    if(this.select == 'Room'){
+      for(let item of this.items.rooms){
+        if(item['name'] == data.cabinet){
+          this.cabinetFlag = true
+        }
+      }
+    }
+
+    if(!this.cabinetFlag && this.select == 'Room'){
+      this.messageByRoom = "Incorrect Cabinet"
+    }
+
+    if(this.select == 'Date'){
+      this.cabinetFlag = true
+    }
+
+    if(this.cabinetFlag && flag){
       var response = this.api.sendPostRequestWithAuth("/booking/create", values)
       response.subscribe(data => {
         this.router.navigate(['/booking'])
@@ -146,6 +162,9 @@ export class BookingComponent implements OnInit {
         this.trigger.openPopover();
         window.setTimeout(() => { this.trigger.closePopover() }, 2000);
       });
+    }else{
+      this.trigger.openPopover();
+      window.setTimeout(() => { this.trigger.closePopover() }, 2000);
     }
   }
 
@@ -222,13 +241,21 @@ export class BookingComponent implements OnInit {
   //get data about events for room
   getDataForRoomEvents(){
     this.events = []
-    this.cabinetByRoom()
+    // this.cabinetByRoom()
     this.getTimetableByDate()
+    for(let item of this.items.rooms){
+      if(item['name'] == this.byRoom.cabinet){
+        this.cabinetFlag = true
+      }
+    }
   }
 
   cabinetByRoom() {
-    var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
-    response.subscribe(r => {
+    this.messageByRoom = ''
+    console.log("Check");
+    if(this.cabinetFlag){
+      var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
+      response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
       if(data.payload != null){
         for(let item of data.payload){
@@ -238,7 +265,6 @@ export class BookingComponent implements OnInit {
             this.events.sort(function(a, b){if(a.start_time > b.start_time){return 1}else{return -1}})
           }
         }
-        this.messageByRoom = ''
         if(this.events.length == 0){
           this.messageByRoom = 'The Cabinet is free'
         }
@@ -246,6 +272,12 @@ export class BookingComponent implements OnInit {
     }, error => {
       this.getServerErrorMessage(error)
     })
+    }
+    else{
+      if(this.byRoom.cabinet.length == 9){
+        this.messageByRoom = 'Incorrect Cabinet'
+      }
+    }
   }
 
   getTimetableByDate(){
@@ -271,6 +303,10 @@ export class BookingComponent implements OnInit {
     this.searchedRooms = this.items.rooms.filter((data: any) => {
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
     })  
+  }
+
+  checkCabinet(){
+
   }
 
   //set room_id and room_name by room mode
