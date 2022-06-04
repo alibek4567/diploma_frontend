@@ -47,8 +47,8 @@ export class AdminConfirmedRequestsComponent implements OnInit {
   }
 
   reject(booking: any){
-    const subject = "Booking Status: Rejected"
-    const content = "Dear " + booking.reserver + ",\nyour booking has been rejected \n" +
+    const subject = "Booking Status: Deleted"
+    const content = "Dear " + booking.reserver + ",\nyour booking has been deleted \n" +
                     "Cabinet: "+booking.room +'\n' + 
                     "Booking Reason: "+booking.reason +'\n' +
                     "Date: "+this.formatDate(booking.date) +'\n' +
