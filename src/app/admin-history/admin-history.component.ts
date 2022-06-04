@@ -31,10 +31,6 @@ export class AdminHistoryComponent implements OnInit {
   ngOnInit(): void {
   }
 
-  formatDate(date: string){
-    return date.split('T')[0]
-  }
-
   filter(){
     this.searchedBookings = this.bookings.filter((data: any) => {
       return data.room.toLowerCase().includes(this.room.toLowerCase());

@@ -51,7 +51,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     const content = "Dear " + booking.reserver + ",\nyour booking has been deleted \n" +
                     "Cabinet: "+booking.room +'\n' + 
                     "Booking Reason: "+booking.reason +'\n' +
-                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Date: "+this.app.formatDate(booking.date) +'\n' +
                     "Time: "+booking.start_time + '-' + booking.end_time
 
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+booking.id, '')

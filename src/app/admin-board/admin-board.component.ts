@@ -13,9 +13,12 @@ export class AdminBoardComponent implements OnInit {
 
   //All booking in processing
 
-  requests: any
-  searchedRequests: any
-  room: string
+  requests: []
+  searchedRequests: any[] = []
+  room: string = ''
+  date: string = ''
+  start_time: string = ''
+  end_time: string = ''
 
   constructor(public api: ApiCallerService, public httpClient: HttpClient, public router: Router, public app: AppComponent) {
     if(!app.isLoggedIn() && !app.isAdmin){
@@ -32,17 +35,22 @@ export class AdminBoardComponent implements OnInit {
    }
 
   ngOnInit(): void {
+    const startsWith = (s: string) => (room: string) => room === s
+
+    const data = ['35X', '45X', '35L']
+  
+    const result = data.filter(startsWith('3')) // => [ '35X', '35L' ]
+    console.log(result);
   }
 
-  formatDate(date: string){
-    return date.split('T')[0]
-  }
+  roomFilter = (s: string) => (item: any) => item.room.toLowerCase().includes(s.toLowerCase()) 
 
   filter(){
-    this.searchedRequests = this.requests.filter((data: any) => {
-      return data.room.toLowerCase().includes(this.room.toLowerCase());
-    })
     console.log(this.room);
+    // this.searchedRequests = this.requests.filter((data: any) => {
+    //   return data.room.toLowerCase().includes(this.room.toLowerCase())
+    // })
+    this.searchedRequests = this.requests.filter(this.roomFilter)
   }
 
   accept(booking: any){
@@ -50,7 +58,7 @@ export class AdminBoardComponent implements OnInit {
     const content = "Dear " + booking.reserver + ", your booking has been accepted \n" +
                     "Cabinet: "+booking.room +'\n' + 
                     "Booking Reason: "+booking.reason +'\n' +
-                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Date: "+this.app.formatDate(booking.date) +'\n' +
                     "Time: "+booking.start_time + '-' + booking.end_time
 
     const response = this.api.sendPostRequestWithAuth('/booking/confirm/'+booking.id, '')
@@ -74,7 +82,7 @@ export class AdminBoardComponent implements OnInit {
     const content = "Dear " + booking.reserver + ",\nyour booking has been rejected \n" +
                     "Cabinet: "+booking.room +'\n' + 
                     "Booking Reason: "+booking.reason +'\n' +
-                    "Date: "+this.formatDate(booking.date) +'\n' +
+                    "Date: "+this.app.formatDate(booking.date) +'\n' +
                     "Time: "+booking.start_time + '-' + booking.end_time
 
     const response = this.api.sendPostRequestWithAuth('/booking/reject/'+booking.id, '')

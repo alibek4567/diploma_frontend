@@ -2,7 +2,24 @@
     <div class="content">
         <div class="topHolder">
           <h2>{{ 'ADMIN-BOARD.adminBoard' | translate }}</h2>
-            <input type="text" [(ngModel)]="room" placeholder="Search by Room" (ngModelChange)="filter()">
+          <div class="inputsHolder">
+            <div class="item">
+              <p>Cabinet</p>
+              <input type="text" [(ngModel)]="room" placeholder="Search by Room" (ngModelChange)="filter()">
+            </div>
+            <div class="item">
+              <p>Date</p>
+              <input type="date" [(ngModel)]="date" (ngModelChange)="filter()">
+            </div>
+            <div class="item">
+              <p>Start Time</p>
+              <input type="time" [(ngModel)]="start_time" (ngModelChange)="filter()">
+            </div>
+            <div class="item">
+              <p>End Time</p>
+              <input type="time" [(ngModel)]="end_time" (ngModelChange)="filter()">
+            </div>
+          </div>
           </div>
             <div class="tableHolder">
               <table>
@@ -46,7 +63,7 @@
                     <b>{{item.reason}}</b> 
                   </td>
                   <td>
-                    <b>{{formatDate(item.date)}}</b> 
+                    <b>{{this.app.formatDate(item.date)}}</b> 
                   </td>
                   <td>
                     <b>{{item.start_time}}</b> 

@@ -262,6 +262,12 @@ export class AppComponent implements OnInit{
     }
     return 0
   }
+
+  formatDate(date: string){
+    // 01.01.2022
+    let tempDate = date.split('T')[0].split('-')
+    return tempDate[2]+ '.' + tempDate[1] + '.' + tempDate[0]
+  }
     
   stringTimeInMinutes(time: string): number {
     let hours = parseInt(time.split(':')[0])
