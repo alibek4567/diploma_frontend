@@ -33,7 +33,6 @@ export class BookingComponent implements OnInit {
 
   events: any[] = []
   rooms: any
-
   searchedRooms: any
 
   today = new Date()
@@ -134,6 +133,7 @@ cabinetByDate(){
         this.messageByDate == 'No Available Rooms'
       }
     }, error => {
+      console.log(error);
     }
   )
 }
@@ -230,16 +230,7 @@ cabinetByDate(){
 }
 
   send(){
-    let data = null
-    if(this.select == 'Room'){
-      data = this.byRoom
-    }
-    else if(this.select == 'Date'){
-      data = this.byDate
-    }
-    else{
-      return
-    }
+    const data = this.select == "Room" ? this.byRoom : this.byDate
 
     let values = {
       room: data.cabinet, 

@@ -50,7 +50,7 @@ export function MSALInstanceFactory(): IPublicClientApplication {
 
 export function MSALInterceptorConfigFactory(): MsalInterceptorConfiguration {
   const protectedResourceMap = new Map<string, Array<string>>();
-  protectedResourceMap.set('https://graph.microsoft.com/beta/me', ['user.read', 'mail.read', 'mail.send', 'contacts.read', 'mail.send.shared']);
+  protectedResourceMap.set('https://graph.microsoft.com/beta/me', ['user.read', 'mail.read', 'mail.send', 'contacts.read']);
 
   return {
     interactionType: InteractionType.Popup,
@@ -107,7 +107,6 @@ export function HttpLoaderFactory(http: HttpClient) {
     MatCardModule,
   ],
   providers: [
-    { provide: DateAdapter, useClass: CustomDateAdapter },
     {
       provide: MSAL_INSTANCE,
       useFactory: MSALInstanceFactory
@@ -122,6 +121,7 @@ export function HttpLoaderFactory(http: HttpClient) {
       useFactory: MSALInterceptorConfigFactory
     },
     MsalService,
+    { provide: DateAdapter, useClass: CustomDateAdapter }
     // {
     //   provide: HTTP_INTERCEPTORS,
     //   useClass: LanguageInterceptor,

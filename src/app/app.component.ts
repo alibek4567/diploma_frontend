@@ -83,7 +83,6 @@ export class AppComponent implements OnInit{
             const r = JSON.parse(JSON.stringify(data))
             // this.api.jwt = r.payload       
             localStorage.setItem('token', r.payload)
-
             this.checkAdmin()
           }, error => {
           });
