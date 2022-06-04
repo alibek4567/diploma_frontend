@@ -5,7 +5,6 @@ import { AdminConfirmedRequestsComponent } from './admin-confirmed-requests/admi
 import { AdminHistoryComponent } from './admin-history/admin-history.component';
 import { SearchByComponent } from './search-by/search-by.component';
 import { BookingComponent } from './booking/booking.component';
-import { GraphicMapComponent } from './graphic-map/graphic-map.component';
 import { HomePageComponent } from './home-page/home-page.component';
 
 const routes: Routes = [
@@ -20,10 +19,6 @@ const routes: Routes = [
   {
     path: 'booking',
     component: BookingComponent
-  },
-  {
-    path: 'graph-map',
-    component: GraphicMapComponent
   },
   {
     path: 'admin-board',
