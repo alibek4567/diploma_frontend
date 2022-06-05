@@ -84,8 +84,8 @@ export class BookingComponent implements OnInit {
       case 400: {
         return (this.select == "Room")?'Time is reserved, try reload page/change time range':'Cabinet is reserved for the selected time, try reload page/select another cabinet'
       }
-      case 403: {
-        return `Access Denied`;
+      case 404: {
+        return `Not Found`;
       }
       case 500: {
         return `Internal Server Error`;
@@ -137,23 +137,11 @@ export class BookingComponent implements OnInit {
       flag = false
     }
 
-    if(this.select == 'Room'){
-      for(let item of this.items.rooms){
-        if(item['name'] == data.cabinet){
-          this.cabinetFlag = true
-        }
-      }
+    if(this.cabinetFlag){
+      this.sendMessage = "Incorrect cabinet"
     }
 
-    if(!this.cabinetFlag && this.select == 'Room'){
-      this.messageByRoom = "Incorrect Cabinet"
-    }
-
-    if(this.select == 'Date'){
-      this.cabinetFlag = true
-    }
-
-    if(this.cabinetFlag && flag){
+    if(flag && !this.cabinetFlag){
       var response = this.api.sendPostRequestWithAuth("/booking/create", values)
       response.subscribe(() => {
         this.router.navigate(['/booking'])
@@ -231,20 +219,13 @@ export class BookingComponent implements OnInit {
 
   // get data about events for room
   getDataForRoomEvents() {
+    this.messageByRoom = ''
     this.events = []
-    // this.cabinetByRoom()
     this.getTimetableByDate()
-    for(let item of this.items.rooms){
-      if(item['name'] == this.byRoom.cabinet){
-        this.cabinetFlag = true
-      }
-    }
+    this.cabinetByRoom()
   }
 
   cabinetByRoom() {
-    this.messageByRoom = ''
-    console.log("Check");
-    if(this.cabinetFlag){
       var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
       response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
@@ -260,17 +241,12 @@ export class BookingComponent implements OnInit {
         }
         if(this.events.length == 0){
           this.messageByRoom = 'The Cabinet is free'
+          this.cabinetFlag = false
         }
       }
     }, error => {
-      console.log(error)
+      this.messageByRoom = this.getServerErrorMessage(error)
     })
-    }
-    else{
-      if(this.byRoom.cabinet.length == 9){
-        this.messageByRoom = 'Incorrect Cabinet'
-      }
-    }
   }
 
   getTimetableByDate() {
@@ -284,9 +260,9 @@ export class BookingComponent implements OnInit {
             if (a.start_time > b.start_time) {return 1} else {return -1}
           })
         }
-        this.messageByRoom = ''
         if (this.events.length == 0) {
           this.messageByRoom = 'The Cabinet is free'
+          this.cabinetFlag = false
         }
       }
     }, error => {
@@ -296,19 +272,25 @@ export class BookingComponent implements OnInit {
 
   //filter list of rooms by room name
   filter() {
-    this.searchedRooms = this.items.rooms.filter((data: any) => {
+    this.events = []
+    this.messageByRoom = ''
+    this.searchedRooms = this.items.rooms.filter((data: any) => {  
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
-    })  
-  }
-
-  checkCabinet(){
-
+    })
+    this.messageByRoom = ''
+    if(this.searchedRooms?.length == 0){
+      this.messageByRoom = 'Not found Cabinet'
+      this.cabinetFlag = true
+    }else{
+      this.messageByRoom = 'Select Cabinet from List'
+    }
   }
 
   //set room_id and room_name by room mode
   setValues(event: any) {
     this.byRoom.cabinet_id = event.option.value.split('-')[1]
     this.byRoom.cabinet = event.option.value.split('-')[0]
+    console.log(this.byRoom.cabinet);
   }
 }
 

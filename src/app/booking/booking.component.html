@@ -14,7 +14,7 @@
             <div *ngIf="select=='Room'">
                 <div class="inputHolder">
                     <p>{{ 'BOOKING.cabinet' | translate }}</p>
-                    <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter(); cabinetByRoom()" maxlength="9" type="text" placeholder="C1.113" [matAutocomplete]="auto">
+                    <input matInput [(ngModel)]="byRoom.cabinet" (ngModelChange)="filter()" maxlength="9" type="text" placeholder="C1.113" [matAutocomplete]="auto">
                     <mat-autocomplete #auto="matAutocomplete" (optionSelected)="setValues($event); getDataForRoomEvents()">
                         <mat-option *ngFor="let room of searchedRooms" [value]="room['name']+'-'+room['id']">
                             {{room['name']}}
