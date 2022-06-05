@@ -21,7 +21,7 @@ export class AdminBoardComponent implements OnInit {
   end_time: string = ''
 
   constructor(public api: ApiCallerService, public httpClient: HttpClient, public router: Router, public app: AppComponent) {
-    if(!app.isLoggedIn() && !app.isAdmin){
+    if(!app.isLoggedIn() || !app.isAdmin) { 
       router.navigateByUrl('')
     }
         
@@ -29,28 +29,18 @@ export class AdminBoardComponent implements OnInit {
     response.subscribe(data => {
       this.requests = JSON.parse(JSON.stringify(data)).payload
       this.searchedRequests = this.requests
-      console.log(this.requests)
+      // console.log(this.requests)
     }, error => {
     })
    }
 
-  ngOnInit(): void {
-    const startsWith = (s: string) => (room: string) => room === s
-
-    const data = ['35X', '45X', '35L']
-  
-    const result = data.filter(startsWith('3')) // => [ '35X', '35L' ]
-    console.log(result);
-  }
-
-  roomFilter = (s: string) => (item: any) => item.room.toLowerCase().includes(s.toLowerCase()) 
+  ngOnInit(): void { }
 
   filter(){
-    console.log(this.room);
-    // this.searchedRequests = this.requests.filter((data: any) => {
-    //   return data.room.toLowerCase().includes(this.room.toLowerCase())
-    // })
-    this.searchedRequests = this.requests.filter(this.roomFilter)
+    this.searchedRequests = this.requests.filter((data: any) => {
+      return data.room.toLowerCase().includes(this.room.toLowerCase())
+    })
+    //this.searchedRequests = this.requests.filter(this.roomFilter)
   }
 
   accept(booking: any){
@@ -65,7 +55,7 @@ export class AdminBoardComponent implements OnInit {
     const r = response.subscribe(data =>{
     this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
       const message = JSON.stringify(res)
-      console.log(message);
+      //console.log(message);
 
       this.router.navigate(['/admin-board'])
       .then(() => {
@@ -73,7 +63,7 @@ export class AdminBoardComponent implements OnInit {
       });
     })
     },error =>{
-      console.log(error);
+      //console.log(error);
     })
   }
 
@@ -89,7 +79,7 @@ export class AdminBoardComponent implements OnInit {
     const r = response.subscribe(data =>{
     this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
       const message = JSON.stringify(res)
-      console.log(message);
+      //console.log(message);
 
       this.router.navigate(['/admin-board'])
       .then(() => {
@@ -97,7 +87,7 @@ export class AdminBoardComponent implements OnInit {
       });
     })
     },error =>{
-      console.log(error);
+      //console.log(error);
     })
   }
 }

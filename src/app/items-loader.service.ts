@@ -129,6 +129,54 @@ export class ItemsLoaderService {
     ]
   ])
 
+  jspdfDictionary = new Map<string, Map<number, string>>([
+    [
+      'en', 
+      new Map<number, string>([
+        [0, 'Timetable'],
+        [1, 'Booking'],
+      ])
+    ],
+    [
+      'kz', 
+      new Map<number, string>([
+        [0, 'Сабақ кестесі'],
+        [1, 'Брондау кестесі'],
+      ])
+    ],
+    [
+      'ru', 
+      new Map<number, string>([
+        [0, 'Расписание'],
+        [1, 'Бронирование'],
+      ])
+    ]
+  ])
+
+  bookingStatus = new Map<string, Map<boolean, string>>([
+    [
+      'en', 
+      new Map<boolean, string>([
+        [true, 'confirmed'],
+        [false, 'pending...'],
+      ])
+    ],
+    [
+      'kz', 
+      new Map<boolean, string>([
+        [true, 'расталды'],
+        [false, 'өңдеуде...'],
+      ])
+    ],
+    [
+      'ru', 
+      new Map<boolean, string>([
+        [true, 'подтверждено'],
+        [false, 'в обработке...'],
+      ])
+    ]
+  ])
+
   rooms: []
   groups: []
   teachers: []

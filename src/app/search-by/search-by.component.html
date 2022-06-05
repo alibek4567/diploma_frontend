@@ -76,7 +76,7 @@
         <mde-popover #appPopoverSearch="mdePopover" [mdePopoverOverlapTrigger]="false">
           <mat-card class="matCard">
             <mat-card-content>
-              Search value is required
+              {{ 'SEARCH.popover.search-required' | translate }}
             </mat-card-content>
           </mat-card>
         </mde-popover>
@@ -88,7 +88,7 @@
       <mde-popover #appPopoverExport="mdePopover" [mdePopoverOverlapTrigger]="false">
         <mat-card class="matCard">
           <mat-card-content>
-            No data to export
+            {{ 'SEARCH.popover.no-export' | translate }}
           </mat-card-content>
         </mat-card>
       </mde-popover>

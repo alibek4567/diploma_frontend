@@ -1,35 +1,37 @@
 <div class="outer">
     <div class="calendarHolder">
+      <!-- booking coontent -->
       <div class="legend">
         <p>{{ 'HOME.bookings' | translate }}</p>
-        <h2 *ngIf="bookings.length==0">{{messageForBooking}}</h2>
-        <div *ngIf="bookings.length!=0">
+        <h2 id="bookingError" *ngIf="bookings.length == 0">{{ errorMessages.get(app.language)?.get(errorStatusBooking) }}</h2>
+        <div *ngIf="bookings.length != 0">
           <div class="item" *ngFor="let item of bookings">
             <p>{{ 'HOME.room' | translate }}: {{item.room}}</p>
             <p>{{ 'HOME.date' | translate }}: {{item.date.split('T')[0]}}</p>
-            <p>Time: {{item.start_time}} - {{item.end_time}}</p>
+            <p>{{ 'HOME.time' | translate }}: {{item.start_time}} - {{item.end_time}}</p>
             <p>{{ 'HOME.reason' | translate }}: {{item.reason}}</p>
-            <p>{{ 'HOME.status' | translate }}: <span [ngStyle]="{'color': item.confirmed ? '#1ad740' : '#e1a42b'}">{{item.confirmed ? 'confirmed' : 'pending...'}}</span></p>
+            <p>{{ 'HOME.status' | translate }}: <span [ngStyle]="{'color': item.confirmed ? '#1ad740' : '#e1a42b'}"> {{ itemsLoader.bookingStatus?.get(app.language)?.get(item.confirmed) }}</span></p>
         </div>
         </div>
       </div>
     </div>
   
-    <div class="content">  
+    <div class="content"> 
+      <!-- schedule content --> 
       <h2 class="searchField">{{searchValue}}</h2>
-      <button *ngIf="searchStart" class="export" mat-icon-button (click)="getPdf(0)"
+      <button *ngIf="searchSuccess" class="export" mat-icon-button (click)="getPdf(0)"
       [mdePopoverTriggerFor]="appPopoverExport" mdePopoverTriggerOn="none">
       <mat-icon>get_app</mat-icon> 
     </button>
     <mde-popover #appPopoverExport="mdePopover" [mdePopoverOverlapTrigger]="false">
       <mat-card class="matCard">
         <mat-card-content>
-          No data to export
+          {{ 'SEARCH.popover.no-export' | translate }}
         </mat-card-content>
       </mat-card>
     </mde-popover>
 
-      <h2 *ngIf="weekSchedule.size == 0" class="searchField">{{messageForSchedule}}</h2>
+      <h2 *ngIf="weekSchedule.size == 0" class="searchField">{{ errorMessages.get(app.language)?.get(this.errorStatusTimetable) }}</h2>
       <div *ngIf="weekSchedule.size != 0" class="grid-container">
         <div class="grid-item">
           <div class="day"></div>

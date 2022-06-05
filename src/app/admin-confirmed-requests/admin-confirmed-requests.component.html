@@ -1,67 +1,71 @@
 <div class="outer">
-    <div class="content">
-        <div class="topHolder">
-          <h2>{{ 'ADMIN-BOARD.confirmedBookings' | translate }}</h2>
-            <input type="text" [(ngModel)]="request" placeholder="Search by Room" (ngModelChange)="filter()">
-          </div>
-
-            <div class="tableHolder">
-              <table>
-                <tr>
-                  <th>
-                    {{ 'ADMIN-BOARD.cabinet' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.sender' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.senderInfo' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.reason' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.date' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.startTime' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.endTime' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.actions' | translate }}
-                  </th>
-                </tr>
-                <tr *ngFor="let item of searchedRequests">
-                  <td>
-                    <b>{{item.room}}</b>
-                  </td>
-                  <td>
-                    <b>{{item.reserver}}</b>
-                  </td>
-                  <td>
-                    <b>{{item.reserver_info}}</b>
-                  </td>
-                  <td>
-                    <b>{{item.reason}}</b>
-                  </td>
-                  <td>
-                    <b>{{this.app.formatDate(item.date)}}</b>
-                  </td>
-                  <td>
-                    <b>{{item.start_time}}</b>
-                  </td>
-                  <td>
-                    <b>{{item.end_time}}</b>
-                  </td>
-                  <td>
-                      <div class="center">
-                        <button id="reject" (click)="reject(item)">{{ 'ADMIN-BOARD.delete' | translate }}</button>
-                      </div>
-                  </td>
-                </tr>
-              </table>
-            </div>
+  <div class="content">
+    <div class="topHolder">
+      <h2>{{ 'ADMIN-BOARD.confirmedBookings' | translate }}</h2>
+      <div class="inputsHolder">
+        <div class="item">
+          <p>{{ 'ADMIN-BOARD.cabinet' | translate }}:</p>
+          <input type="text" [(ngModel)]="request" placeholder='{{ "ADMIN-BOARD.placeholder-room" | translate }}' (ngModelChange)="filter()">
+        </div>
+      </div>
     </div>
+    <div class="tableHolder">
+      <table>
+        <tr>
+          <th>
+            {{ 'ADMIN-BOARD.cabinet' | translate }}
+          </th>
+           <th>
+            {{ 'ADMIN-BOARD.sender' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.senderInfo' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.reason' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.date' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.startTime' | translate }}
+          </th>
+            <th>
+            {{ 'ADMIN-BOARD.endTime' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.actions' | translate }}
+          </th>
+        </tr>
+        <tr *ngFor="let item of searchedRequests">
+          <td>
+            <b>{{item.room}}</b>
+          </td>
+          <td>
+            <b>{{item.reserver}}</b>
+          </td>
+          <td>
+            <b>{{item.reserver_info}}</b>
+          </td>
+          <td>
+             <b>{{item.reason}}</b>
+          </td>
+          <td>
+            <b>{{this.app.formatDate(item.date)}}</b>
+          </td>
+          <td>
+            <b>{{item.start_time}}</b>
+          </td>
+          <td>
+            <b>{{item.end_time}}</b>
+          </td>
+          <td>
+            <div class="center">
+              <button id="reject" (click)="reject(item)">{{ 'ADMIN-BOARD.delete' | translate }}</button>
+            </div>
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </div>

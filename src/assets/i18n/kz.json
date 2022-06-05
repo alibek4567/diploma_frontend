@@ -9,17 +9,19 @@
         "search-tab": "Іздеу",
         "booking-tab": "Брондау",
         "graph-map-tab": "Университет картасi",
-        "dev-board-tab": "Админ тақтасы",
-        "history-tab": "Брондау тізімі",
+        "dev-board-tab": "Администратор тақтасы",
+        "history-tab": "Брондаулар тарихы",
         "confirm-tab": "Расталған брондаулар"
     },
 
     "HOME": {
-        "bookings": "Брондаулар",
-        "room": "Room",
-        "date": "Date",
-        "reason": "Reason",
-        "status": "Status"
+        "bookings": "Брондау тізімі",
+        "room": "Кабинет",
+        "date": "Күні",
+        "time": "Уақыт",
+        "reason": "Себеп",
+        "reserver": "Брон. жасаушы",
+        "status": "Мәртебесі"
     },
 
     "SEARCH": {
@@ -36,59 +38,62 @@
             "fri": "ЖҰМ",
             "sat": "СЕН"
         },
+        "popover": {
+            "search-required": "Іздеу мәнің енгізілуі қажет",
+            "no-export": "Экспорттау үшін деректер жоқ"
+        },
         "search": "іздеу",
-        "legend": "Legend",
-        "oneLesson": "One Lesson",
-        "severalLessons": "Several Lessons",
-        "booking": "booking",
-        "approved": "approved",
-        "pending": "pending"
+        "legend": "Түсіндірме",
+        "oneLesson": "Бір сабақ",
+        "severalLessons": "Бірнеше сабақ",
+        "booking": "Брондау",
+        "approved": "Расталған",
+        "pending": "Өңдеуде"
     },
 
     "BOOKING": {
-        "bookingForm": "Booking Form",
-        "selectBy": "Select by",
-        "date": "Date",
-        "room": "Room",
-        "cabinet": "Cabinet",
-        "chooseDate": "Choose a date",
-        "startTime": "Start Time",
-        "endTime": "End Time",
-        "reason": "Reason",
-        "send": "Send",
-        "noEvents": "No Events",
-        "seats": "Seats",
-        "noRooms": "No Available Rooms",
-        "enterComment": "Enter your comments"
+        "bookingForm": "Брондау Формасы",
+        "selectBy": "Бронтау түрі",
+        "date": "Күні",
+        "room": "Кабинет",
+        "cabinet": "Кабинет",
+        "chooseDate": "Күнді таңдаңыз",
+        "startTime": "Басталуы уақыты",
+        "endTime": "Аяқталуы уақыты",
+        "reason": "Себебі",
+        "send": "Жіберу",
+        "noEvents": "Іс-шаралар жоқ",
+        "seats": "Орындар саны",
+        "noRooms": "Бос кабинеттер жоқ",
+        "enterComment": "Пікірінізді енгізіңіз"
     },
 
     "POP-UP": {
-        "subject": "Subject",
-        "title": "Title",
-        "type": "Type",
-        "location": "Location",
-        "time": "Time",
-        "tutor": "Tutor"
+        "subject": "Пән",
+        "title": "Атауы",
+        "type": "Түрі",
+        "location": "Орналасуы",
+        "time": "Уақыт",
+        "tutor": "Оқытушы",
+        "reserver": "Бронь жасаушы",
+        "status": "Мәртебесі"
     },
 
     "ADMIN-BOARD": {
-        "adminBoard": "Adminboard",
-        "confirmedBookings": "Confirmed Bookings",
-        "bookingHistory": "Booking History",
-        "cabinet": "Cabinet",
-        "sender": "Sender",
-        "senderInfo": "Sender Info",
-        "reason": "Reason",
-        "date": "Date",
-        "startTime": "Start Time",
-        "endTime": "End Time",
-        "actions": "Actions",
-        "accept": "Accept",
-        "reject": "Reject",
-        "delete": "Delete"
-    },
-
-    "GRAPH-MAP": {
-        "WELCOME": "Hello World!"
+        "adminBoard": "Администратор тақтасы",
+        "confirmedBookings": "Расталған брондаулар",
+        "bookingHistory": "Брондаулар тарихы",
+        "cabinet": "Кабинет",
+        "sender": "Жіберуші",
+        "senderInfo": "Жіберуші туралы ақп.",
+        "reason": "Атауы",
+        "date": "Күні",
+        "startTime": "Басталуы уақыты",
+        "endTime": "Аяқталуы уақыты",
+        "actions": "Әрекеттер",
+        "accept": "Растау",
+        "reject": "Қабылдамау",
+        "delete": "Өшіру",
+        "placeholder-room": "Кабинет бойынша іздеу"
     }
 }
