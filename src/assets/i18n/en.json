@@ -18,7 +18,9 @@
         "bookings": "Bookings",
         "room": "Room",
         "date": "Date",
+        "time": "Time",
         "reason": "Reason",
+        "reserver": "Reserver",
         "status": "Status"
     },
 
@@ -36,13 +38,17 @@
             "fri": "FRI",
             "sat": "SAT"
         },
+        "popover": {
+            "search-required": "Search value is required",
+            "no-export": "No data to export"
+        },
         "search": "Search",
         "legend": "Legend",
         "oneLesson": "One Lesson",
         "severalLessons": "Several Lessons",
-        "booking": "booking",
-        "approved": "approved",
-        "pending": "pending"
+        "booking": "Booking",
+        "approved": "Approved",
+        "pending": "Pending"
     },
 
     "BOOKING": {
@@ -68,7 +74,9 @@
         "type": "Type",
         "location": "Location",
         "time": "Time",
-        "tutor": "Tutor"
+        "tutor": "Tutor",
+        "reserver": "Reserver",
+        "status": "Status"
     },
 
     "ADMIN-BOARD": {

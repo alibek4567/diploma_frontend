@@ -15,11 +15,13 @@
     },
 
     "HOME": {
-        "bookings": "Брондаулар",
-        "room": "Room",
-        "date": "Date",
-        "reason": "Reason",
-        "status": "Status"
+        "bookings": "Брондау тізімі",
+        "room": "Кабинет",
+        "date": "Күні",
+        "time": "Уақыт",
+        "reason": "Себеп",
+        "reserver": "Брон. жасаушы",
+        "status": "Мәртебесі"
     },
 
     "SEARCH": {
@@ -36,13 +38,17 @@
             "fri": "ЖҰМ",
             "sat": "СЕН"
         },
+        "popover": {
+            "search-required": "Іздеу мәнің енгізілуі қажет",
+            "no-export": "Экспорттау үшін деректер жоқ"
+        },
         "search": "іздеу",
-        "legend": "Legend",
-        "oneLesson": "One Lesson",
-        "severalLessons": "Several Lessons",
-        "booking": "booking",
-        "approved": "approved",
-        "pending": "pending"
+        "legend": "Түсіндірме",
+        "oneLesson": "Бір сабақ",
+        "severalLessons": "Бірнеше сабақ",
+        "booking": "Брондау",
+        "approved": "Расталған",
+        "pending": "Өңдеуде"
     },
 
     "BOOKING": {
@@ -63,12 +69,14 @@
     },
 
     "POP-UP": {
-        "subject": "Subject",
-        "title": "Title",
-        "type": "Type",
-        "location": "Location",
-        "time": "Time",
-        "tutor": "Tutor"
+        "subject": "Пән",
+        "title": "Атауы",
+        "type": "Түрі",
+        "location": "Орналасуы",
+        "time": "Уақыт",
+        "tutor": "Оқытушы",
+        "reserver": "Бронь жасаушы",
+        "status": "Мәртебесі"
     },
 
     "ADMIN-BOARD": {

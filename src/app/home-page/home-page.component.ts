@@ -22,8 +22,7 @@ export class HomePageComponent implements OnInit {
 
   @ViewChildren(MdePopoverTrigger) trigger: QueryList<MdePopoverTrigger>;
 
-  weekSchedule = new Map<string, Map<string, Subject[]>>()
-
+  // search parameters
   department = ''
   searchStart: boolean = false
   searchMode: string = ''
@@ -31,32 +30,59 @@ export class HomePageComponent implements OnInit {
   searchResult: string
   searchSuccess: boolean = false
 
-  // search by cabinet
-  cabinet: boolean = false
-
   // time parameters of schedule
   scheduleStartTime: string = "24:00"
   scheduleEndTime: string = "00:00"
   timeArray: string[] = []
 
+  weekSchedule = new Map<string, Map<string, Subject[]>>()
+
+  // Booking Data
   id: string | null = localStorage.getItem('id')
   bookings: any[] = []
-  messageForBooking = "No Events"
-  messageForSchedule = "No Schedule"
-  loading = true
-  today = new Date
 
-  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router, public itemsLoader: ItemsLoaderService,) {
-    console.log(app.isLoggedIn())
-    
+  messageForBooking: string = "No Events"
+  messageForSchedule: string = "No Schedule"
+
+  errorStatusBooking: number = 0
+  errorStatusTimetable: number = 0
+
+  errorMessages = new Map<string, Map<number, string>>([
+    [
+      'en', 
+      new Map<number, string>([
+        [400, 'Request error, check the request correctness'],
+        [404, 'No records in the server'],
+        [500, 'Server error, try to request later ...'],
+      ])
+    ],
+    [
+      'kz', 
+      new Map<number, string>([
+        [400, 'Сұраныстағы қате, сұраудың дұрыстығын тексеріңіз'],
+        [404, 'Серверде жазбалар жоқ'],
+        [500, 'Сервер қатесі, әрекетті кейінірек қайталаңыз ...'],
+      ])
+    ],
+    [
+      'ru', 
+      new Map<number, string>([
+        [400, 'Ошибка в запроса, проверьте правильность запроса'],
+        [404, 'Нет записей на сервере'],
+        [500, 'Ошибка сервера, попробуйте запросить позже...'],
+      ])
+    ]
+  ])
+
+  constructor(private dialogRef: MatDialog, public api: ApiCallerService, public app: AppComponent, public router: Router, public itemsLoader: ItemsLoaderService,) {    
+    // check auth info
     if(!app.isLoggedIn()){
       router.navigateByUrl('')
     }
-
-    console.log(localStorage.getItem('department'));
   
+    // check department of user
     if(isNumber(this.department?.substring(this.department.length - 4))){
-      let temp1 = localStorage.getItem('department') //?.replace('-', '')
+      let temp1 = localStorage.getItem('department')
       if (temp1 != undefined)
       this.searchValue = temp1
       this.searchMode = 'by-group'
@@ -67,80 +93,73 @@ export class HomePageComponent implements OnInit {
         this.searchMode = 'by-teacher'
       }
     }
-    
-    console.log(this.searchValue);
 
+    // getting study timetable of user
     this.app.waitForElm('.searchField').then(async () => {
       this.setSearch()
     });
 
+    // geeting study rooms booking of user
     var response = this.api.sendGetRequest("/booking/reserver/"+this.id)
     response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
       if(data.payload != undefined){
         const temp = data.payload
         for(let item of temp){
-          if(dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat(this.today).split('T')[0]) == 1 ||
-            dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat(this.today).split('T')[0]) == 0){
+          if(dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat( this.app.getTodaysDate(+6) ).split('T')[0]) == 1 ||
+            dateCompare(item.date.split('T')[0], this.app.toGolangDateFormat( this.app.getTodaysDate(+6) ).split('T')[0]) == 0){
             this.bookings.push(item)
           }
         }
       }
     }, error => {
+      this.errorStatusBooking = error.status
     })
   }
 
-  ngOnInit(): void {
-  }
+  ngOnInit(): void { }
 
   setSearch() {
-    if (this.searchValue == '') {
-      console.log(this.searchValue)
-    } else {
+    if (this.searchValue != '') {
+      this.weekSchedule.clear()
+
       this.timeArray = []
-      this.scheduleStartTime = "24:00" //"22:00"
-      this.scheduleEndTime = "00:00" //"8:00"
+      this.scheduleStartTime = "24:00"
+      this.scheduleEndTime = "00:00"
+
       this.searchStart = true
       this.searchResult = this.searchValue
+
       switch(this.searchMode) { 
         case 'by-group': { 
-          this.cabinet = false
-          this.getSearchResult("/timetable/group/" + this.searchValue)
+          this.getStudyTimetable("/timetable/group/" + this.searchValue)
           break; 
         }
         case 'by-teacher': { 
-          this.cabinet = false
-          this.getSearchResult("/timetable/tutor/email/" + this.searchValue)
+          this.getStudyTimetable("/timetable/tutor/email/" + this.searchValue)
           break; 
         }
-        default: { 
-           console.log("no correct search Mode")
-        } 
       } 
     }
   }  
 
-  getSearchResult(request: string) {
-    this.weekSchedule.clear()
-    //this.timeArray = []
-     
+  getStudyTimetable(request: string) {
     var response = this.api.sendGetRequest(request)
     response.subscribe(data => {
       this.searchSuccess = true
       const schedule = JSON.parse(JSON.stringify(data))
-      // Sorting
+      // process data
       for (let i = 1; i < 7; i++) {
         if (schedule.payload["d" + i] != null) {
           for (let item of schedule.payload["d" + i]) {
-            // Time set
+            // dynamic time setting
             if (this.app.compareTime(item.start_time, this.scheduleStartTime) == -1) {
               this.scheduleStartTime = item.start_time
             }
             if (this.app.compareTime(item.end_time, this.scheduleEndTime) == 1) {
               this.scheduleEndTime = item.end_time
             }
-
-            // Mapping
+            // mapping
             if (this.weekSchedule.get("d" + i) != undefined) {
               if (this.weekSchedule.get("d" + i)?.get(item.start_time) != undefined) {
                 this.weekSchedule.get("d" + i)?.get(item.start_time)?.push(item)
@@ -155,17 +174,8 @@ export class HomePageComponent implements OnInit {
         }
       }
 
-      // Drawing Time blocks
-      //if (this.searchMode != 'by-cabinet') {
-        let myArray: string[] = []
-        let start = parseInt(this.scheduleStartTime.split(':')[0])
-        let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
-        for (let i = start; i < end; i++) {
-          myArray.push(i + ':00')
-          myArray.push(i + ':30')
-        }
-        this.timeArray = myArray
-      //}
+      // drawing time blocks
+      this.drawTimeBlocks()
 
       // Drawing Subjects
       this.app.waitForElm('.grid-container').then(async () => {
@@ -174,13 +184,23 @@ export class HomePageComponent implements OnInit {
         }
       });
     }, error => { 
-      this.searchSuccess = false
-      console.log(error) 
-      //this.searchResult = 'No lessons schedule'
-      this.timeArray = [ ]
+      this.errorStatusTimetable= error.status
     })
   }
 
+  // draw time blocks
+  drawTimeBlocks() {
+    let myArray: string[] = []
+    let start = parseInt(this.scheduleStartTime.split(':')[0])
+    let end = parseInt(this.scheduleEndTime.split(':')[0]) + 1
+    for (let i = start; i < end; i++) {
+      myArray.push(i + ':00')
+      myArray.push(i + ':30')
+    }
+    this.timeArray = myArray
+  }
+
+  // set subjects blocks for arrays to display
   async setSubjects(day: string, daySchedule: any) {
     if (daySchedule != null) {
       daySchedule.forEach(async (subjects: Subject[]) => {
@@ -188,28 +208,24 @@ export class HomePageComponent implements OnInit {
       var subjectStartTime = subjects[0].start_time.split(':');
       var hours = parseInt(subjectStartTime[0])
       var minutes = parseInt(subjectStartTime[1])
-
-      //console.log(subjects[0].start_time, subjects[0].end_time)
-
       let id = day + "_t" + subjectStartTime[0] + subjectStartTime[1]
 
       await this.app.waitForElm('#' + id).then(() => {
-        //console.log('success?')
         const el = (<HTMLElement>document.getElementById(id));
 
         let duration = this.app.stringTimeInMinutes(subjects[0].end_time) - this.app.stringTimeInMinutes(subjects[0].start_time)
-
         el.style.height = (duration * 5 / 60) + "rem"
 
+        let startHour = parseInt(this.scheduleStartTime.split(':')[0])
         // Displacement = (Borders) + (Full Hours) + (Minutes)
-        let startHour = parseInt(this.scheduleStartTime.split(':')[0]) // 8 hours
-        el.style.top = ((0.1 * 2 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
-        el.style.visibility = "visible"
+        el.style.top = ((0.1 * 2.15 * (hours - startHour)) + ((hours - startHour) * 5) + (minutes / 60) * 5) + "rem"
+
+        if (subjects.length > 1) {
+          el.style.background = 'linear-gradient(90deg, rgb(69, 124, 206), rgb(165, 52, 214))';
+        }
 
         const el_title = (<HTMLElement>document.getElementById(id + "_title"));
         const el_room = (<HTMLElement>document.getElementById(id + "_room"));
-        el_title.textContent = ''
-        el_room.textContent = ''
 
         let title: string = ''
         let room: string = ''
@@ -218,23 +234,22 @@ export class HomePageComponent implements OnInit {
           room += subject.room + ' / '
         }
 
-        if (subjects.length > 1) {
-          el.style.background = 'linear-gradient(90deg, rgb(69, 124, 206), rgb(165, 52, 214))';
-        }
-
         el_title.textContent = title.slice(0, -3);
         el_room.textContent = room.slice(0, -3);
 
+        el.style.visibility = "visible"
       })
     })
   } 
 }
 
+  // setting unique id for schedule blocks
   setSubjectId(subject: string): string {
     let time = subject.split(':');
     return "t" + time[0] + time[1]
   }
 
+  // pass subject/booking to open in modal window
   openSubject(subject: Subject[]) {
     this.dialogRef.open(SubjectPopUpComponent, {
       data: {
@@ -243,9 +258,9 @@ export class HomePageComponent implements OnInit {
     })
   }
 
+  // Render and return pdf file with schedule tables.
   getPdf(id: number) {
     if (this.weekSchedule.size != 0 || this.bookings.length != 0) {
-      let language: string = localStorage.getItem('language') || 'en'
     
       const doc = new jsPDF('portrait', 'pt', 'a4')
 
@@ -254,7 +269,7 @@ export class HomePageComponent implements OnInit {
 
       let isSchedule = this.weekSchedule.size != 0
 
-      let headerTxt = 'Schedule: ' + this.searchResult
+      let headerTxt = this.itemsLoader.jspdfDictionary.get(this.app.language)?.get(0) + ': ' + this.searchResult
      
       doc.text(headerTxt, 50, 50);
 
@@ -263,7 +278,7 @@ export class HomePageComponent implements OnInit {
       if (isSchedule) {
         this.weekSchedule.forEach((schedule, day) => {
         let dayNumber = parseInt(day[1])
-        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+        let theDay = this.itemsLoader.days.get(this.app.language)?.get(dayNumber) || ''
 
         schedule.forEach((subjects, time) => {
           let title = ''
@@ -316,7 +331,7 @@ export class HomePageComponent implements OnInit {
         }
         }
 
-        let header: RowInput = this.itemsLoader.timeTableFields.get(language) || []
+        let header: RowInput = this.itemsLoader.timeTableFields.get(this.app.language) || []
 
         autoTable(doc, {
           head: [ header ],
@@ -337,33 +352,7 @@ export class HomePageComponent implements OnInit {
   }
 }
 
-// function waitForElm(selector: string) {
-//   return new Promise(resolve => {
-//       if (document.querySelector(selector)) {
-//           return resolve(document.querySelector(selector));
-//       }
-
-//       const observer = new MutationObserver(mutations => {
-//           if (document.querySelector(selector)) {
-//               resolve(document.querySelector(selector));
-//               observer.disconnect();
-//           }
-//       });
-
-//       observer.observe(document.body, {
-//           childList: true,
-//           subtree: true
-//       });
-//   });
-// }
-
-// function toGolangDateFormat(date: Date): string {
-//   // example: "2022-06-19T00:00:00Z" - golang format
-//   let rowDate = date.toLocaleDateString().split('.')
-//   let formatDate = rowDate[2] + '-' + rowDate[1] + '-' + rowDate[0] + 'T00:00:00Z'
-//   return formatDate
-// }
-
+// compare 2 string dates
 function dateCompare(d1: string, d2: string): number{
   const date1 = new Date(d1);
   const date2 = new Date(d2);
@@ -377,30 +366,7 @@ function dateCompare(d1: string, d2: string): number{
   }
 }
 
-// function compareTime(time1: string, time2: string): number {
-//   // 1 = time1 > time2
-//   // 0 = time1 == time2
-//   // -1 = time1 < time2
-
-//   var time1date = new Date("1970-01-01 " + time1)
-//   var time2date = new Date("1970-01-01 " + time2)
-
-//   if (time1date.getTime() > time2date.getTime()) {
-//     return 1
-//   } else if (time1date.getTime() < time2date.getTime()) {
-//     return -1
-//   }
-//   return 0
-
-//   // 24:00 and 00:00 = ?
-// }
-
-// function stringTimeInMinutes(time: string): number {
-//   let hours = parseInt(time.split(':')[0])
-//   let minutes = parseInt(time.split(':')[1])
-//   return (hours * 60) + minutes
-// }
-
+// check is Number
 function isNumber(char: any) {
   //return /^\d$/.test(char);
   return !Number.isNaN(Number(char))

@@ -26,23 +26,3 @@ export class Subject implements ScheduleElement {
     confirmed: boolean
     reserver: string
   }
-
-  // export class Booking implements ScheduleElement {
-  //   room: string
-  //   start_time: string
-  //   end_time: string
-  //   reason: string
-  //   date: string
-    // private _age: number
-
-    // public get age() {
-    //   return this._age;
-    // }
-
-  // public set age(theAge: number) {
-  //     if (theAge <= 0 || theAge >= 200) {
-  //         throw new Error('The age is invalid');
-  //     }
-  //     this._age = theAge;
-  // }
-  // }

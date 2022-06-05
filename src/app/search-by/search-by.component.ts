@@ -200,7 +200,6 @@ export class SearchByComponent implements OnInit {
         } 
       }
       window.setTimeout(() => { this.loading = false }, 500);
-      //this.loading = false
     }
   }  
 
@@ -431,7 +430,7 @@ export class SearchByComponent implements OnInit {
 
   // display search result / errors
   getSearchResult(): string {
-    if (this.searchMode != 'by-cabinet') {
+    if (!this.isCabinet) {
       if (this.errorStatusTimetable != 0) {
         let lang = localStorage?.getItem('language') || 'en'
         let message = this.errorMessages.get(lang)?.get(this.errorStatusTimetable) || ''
@@ -462,7 +461,6 @@ export class SearchByComponent implements OnInit {
   // Render and return pdf file with schedule tables.
   getPdf(id: number) {
     if (this.weekSchedule.size != 0 || this.bookingSchedule.size != 0) {
-      let language: string = localStorage.getItem('language') || 'en'
     
       const doc = new jsPDF('portrait', 'pt', 'a4')
 
@@ -478,12 +476,12 @@ export class SearchByComponent implements OnInit {
       let rowsBookings: { "content": string }[][] = []
 
       if (isSchedule) {
-        headerTxt = 'Schedule: ' + this.searchResult
+        headerTxt = this.itemsLoader.jspdfDictionary.get(this.app.language)?.get(0) + ': ' + this.searchResult
         doc.text(headerTxt, 50, 50);
 
         this.weekSchedule.forEach((schedule, day) => {
           let dayNumber = parseInt(day[1])
-          let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+          let theDay = this.itemsLoader.days.get(this.app.language)?.get(dayNumber) || ''
 
           schedule.forEach((subjects, time) => {
             let title = ''
@@ -530,7 +528,7 @@ export class SearchByComponent implements OnInit {
           }
         } 
 
-        let header: RowInput = this.itemsLoader.timeTableFields.get(language) || []
+        let header: RowInput = this.itemsLoader.timeTableFields.get(this.app.language) || []
 
         autoTable(doc, {
           head: [ header ],
@@ -547,12 +545,12 @@ export class SearchByComponent implements OnInit {
       if (isSchedule) {
         doc.addPage()
       } 
-      headerTxt = 'Booking: ' + this.searchResult
+      headerTxt = this.itemsLoader.jspdfDictionary.get(this.app.language)?.get(1) + ': ' + this.searchResult
       doc.text(headerTxt, 50, 50);
 
       this.bookingSchedule.forEach((schedule, day) => {
         let dayNumber = parseInt(day[1])
-        let theDay = this.itemsLoader.days.get(language)?.get(dayNumber) || ''
+        let theDay = this.itemsLoader.days.get(this.app.language)?.get(dayNumber) || ''
 
         let date = this.weekDates.get(day)
 
@@ -583,7 +581,7 @@ export class SearchByComponent implements OnInit {
           }
         }
 
-        let header: RowInput = this.itemsLoader.bookingTableFields.get(language) || []
+        let header: RowInput = this.itemsLoader.bookingTableFields.get(this.app.language) || []
 
         autoTable(doc, {
           head: [ header ],

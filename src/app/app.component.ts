@@ -34,7 +34,7 @@ export class AppComponent implements OnInit{
   username: any
   profileInfo: any
   department: any
-  language: string | null
+  language: string
   isAdmin = false
 
   constructor(private titleService: Title, public router: Router, public httpClient: HttpClient, translate: TranslateService, 
@@ -42,8 +42,8 @@ export class AppComponent implements OnInit{
     private api: ApiCallerService, public items: ItemsLoaderService) {    
       
       translate.setDefaultLang("en")
-      this.language = localStorage.getItem('language')
-      if (this.language == null) {
+      this.language = localStorage.getItem('language') || ''
+      if (this.language == '') {
         this.language = 'en'
         localStorage.setItem('language', this.language)
       }
