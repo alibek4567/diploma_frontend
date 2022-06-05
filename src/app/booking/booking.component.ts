@@ -100,6 +100,9 @@ export class BookingComponent implements OnInit {
     const data = this.select == "Room" ? this.byRoom : this.byDate
     this.sendMessage = ''
 
+    const offset = data.date.getTimezoneOffset()
+    data.date = new Date(data.date.getTime() - (offset*60*1000))
+
     let values = {
       reason: data.comment,
       start_time: data.startTime,
@@ -163,8 +166,11 @@ export class BookingComponent implements OnInit {
 
   // get all cabinets by selecting date
   cabinetByDate() {
+    const offset = this.byDate.date.getTimezoneOffset()
+    let sendDate = new Date(this.byDate.date.getTime() - (offset*60*1000))
+
     let data = {
-      date: this.byDate.date, 
+      date: sendDate, 
       start_time: this.byDate.startTime , 
       end_time: this.byDate.endTime
     }
@@ -226,13 +232,16 @@ export class BookingComponent implements OnInit {
   }
 
   cabinetByRoom() {
-      var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: this.byRoom.date})
+      const offset = this.byRoom.date.getTimezoneOffset()
+      let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
+
+      var response = this.api.sendPostRequest("/booking/room/"+this.byRoom.cabinet_id, {date: sendDate})
       response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
       if (data.payload != null) {
         for (let item of data.payload) {
           let roomDate = item.date
-          if (roomDate.split('T')[0] == this.app.toGolangDateFormat(this.byRoom.date).split('T')[0]) {
+          if (roomDate.split('T')[0] == this.app.toGolangDateFormat(sendDate).split('T')[0]) {
             this.events.push(item)
             this.events.sort(function(a, b) {
               if (a.start_time > b.start_time) {return 1} else {return -1} 
@@ -250,11 +259,14 @@ export class BookingComponent implements OnInit {
   }
 
   getTimetableByDate() {
+    const offset = this.byRoom.date.getTimezoneOffset()
+    let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
+
     const response = this.api.sendGetRequest("/timetable/room/" + this.byRoom.cabinet_id)
     response.subscribe(data => {
       const schedule = JSON.parse(JSON.stringify(data))
-      if(schedule.payload['d' + this.byRoom.date.getDay()] != undefined) {
-        for (let item of schedule.payload['d' + this.byRoom.date.getDay()]) {
+      if(schedule.payload['d' + sendDate.getDay()] != undefined) {
+        for (let item of schedule.payload['d' + sendDate.getDay()]) {
           this.events.push({ start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor })
           this.events.sort(function(a, b) {
             if (a.start_time > b.start_time) {return 1} else {return -1}

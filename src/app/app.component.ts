@@ -9,6 +9,7 @@ import { MAT_DATE_LOCALE, DateAdapter } from '@angular/material/core';
 
 import { ApiCallerService } from './api-caller.service';
 import { ItemsLoaderService } from './items-loader.service';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'app-root',
@@ -77,7 +78,7 @@ export class AppComponent implements OnInit{
           localStorage.setItem("username", this.username)
           localStorage.setItem("email", this.email)
           localStorage.setItem("id", this.id)
-          var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: "Astana IT University"})
+          var response = this.api.sendPostRequest("/login/office", {email: this.email, organization: environment.authSecret})
           response.subscribe(data => {
             const r = JSON.parse(JSON.stringify(data))
             // this.api.jwt = r.payload       
