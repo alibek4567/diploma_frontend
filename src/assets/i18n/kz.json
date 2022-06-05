@@ -52,20 +52,20 @@
     },
 
     "BOOKING": {
-        "bookingForm": "Booking Form",
-        "selectBy": "Select by",
-        "date": "Date",
-        "room": "Room",
-        "cabinet": "Cabinet",
-        "chooseDate": "Choose a date",
-        "startTime": "Start Time",
-        "endTime": "End Time",
-        "reason": "Reason",
-        "send": "Send",
-        "noEvents": "No Events",
-        "seats": "Seats",
-        "noRooms": "No Available Rooms",
-        "enterComment": "Enter your comments"
+        "bookingForm": "Брондау Формасы",
+        "selectBy": "Бронтау түрі",
+        "date": "Күні",
+        "room": "Кабинет",
+        "cabinet": "Кабинет",
+        "chooseDate": "Күнді таңдаңыз",
+        "startTime": "Басталуы уақыты",
+        "endTime": "Аяқталуы уақыты",
+        "reason": "Себебі",
+        "send": "Жіберу",
+        "noEvents": "Іс-шаралар жоқ",
+        "seats": "Орындар саны",
+        "noRooms": "Бос кабинеттер жоқ",
+        "enterComment": "Пікірінізді енгізіңіз"
     },
 
     "POP-UP": {
