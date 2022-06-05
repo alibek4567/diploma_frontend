@@ -28,7 +28,6 @@ export class BookingComponent implements OnInit {
   // common parameters for both modes
   select = "Date"
 
-  // ?
   temp = new Date(new Date().setDate(new Date().getDate() + 1))
 
   today = (new Date().getDay() != 0)? new Date():this.temp
@@ -62,6 +61,63 @@ export class BookingComponent implements OnInit {
     cabinet_id: ''
   }
 
+  responseMessage = new Map<string, Map<string, string>>([
+    [
+      'en', 
+      new Map<string, string>([
+        ['400-1', 'Time is reserved, try reload page / change time range'],
+        ['400-2', 'Cabinet is reserved for the selected time, try reload page / select another cabinet'],
+        ['404', 'Not Found'],
+        ['500', 'Internal Server Error'],
+        ['default', 'Unknown Server Error'],
+        ['required', ' is required'],
+        ['timeRestriction', 'Time range is 08:00 - 19:00'],
+        ['incorrectCab', 'Incorrect cabinet'],
+        ['noRooms', 'No available cabinets'],
+        ['wrongInput', 'Wrong inputs, check entered data'],
+        ['freeCab', 'The cabinet is free'],
+        ['404Cabinet', 'Not found cabinet'],
+        ['selectCab', 'Select cabinet from list'],
+      ])
+    ],
+    [
+      'kz', 
+      new Map<string, string>([
+        ['400-1', 'Таңдалған уақыт жұмсалуда, бетті қайта жүктеп көріңіз / уақыт ауқымын өзгертіңіз'],
+        ['400-2', 'Кабинет таңдалған уақытқа жұмсалуда, бетті қайта жүктеп көріңіз / басқа кабинетті таңдаңыз'],
+        ['404', 'Табылмаған'],
+        ['500', 'Сервердің ішкі қатесі'],
+        ['default', 'Сервердің беймәлім қатесі'],
+        ['required', ' талап етіледі'],
+        ['timeRestriction', 'Рұқсат етілген уақыт диапазоны: 08:00 - 19:00'],
+        ['incorrectCab', 'Қате кабинет'],
+        ['noRooms', 'Бос кабинеттер жоқ'],
+        ['wrongInput', 'Енгізілген ақпарат дұрыс емес, ақпараттың дұрыстығын тексеріңіз'],
+        ['freeCab', 'Кабинет бос'],
+        ['404Cabinet', 'Кабинет табылмады'],
+        ['selectCab', 'Тізімнен кабинетті таңдаңыз'],
+      ])
+    ],
+    [
+      'ru', 
+      new Map<string, string>([
+        ['400-1', 'Время зарезервировано, попробуйте перезагрузить страницу / изменить временной диапазон'],
+        ['400-2', 'Кабинет зарезервирован на выбранное время, попробуйте перезагрузить страницу / выбрать другой кабинет'],
+        ['404', 'Не найдено'],
+        ['500', 'Внутренняя ошибка сервера'],
+        ['default', 'Неизвестная ошибка сервера'],
+        ['required', ' необходим для поиска'],
+        ['timeRestriction', 'Разрешимый диапазон времени: 08:00 - 19:00'],
+        ['incorrectCab', 'Неправильный кабинет'],
+        ['noRooms', 'Нет свободных кабинетов'],
+        ['wrongInput', 'Неверные данные, проверьте правильность данных'],
+        ['freeCab', 'Кабинет свободен'],
+        ['404Cabinet', 'Кабинет не найден'],
+        ['selectCab', 'Выберите кабинет из списка'],
+      ])
+    ]
+  ])
+
   constructor(private api: ApiCallerService, private router: Router, public items: ItemsLoaderService, public app: AppComponent) {
     if (!app.isLoggedIn()) {
       router.navigateByUrl('')
@@ -85,16 +141,16 @@ export class BookingComponent implements OnInit {
   getServerErrorMessage(error: HttpErrorResponse): string {
     switch (error.status) {
       case 400: {
-        return (this.select == "Room")?'Time is reserved, try reload page/change time range':'Cabinet is reserved for the selected time, try reload page/select another cabinet'
+        return (this.select == "Room")?this.responseMessage?.get(this.app.language)?.get('400-1')!:this.responseMessage?.get(this.app.language)?.get('400-2')!
       }
       case 404: {
-        return `Not Found`;
+        return this.responseMessage?.get(this.app.language)?.get('404')!;
       }
       case 500: {
-        return `Internal Server Error`;
+        return this.responseMessage?.get(this.app.language)?.get('500')!;
       }
       default: {
-        return `Unknown Server Error`;
+        return this.responseMessage?.get(this.app.language)?.get('default')!;
       }
     }
   }
@@ -125,26 +181,26 @@ export class BookingComponent implements OnInit {
     const keysArr = Object.keys(values)
     valuesArr.forEach((val, index) => {
       if (val == null || val == '') {
-        this.sendMessage = keysArr[index] + ' is required'
+        this.sendMessage = keysArr[index] + this.responseMessage?.get(this.app.language)?.get('required')!
         flag = false
       }
     });
 
     if (this.app.compareTime(data.startTime, '8:00') == -1) {
-      this.sendMessage = "Time range is 08:00 - 19:00"
+      this.sendMessage = this.responseMessage?.get(this.app.language)?.get('timeRestriction')!
       flag = false
     }
     if (this.app.compareTime(data.endTime, '19:00') == 1) {
-      this.sendMessage = "Time range is 08:00 - 19:00"
+      this.sendMessage = this.responseMessage?.get(this.app.language)?.get('timeRestriction')!
       flag = false
     }
     if (data.endTime < data.startTime) {
-      this.sendMessage = "Time range is 08:00 - 19:00"
+      this.sendMessage = this.responseMessage?.get(this.app.language)?.get('timeRestriction')!
       flag = false
     }
 
     if(this.select == 'Room' && this.cabinetFlag){
-      this.sendMessage = "Incorrect cabinet"
+      this.sendMessage = this.responseMessage?.get(this.app.language)?.get('incorrectCab')!
     }
 
     if(flag && !this.cabinetFlag){
@@ -200,14 +256,14 @@ export class BookingComponent implements OnInit {
         this.rooms = timeTables.payload
         this.messageByDate = ''
         if (this.rooms.length == 0) {
-          this.messageByDate == 'No Available Rooms'
+          this.messageByDate = this.responseMessage?.get(this.app.language)?.get('noRooms')!
         }
       }, error => {
-        console.log(error);
+        //console.log(error);
       })
     } else {
       this.rooms = []
-      this.messageByDate = "Wrong inputs, check entered data"
+      this.messageByDate = this.responseMessage?.get(this.app.language)?.get('wrongInput')!
     }
   }
 
@@ -228,14 +284,14 @@ export class BookingComponent implements OnInit {
 
   // get data about events for room
   getDataForRoomEvents() {
-    console.log("New request");
+    //console.log("New request");
     this.events = []
     this.getTimetableByDate()
     this.cabinetByRoom()
   }
 
   cabinetByRoom() {
-    console.log("Booking check");
+    //console.log("Booking check");
       const offset = this.byRoom.date.getTimezoneOffset()
       let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
 
@@ -254,16 +310,16 @@ export class BookingComponent implements OnInit {
         }
         this.messageByRoom = ''
         if(this.events.length == 0){
-          this.messageByRoom = 'The Cabinet is free'
+          this.messageByRoom = this.responseMessage?.get(this.app.language)?.get('freeCab')!
         }
       }
     }, error => {
-      console.log(error)
+      //console.log(error)
     })
   }
 
   getTimetableByDate() {
-    console.log("Timetable check");
+    //console.log("Timetable check");
     const offset = this.byRoom.date.getTimezoneOffset()
     let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
 
@@ -279,11 +335,11 @@ export class BookingComponent implements OnInit {
         }
         this.messageByRoom = ''
         if(this.events.length == 0){
-          this.messageByRoom = 'The Cabinet is free'
+          this.messageByRoom = this.responseMessage?.get(this.app.language)?.get('freeCab')!
         }
       }
     }, error => {
-      console.log(error)
+      //console.log(error)
     })
   }
 
@@ -296,9 +352,9 @@ export class BookingComponent implements OnInit {
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
     })
     if(this.searchedRooms?.length == 0){
-      this.messageByRoom = 'Not found Cabinet'
+      this.messageByRoom = this.responseMessage?.get(this.app.language)?.get('404Cabinet')!
     }else{
-      this.messageByRoom = 'Select Cabinet from List'
+      this.messageByRoom = this.responseMessage?.get(this.app.language)?.get('selectCab')!
     }
   }
 
@@ -306,10 +362,7 @@ export class BookingComponent implements OnInit {
   setValues(event: any) {
     this.byRoom.cabinet_id = event.option.value.split('-')[1]
     this.byRoom.cabinet = event.option.value.split('-')[0]
-    console.log(this.byRoom.cabinet);
+    //console.log(this.byRoom.cabinet);
     this.cabinetFlag = false
   }
 }
-
-
-

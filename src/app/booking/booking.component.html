@@ -45,7 +45,7 @@
     
                 <div class="inputHolder" style="width: 100%;">
                     <p>{{ 'BOOKING.reason' | translate }}</p>
-                    <textarea [(ngModel)]="byRoom.comment" type="text" placeholder=""></textarea>
+                    <textarea [(ngModel)]="byRoom.comment" type="text" placeholder="{{ 'BOOKING.enterComment' | translate }}"></textarea>
                 </div>
                 
             </div>
@@ -74,7 +74,7 @@
     
                 <div class="inputHolder" style="width: 100%">
                     <p>{{ 'BOOKING.reason' | translate }}</p>
-                    <textarea [(ngModel)]="byDate.comment" type="text" placeholder="Enter a comment"></textarea>
+                    <textarea [(ngModel)]="byDate.comment" type="text" placeholder="{{ 'BOOKING.enterComment' | translate }}"></textarea>
                 </div>
             </div>
 
