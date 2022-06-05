@@ -24,10 +24,8 @@ export class HomePageComponent implements OnInit {
 
   // search parameters
   department = ''
-  searchStart: boolean = false
   searchMode: string = ''
   searchValue: string
-  searchResult: string
   searchSuccess: boolean = false
 
   // time parameters of schedule
@@ -41,9 +39,6 @@ export class HomePageComponent implements OnInit {
   id: string | null = localStorage.getItem('id')
   bookings: any[] = []
 
-  messageForBooking: string = "No Events"
-  messageForSchedule: string = "No Schedule"
-
   errorStatusBooking: number = 0
   errorStatusTimetable: number = 0
 
@@ -51,6 +46,7 @@ export class HomePageComponent implements OnInit {
     [
       'en', 
       new Map<number, string>([
+        [0, ''],
         [400, 'Request error, check the request correctness'],
         [404, 'No records in the server'],
         [500, 'Server error, try to request later ...'],
@@ -59,6 +55,7 @@ export class HomePageComponent implements OnInit {
     [
       'kz', 
       new Map<number, string>([
+        [0, ''],
         [400, 'Сұраныстағы қате, сұраудың дұрыстығын тексеріңіз'],
         [404, 'Серверде жазбалар жоқ'],
         [500, 'Сервер қатесі, әрекетті кейінірек қайталаңыз ...'],
@@ -67,6 +64,7 @@ export class HomePageComponent implements OnInit {
     [
       'ru', 
       new Map<number, string>([
+        [0, ''],
         [400, 'Ошибка в запроса, проверьте правильность запроса'],
         [404, 'Нет записей на сервере'],
         [500, 'Ошибка сервера, попробуйте запросить позже...'],
@@ -82,14 +80,14 @@ export class HomePageComponent implements OnInit {
   
     // check department of user
     if(isNumber(this.department?.substring(this.department.length - 4))){
-      let temp1 = localStorage.getItem('department')
-      if (temp1 != undefined)
-      this.searchValue = temp1
+      let department = localStorage.getItem('department')
+      if (department != undefined)
+      this.searchValue = department
       this.searchMode = 'by-group'
     } else {
-      let temp2 = localStorage.getItem('email')
-      if (temp2 != null) {
-        this.searchValue = temp2
+      let email = localStorage.getItem('email')
+      if (email != null) {
+        this.searchValue = email
         this.searchMode = 'by-teacher'
       }
     }
@@ -100,7 +98,7 @@ export class HomePageComponent implements OnInit {
     });
 
     // geeting study rooms booking of user
-    var response = this.api.sendGetRequest("/booking/reserver/"+this.id)
+    var response = this.api.sendGetRequest("/booking/reserver/" + this.id)
     response.subscribe(r => {
       const data = JSON.parse(JSON.stringify(r))
       if(data.payload != undefined){
@@ -126,9 +124,6 @@ export class HomePageComponent implements OnInit {
       this.timeArray = []
       this.scheduleStartTime = "24:00"
       this.scheduleEndTime = "00:00"
-
-      this.searchStart = true
-      this.searchResult = this.searchValue
 
       switch(this.searchMode) { 
         case 'by-group': { 
@@ -260,7 +255,7 @@ export class HomePageComponent implements OnInit {
 
   // Render and return pdf file with schedule tables.
   getPdf(id: number) {
-    if (this.weekSchedule.size != 0 || this.bookings.length != 0) {
+    if (this.weekSchedule.size != 0) {
     
       const doc = new jsPDF('portrait', 'pt', 'a4')
 
@@ -269,7 +264,7 @@ export class HomePageComponent implements OnInit {
 
       let isSchedule = this.weekSchedule.size != 0
 
-      let headerTxt = this.itemsLoader.jspdfDictionary.get(this.app.language)?.get(0) + ': ' + this.searchResult
+      let headerTxt = this.itemsLoader.jspdfDictionary.get(this.app.language)?.get(0) + ': ' + this.searchValue
      
       doc.text(headerTxt, 50, 50);
 
@@ -344,7 +339,7 @@ export class HomePageComponent implements OnInit {
         })
       }
   
-      doc.save(this.searchResult + '.pdf')
+      doc.save(this.searchValue + '.pdf')
     } else {
       this.trigger.toArray()[id].openPopover();
       window.setTimeout(() => { this.trigger.toArray()[id].closePopover() }, 2000);

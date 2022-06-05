@@ -1,61 +1,65 @@
 <div class="outer">
-    <div class="content">
-        <div class="topHolder">
-            <h2>{{ 'ADMIN-BOARD.bookingHistory' | translate }}</h2>
-            <input type="text" [(ngModel)]="room" placeholder="Search by Room" (ngModelChange)="filter()">
-          </div>
-        
-            <div class="tableHolder">
-              <table>
-                <tr>
-                  <th>
-                    {{ 'ADMIN-BOARD.cabinet' | translate }} 
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.sender' | translate }} 
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.senderInfo' | translate }} 
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.reason' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.date' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.startTime' | translate }}
-                  </th>
-                  <th>
-                    {{ 'ADMIN-BOARD.endTime' | translate }}
-                  </th>
-                </tr>
-                <tr *ngFor="let item of searchedBookings">
-                  <td>
-                    <b>{{item.room}}</b> 
-                  </td>
-                  <td>
-                    <b>{{item.reserver}}</b> 
-                  </td>
-                  <td>
-                    <b>{{item.reserver_info}}</b> 
-                  </td>
-                  <td>
-                    <b>{{item.reason}}</b> 
-                  </td>
-                  <td>
-                    <b>{{this.app.formatDate(item.date)}}</b> 
-                  </td>
-                  <td>
-                    <b>{{item.start_time}}</b> 
-                  </td>
-                  <td>
-                    <b>{{item.end_time}}</b> 
-                  </td>
-                </tr>
-              </table>
-            </div>
+  <div class="content">
+    <div class="topHolder">
+      <h2>{{ 'ADMIN-BOARD.bookingHistory' | translate }}</h2>
+      <div class="inputsHolder">
+        <div class="item">
+          <p>{{ 'ADMIN-BOARD.cabinet' | translate }}:</p>
+          <input type="text" [(ngModel)]="room" placeholder='{{ "ADMIN-BOARD.placeholder-room" | translate }}' (ngModelChange)="filter()">
+        </div>
+      </div>
     </div>
+    <div class="tableHolder">
+      <table>
+        <tr>
+          <th>
+            {{ 'ADMIN-BOARD.cabinet' | translate }} 
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.sender' | translate }} 
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.senderInfo' | translate }} 
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.reason' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.date' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.startTime' | translate }}
+          </th>
+          <th>
+            {{ 'ADMIN-BOARD.endTime' | translate }}
+          </th>
+        </tr>
+        <tr *ngFor="let item of searchedBookings">
+          <td>
+            <b>{{item.room}}</b> 
+          </td>
+          <td>
+            <b>{{item.reserver}}</b> 
+          </td>
+          <td>
+            <b>{{item.reserver_info}}</b> 
+          </td>
+          <td>
+            <b>{{item.reason}}</b> 
+          </td>
+          <td>
+            <b>{{this.app.formatDate(item.date)}}</b> 
+          </td>
+          <td>
+            <b>{{item.start_time}}</b> 
+          </td>
+          <td>
+            <b>{{item.end_time}}</b> 
+          </td>
+        </tr>
+      </table>
+    </div>
+  </div>
 </div>
 
 

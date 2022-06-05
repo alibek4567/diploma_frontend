@@ -15,7 +15,7 @@ export class AdminHistoryComponent implements OnInit {
   room: string
 
   constructor(public api: ApiCallerService, public app: AppComponent, public router: Router) { 
-    if(!app.isLoggedIn() && !app.isAdmin){
+    if(!app.isLoggedIn() || !app.isAdmin) { 
       router.navigateByUrl('')
     }
 
@@ -23,7 +23,7 @@ export class AdminHistoryComponent implements OnInit {
     response.subscribe(data => {
       this.bookings = JSON.parse(JSON.stringify(data)).payload
       this.searchedBookings = this.bookings
-      console.log(this.bookings)
+      //console.log(this.bookings)
     }, error => {
     })
   }
@@ -35,7 +35,7 @@ export class AdminHistoryComponent implements OnInit {
     this.searchedBookings = this.bookings.filter((data: any) => {
       return data.room.toLowerCase().includes(this.room.toLowerCase());
     })
-    console.log(this.room);
+    //console.log(this.room);
   }
 
 }

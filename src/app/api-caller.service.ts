@@ -22,8 +22,6 @@ export class ApiCallerService {
   }
 
   sendGetRequestWithAuth(url: string) {
-    console.log(localStorage.getItem('token'));
-    
     const httpOptions = {
       headers: new HttpHeaders({
         'Content-Type':  'application/json',

@@ -20,7 +20,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
   searchedRequests: any
 
   constructor(public api: ApiCallerService, public router: Router, public app: AppComponent, public httpClient: HttpClient) { 
-    if(!app.isLoggedIn() && !app.isAdmin){
+    if(!app.isLoggedIn() || !app.isAdmin) { 
       router.navigateByUrl('')
     }
 
@@ -28,7 +28,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     response.subscribe(data => {
       this.requests = JSON.parse(JSON.stringify(data)).payload
       this.searchedRequests = this.requests
-      console.log(this.searchedRequests)
+      //console.log(this.searchedRequests)
     }, error => {
     })
   }
@@ -43,7 +43,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     this.searchedRequests = this.requests.filter((data: any) => {
       return data.room.toLowerCase().includes(this.request.toLowerCase());
     })
-    console.log(this.request);
+    //console.log(this.request);
   }
 
   reject(booking: any){
@@ -58,7 +58,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
     const r = response.subscribe(data =>{
     this.app.sendEmail(subject, content, booking.reserver_email).subscribe(res => {
       const message = JSON.stringify(res)
-      console.log(message);
+      //console.log(message);
 
       this.router.navigate(['/admin-confirmed'])
       .then(() => {
@@ -66,7 +66,7 @@ export class AdminConfirmedRequestsComponent implements OnInit {
       });
     })
     },error =>{
-      console.log(error);
+      //console.log(error);
     })
   }
 }
