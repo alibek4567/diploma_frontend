@@ -68,8 +68,11 @@ export class BookingComponent implements OnInit {
     }
     this.searchedRooms = this.items.rooms
 
-    console.log(this.today, this.today.getDay())
-    console.log(new Date().getDay() == 0)
+    // console.log(this.byDate.date.getDay());
+    if(this.byDate.date.getDay() == 0){
+      this.byDate.date.setDate(this.byDate.date.getDate() + 1)
+      this.byRoom.date.setDate(this.byRoom.date.getDate() + 1)
+    }
   }
 
   ngOnInit(): void { }
@@ -140,7 +143,7 @@ export class BookingComponent implements OnInit {
       flag = false
     }
 
-    if(this.cabinetFlag){
+    if(this.select == 'Room' && this.cabinetFlag){
       this.sendMessage = "Incorrect cabinet"
     }
 
@@ -225,13 +228,14 @@ export class BookingComponent implements OnInit {
 
   // get data about events for room
   getDataForRoomEvents() {
-    this.messageByRoom = ''
+    console.log("New request");
     this.events = []
     this.getTimetableByDate()
     this.cabinetByRoom()
   }
 
   cabinetByRoom() {
+    console.log("Booking check");
       const offset = this.byRoom.date.getTimezoneOffset()
       let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
 
@@ -248,33 +252,34 @@ export class BookingComponent implements OnInit {
             })
           }
         }
+        this.messageByRoom = ''
         if(this.events.length == 0){
           this.messageByRoom = 'The Cabinet is free'
-          this.cabinetFlag = false
         }
       }
     }, error => {
-      this.messageByRoom = this.getServerErrorMessage(error)
+      console.log(error)
     })
   }
 
   getTimetableByDate() {
+    console.log("Timetable check");
     const offset = this.byRoom.date.getTimezoneOffset()
     let sendDate = new Date(this.byRoom.date.getTime() - (offset*60*1000))
 
     const response = this.api.sendGetRequest("/timetable/room/" + this.byRoom.cabinet_id)
     response.subscribe(data => {
       const schedule = JSON.parse(JSON.stringify(data))
-      if(schedule.payload['d' + sendDate.getDay()] != undefined) {
+      if(schedule.payload['d' + sendDate.getDay()] != null) {
         for (let item of schedule.payload['d' + sendDate.getDay()]) {
           this.events.push({ start_time: item.start_time, end_time: item.end_time, reason: item.subject, reserver: item.tutor })
           this.events.sort(function(a, b) {
             if (a.start_time > b.start_time) {return 1} else {return -1}
           })
         }
-        if (this.events.length == 0) {
+        this.messageByRoom = ''
+        if(this.events.length == 0){
           this.messageByRoom = 'The Cabinet is free'
-          this.cabinetFlag = false
         }
       }
     }, error => {
@@ -284,15 +289,14 @@ export class BookingComponent implements OnInit {
 
   //filter list of rooms by room name
   filter() {
+    this.cabinetFlag = true
     this.events = []
     this.messageByRoom = ''
     this.searchedRooms = this.items.rooms.filter((data: any) => {  
       return data.name.toLowerCase().includes(this.byRoom.cabinet.toLowerCase());
     })
-    this.messageByRoom = ''
     if(this.searchedRooms?.length == 0){
       this.messageByRoom = 'Not found Cabinet'
-      this.cabinetFlag = true
     }else{
       this.messageByRoom = 'Select Cabinet from List'
     }
@@ -303,6 +307,7 @@ export class BookingComponent implements OnInit {
     this.byRoom.cabinet_id = event.option.value.split('-')[1]
     this.byRoom.cabinet = event.option.value.split('-')[0]
     console.log(this.byRoom.cabinet);
+    this.cabinetFlag = false
   }
 }
 
